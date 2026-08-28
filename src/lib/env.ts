@@ -7,12 +7,12 @@ import { z } from 'zod';
 
 const serverSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  JWT_ACCESS_SECRET: z.string().min(32, 'JWT_ACCESS_SECRET must be at least 32 characters'),
-  JWT_REFRESH_SECRET: z.string().min(32, 'JWT_REFRESH_SECRET must be at least 32 characters'),
-  JWT_ACCESS_EXPIRES_IN: z.string().default('15m'),
-  JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
+  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+  NEXTAUTH_SECRET_CUSTOMER: z
+    .string()
+    .min(32, 'NEXTAUTH_SECRET_CUSTOMER must be at least 32 characters'),
+  NEXTAUTH_SECRET_ADMIN: z.string().min(32, 'NEXTAUTH_SECRET_ADMIN must be at least 32 characters'),
   COOKIE_DOMAIN: z.string().default('localhost'),
-  CSRF_SECRET: z.string().min(32, 'CSRF_SECRET must be at least 32 characters'),
   ALLOWED_ORIGINS: z.string().default('http://localhost:3000'),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60_000),
   RATE_LIMIT_MAX_REQUESTS: z.coerce.number().int().positive().default(100),
@@ -20,7 +20,7 @@ const serverSchema = z.object({
 });
 
 const clientSchema = z.object({
-  NEXT_PUBLIC_APP_NAME: z.string().min(1).default('Enterprise App'),
+  NEXT_PUBLIC_APP_NAME: z.string().min(1).default('GoOrder'),
   NEXT_PUBLIC_APP_URL: z.string().url().default('http://localhost:3000'),
   NEXT_PUBLIC_APP_ENV: z.enum(['development', 'staging', 'production']).default('development'),
   NEXT_PUBLIC_API_URL: z.string().url().default('http://localhost:3000/api'),
@@ -39,12 +39,10 @@ function formatZodError(error: z.ZodError): string {
 export function getServerEnv(): ServerEnv {
   const parsed = serverSchema.safeParse({
     NODE_ENV: process.env.NODE_ENV,
-    JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
-    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
-    JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN,
-    JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN,
+    DATABASE_URL: process.env.DATABASE_URL,
+    NEXTAUTH_SECRET_CUSTOMER: process.env.NEXTAUTH_SECRET_CUSTOMER,
+    NEXTAUTH_SECRET_ADMIN: process.env.NEXTAUTH_SECRET_ADMIN,
     COOKIE_DOMAIN: process.env.COOKIE_DOMAIN,
-    CSRF_SECRET: process.env.CSRF_SECRET,
     ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS,
     RATE_LIMIT_WINDOW_MS: process.env.RATE_LIMIT_WINDOW_MS,
     RATE_LIMIT_MAX_REQUESTS: process.env.RATE_LIMIT_MAX_REQUESTS,

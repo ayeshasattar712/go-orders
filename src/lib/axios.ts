@@ -6,25 +6,6 @@ import axios, {
 } from 'axios';
 import { clientEnv } from '@/lib/env';
 
-interface RetryConfig extends InternalAxiosRequestConfig {
-  _retry?: boolean;
-}
-
-let refreshPromise: Promise<string | null> | null = null;
-
-async function refreshAccessToken(): Promise<string | null> {
-  try {
-    const response = await axios.post(
-      `${clientEnv.NEXT_PUBLIC_API_URL}/auth/refresh`,
-      {},
-      { withCredentials: true },
-    );
-    return (response.data?.data?.accessToken as string | undefined) ?? null;
-  } catch {
-    return null;
-  }
-}
-
 function createApiClient(): AxiosInstance {
   const instance = axios.create({
     baseURL: clientEnv.NEXT_PUBLIC_API_URL,
@@ -55,27 +36,21 @@ function createApiClient(): AxiosInstance {
 
   instance.interceptors.response.use(
     (response: AxiosResponse) => response,
-    async (error: AxiosError) => {
-      const original = error.config as RetryConfig | undefined;
+    (error: AxiosError) => {
       const status = error.response?.status;
 
-      if (status === 401 && original && !original._retry && !original.url?.includes('/auth/')) {
-        original._retry = true;
+      const isAuthEndpoint = error.config?.url?.includes('/auth/');
 
-        refreshPromise ??= refreshAccessToken().finally(() => {
-          refreshPromise = null;
-        });
-
-        const token = await refreshPromise;
-        if (token) {
-          original.headers = original.headers ?? {};
-          original.headers.Authorization = `Bearer ${token}`;
-          return instance(original);
-        }
-
-        if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login')) {
-          window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;
-        }
+      if (
+        status === 401 &&
+        !isAuthEndpoint &&
+        typeof window !== 'undefined' &&
+        !window.location.pathname.startsWith('/login') &&
+        !window.location.pathname.startsWith('/admin/login')
+      ) {
+        const loginPath = window.location.pathname.startsWith('/admin') ? '/admin/login' : '/login';
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- outside React render/event context, useRouter is unavailable in this axios interceptor
+        window.location.href = `${loginPath}?next=${encodeURIComponent(window.location.pathname)}`;
       }
 
       const message =

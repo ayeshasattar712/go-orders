@@ -1,14 +1,16 @@
-import { cookies } from 'next/headers';
-import { COOKIE_NAMES } from '@/constants/cookies';
-import { verifyAccessToken } from '@/lib/auth';
+import { getAdminSession } from '@/lib/auth/admin-auth';
+import { getCustomerSession } from '@/lib/auth/customer-auth';
+import type { AppSessionToken } from '@/lib/auth/session';
 import { hasAnyPermission, hasPermission } from '@/lib/permissions';
 import { getClientIp, rateLimit } from '@/lib/rate-limit';
 import { assertSafeInput, sanitizeText } from '@/lib/security';
 import { errorResponse } from '@/lib/api-response';
 import type { Permission } from '@/constants/roles';
-import type { JwtAccessPayload } from '@/types/auth';
 
-export async function requireAuth(request: Request): Promise<JwtAccessPayload | Response> {
+async function guardSession(
+  request: Request,
+  getSession: () => Promise<AppSessionToken | null>,
+): Promise<AppSessionToken | Response> {
   const ip = getClientIp(request);
   const limited = rateLimit(`api:${ip}`);
   if (!limited.success) {
@@ -21,25 +23,26 @@ export async function requireAuth(request: Request): Promise<JwtAccessPayload | 
     });
   }
 
-  const cookieStore = await cookies();
-  const bearer = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
-  const cookieToken = cookieStore.get(COOKIE_NAMES.ACCESS_TOKEN)?.value;
-  const token = bearer || cookieToken;
-
-  if (!token) {
-    return errorResponse('Unauthorized', { status: 401, code: 'UNAUTHORIZED' });
-  }
-
-  const session = await verifyAccessToken(token);
+  const session = await getSession();
   if (!session) {
-    return errorResponse('Session expired', { status: 401, code: 'SESSION_EXPIRED' });
+    return errorResponse('Unauthorized', { status: 401, code: 'UNAUTHORIZED' });
   }
 
   return session;
 }
 
+/** Only ever resolves a customer_session — never accepts an admin session. */
+export function requireCustomerSession(request: Request): Promise<AppSessionToken | Response> {
+  return guardSession(request, getCustomerSession);
+}
+
+/** Only ever resolves an admin_session — never accepts a customer session. */
+export function requireStaffSession(request: Request): Promise<AppSessionToken | Response> {
+  return guardSession(request, getAdminSession);
+}
+
 export function requirePermissions(
-  session: JwtAccessPayload,
+  session: AppSessionToken,
   permissions: Permission[],
 ): true | Response {
   if (!hasAnyPermission(session, permissions)) {
@@ -49,7 +52,7 @@ export function requirePermissions(
 }
 
 export function requirePermission(
-  session: JwtAccessPayload,
+  session: AppSessionToken,
   permission: Permission,
 ): true | Response {
   if (!hasPermission(session, permission)) {

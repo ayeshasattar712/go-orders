@@ -6,16 +6,16 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginInput } from '@/schemas/auth.schema';
-import { authService } from '@/services/api';
-import { useAuthStore } from '@/store/auth-store';
+import { customerAuthService } from '@/services/api';
+import { useCustomerAuthStore } from '@/store/customer-auth-store';
 import { FormField } from '@/components/forms/form-field';
 import { Button } from '@/components/ui/button';
-import { DEFAULT_LOGIN_REDIRECT } from '@/constants/routes';
+import { CUSTOMER_DEFAULT_LOGIN_REDIRECT } from '@/constants/routes';
 
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const setUser = useAuthStore((state) => state.setUser);
+  const setUser = useCustomerAuthStore((state) => state.setUser);
   const [formError, setFormError] = useState<string | null>(null);
 
   const {
@@ -25,8 +25,8 @@ export function LoginForm() {
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: 'admin@example.com',
-      password: 'Admin123!',
+      email: 'user@example.com',
+      password: 'User1234!',
       rememberMe: false,
     },
   });
@@ -34,9 +34,9 @@ export function LoginForm() {
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
     try {
-      const result = await authService.login(values);
+      const result = await customerAuthService.login(values);
       setUser(result.user);
-      const next = searchParams.get('next') || DEFAULT_LOGIN_REDIRECT;
+      const next = searchParams.get('next') || CUSTOMER_DEFAULT_LOGIN_REDIRECT;
       router.replace(next);
       router.refresh();
     } catch (error) {
@@ -71,13 +71,13 @@ export function LoginForm() {
         </Link>
       </div>
 
-      {formError ? <p className="text-sm text-destructive">{formError}</p> : null}
+      {formError ? <p className="text-destructive text-sm">{formError}</p> : null}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? 'Signing in...' : 'Sign in'}
       </Button>
 
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-muted-foreground text-center text-sm">
         No account?{' '}
         <Link href="/register" className="text-primary hover:underline">
           Create one

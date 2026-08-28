@@ -1,0 +1,795 @@
+// GoOrder Prisma schema — Phase 1 (additive, alongside existing mock-data).
+// Enum values that mirror hyphenated string unions used across the frontend
+// (e.g. 'in-stock', '7-day') are declared SCREAMING_SNAKE_CASE with @map so
+// Prisma Client stays a valid JS identifier while the DB stores the original
+// string via @map. Seed/service code translates between the two.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Auth / users
+// ---------------------------------------------------------------------------
+
+enum UserType {
+  CUSTOMER
+  STAFF
+}
+
+// Mirrors src/constants/roles.ts ROLES exactly — do not let these drift apart.
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  FINANCE_MANAGER
+  PROCUREMENT_MANAGER
+  INVENTORY_MANAGER
+  SALES_MANAGER
+  MANAGER
+  USER
+  VIEWER
+}
+
+model User {
+  id                   String    @id @default(cuid())
+  email                String    @unique
+  passwordHash         String
+  firstName            String
+  lastName             String
+  userType             UserType
+  role                 Role
+  avatarUrl            String?
+  isActive             Boolean   @default(true)
+  emailVerified        DateTime?
+  resetTokenHash       String?
+  resetTokenExpiresAt  DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  client        Client?
+  orders        Order[]
+  chatMessages  ChatMessage[]
+
+  @@index([userType])
+}
+
+// ---------------------------------------------------------------------------
+// Catalog
+// ---------------------------------------------------------------------------
+
+enum CategoryStatus {
+  ACTIVE   @map("active")
+  INACTIVE @map("inactive")
+}
+
+model Category {
+  id           String         @id @default(cuid())
+  name         String
+  slug         String         @unique
+  icon         String
+  productCount Int            @default(0)
+  image        String
+  description  String
+  status       CategoryStatus @default(ACTIVE)
+
+  products Product[]
+  vendors  Vendor[]  @relation("VendorCategories")
+}
+
+enum VendorStatus {
+  PENDING   @map("pending")
+  APPROVED  @map("approved")
+  REJECTED  @map("rejected")
+  SUSPENDED @map("suspended")
+}
+
+model Vendor {
+  id               String       @id @default(cuid())
+  name             String
+  slug             String       @unique
+  logo             String
+  banner           String
+  rating           Float        @default(0)
+  reviewCount      Int          @default(0)
+  verified         Boolean      @default(false)
+  location         String
+  responseTime     String
+  yearsActive      Int
+  fulfillmentRate  Float
+  certifications   String[]
+  status           VendorStatus
+  contactPerson    String
+  email            String
+  phone            String
+  address          String
+  registeredAt     DateTime
+  performanceScore Float
+
+  categories Category[]       @relation("VendorCategories")
+  products   Product[]
+  purchases  VendorPurchase[]
+}
+
+enum StockStatus {
+  IN_STOCK     @map("in-stock")
+  LOW_STOCK    @map("low-stock")
+  OUT_OF_STOCK @map("out-of-stock")
+  PREORDER     @map("preorder")
+}
+
+model Product {
+  id                   String      @id @default(cuid())
+  slug                 String      @unique
+  name                 String
+  shortDescription     String
+  description          String
+  images               String[]
+  categoryId           String
+  category             Category    @relation(fields: [categoryId], references: [id])
+  vendorId             String
+  vendor               Vendor      @relation(fields: [vendorId], references: [id])
+  price                Float
+  compareAtPrice       Float?
+  currency             String      @default("USD")
+  rating               Float       @default(0)
+  reviewCount          Int         @default(0)
+  stock                Int         @default(0)
+  stockStatus          StockStatus
+  sku                  String      @unique
+  unit                 String
+  minOrderQty          Int         @default(1)
+  tags                 String[]
+  isBestSeller         Boolean     @default(false)
+  isTrending           Boolean     @default(false)
+  isNew                Boolean     @default(false)
+  deliveryEstimateDays Int
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  bulkPricing    BulkPriceTier[]
+  specifications ProductSpecification[]
+  reviews        ProductReview[]
+  orderItems     OrderItem[]
+
+  @@index([categoryId])
+  @@index([vendorId])
+}
+
+model BulkPriceTier {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  minQty    Int
+  maxQty    Int?
+  price     Float
+}
+
+model ProductSpecification {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  label     String
+  value     String
+}
+
+model ProductReview {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  author    String
+  avatar    String?
+  rating    Float
+  date      DateTime
+  title     String
+  body      String
+  verified  Boolean  @default(false)
+  helpful   Int      @default(0)
+}
+
+model Testimonial {
+  id      String @id @default(cuid())
+  name    String
+  role    String
+  company String
+  avatar  String
+  quote   String
+  rating  Float
+}
+
+// ---------------------------------------------------------------------------
+// Orders
+// ---------------------------------------------------------------------------
+
+enum OrderStatus {
+  PENDING          @map("pending")
+  CONFIRMED        @map("confirmed")
+  PROCESSING       @map("processing")
+  PACKED           @map("packed")
+  SHIPPED          @map("shipped")
+  OUT_FOR_DELIVERY @map("out-for-delivery")
+  DELIVERED        @map("delivered")
+  CANCELLED        @map("cancelled")
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  orderNumber    String      @unique
+  userId         String?
+  user           User?       @relation(fields: [userId], references: [id])
+  date           DateTime
+  status         OrderStatus
+  total          Float
+  itemCount      Int
+  eta            String
+  vendorName     String
+  trackingNumber String
+  carrier        String
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  shippingName  String?
+  shippingLine1 String?
+  shippingCity  String?
+  shippingState String?
+  shippingZip   String?
+  paymentMethod CheckoutPaymentMethod?
+
+  items    OrderItem[]
+  timeline OrderTimelineStep[]
+  payment  Payment?
+
+  @@index([userId])
+}
+
+enum CheckoutPaymentMethod {
+  BANK_ACCOUNT     @map("bank-account")
+  ONLINE_TRANSFER  @map("online-transfer")
+}
+
+enum PaymentStatus {
+  PENDING             @map("pending")
+  AWAITING_TRANSFER   @map("awaiting-transfer")
+  CONFIRMED           @map("confirmed")
+}
+
+model Payment {
+  id                 String                 @id @default(cuid())
+  orderId            String                 @unique
+  order              Order                  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method             CheckoutPaymentMethod
+  status             PaymentStatus
+  amount             Float
+  reference          String                 @unique
+  bankName           String?
+  accountTitle       String?
+  accountNumber      String?
+  transferReference  String?
+  paidAt             DateTime?
+  createdAt          DateTime               @default(now())
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+  name      String
+  image     String
+  quantity  Int
+  price     Float
+}
+
+model OrderTimelineStep {
+  id          String      @id @default(cuid())
+  orderId     String
+  order       Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status      OrderStatus
+  label       String
+  timestamp   DateTime?
+  description String
+}
+
+// ---------------------------------------------------------------------------
+// Clients (B2B companies) & addresses
+// ---------------------------------------------------------------------------
+
+enum ClientStatus {
+  ACTIVE    @map("active")
+  SUSPENDED @map("suspended")
+}
+
+model Client {
+  id                 String       @id @default(cuid())
+  userId             String?      @unique
+  user               User?        @relation(fields: [userId], references: [id])
+  companyName        String
+  contactName        String
+  email              String       @unique
+  phone              String
+  address            String
+  status             ClientStatus @default(ACTIVE)
+  creditLimit        Float        @default(0)
+  creditUsed         Float        @default(0)
+  creditFrozen       Boolean      @default(false)
+  outstandingBalance Float        @default(0)
+  dueAmount          Float        @default(0)
+  nextDueDate        DateTime?
+  joinedAt           DateTime
+  orderCount         Int          @default(0)
+  totalSpend         Float        @default(0)
+  taxId              String?
+  billingEmail       String?
+
+  addresses     ClientAddress[]
+  invoices      Invoice[]
+  quotations    Quotation[]
+  chatThreads   ChatThread[]
+  notifications AppNotification[]
+}
+
+model ClientAddress {
+  id         String  @id @default(cuid())
+  clientId   String
+  client     Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  label      String
+  line1      String
+  line2      String?
+  city       String
+  state      String
+  postalCode String
+  country    String
+  isDefault  Boolean @default(false)
+}
+
+// ---------------------------------------------------------------------------
+// Invoicing / accounting
+// ---------------------------------------------------------------------------
+
+enum InvoiceType {
+  RECEIVABLE @map("receivable")
+  PAYABLE    @map("payable")
+}
+
+enum InvoiceStatus {
+  DRAFT   @map("draft")
+  SENT    @map("sent")
+  PAID    @map("paid")
+  PARTIAL @map("partial")
+  OVERDUE @map("overdue")
+  CREDIT  @map("credit")
+}
+
+model Invoice {
+  id               String        @id @default(cuid())
+  invoiceNumber    String        @unique
+  vendorOrCustomer String
+  clientId         String?
+  client           Client?       @relation(fields: [clientId], references: [id])
+  type             InvoiceType
+  issueDate        DateTime
+  dueDate          DateTime
+  amount           Float
+  amountPaid       Float         @default(0)
+  status           InvoiceStatus
+  orderNumber      String?
+}
+
+enum InvoiceAlertTiming {
+  SEVEN_DAY @map("7-day")
+  THREE_DAY @map("3-day")
+  DUE_TODAY @map("due-today")
+  OVERDUE   @map("overdue")
+}
+
+enum InvoiceAlertChannel {
+  DASHBOARD @map("dashboard")
+  EMAIL     @map("email")
+  SMS       @map("sms")
+}
+
+enum InvoiceAlertRecipient {
+  CLIENT @map("client")
+  ADMIN  @map("admin")
+}
+
+model InvoiceAlertRule {
+  id          String                  @id @default(cuid())
+  timing      InvoiceAlertTiming
+  label       String
+  description String
+  channels    InvoiceAlertChannel[]
+  recipients  InvoiceAlertRecipient[]
+  enabled     Boolean                 @default(true)
+}
+
+model InvoiceAlertLogEntry {
+  id            String                 @id @default(cuid())
+  invoiceNumber String
+  clientName    String
+  timing        InvoiceAlertTiming
+  channel       InvoiceAlertChannel
+  recipient     InvoiceAlertRecipient
+  sentAt        DateTime
+}
+
+model LedgerEntry {
+  id          String   @id @default(cuid())
+  date        DateTime
+  account     String
+  description String
+  debit       Float    @default(0)
+  credit      Float    @default(0)
+}
+
+// ---------------------------------------------------------------------------
+// Quotations, RFQs, tenders, vendor purchases
+// ---------------------------------------------------------------------------
+
+enum QuotationStatus {
+  REQUESTED @map("requested")
+  APPROVED  @map("approved")
+  REJECTED  @map("rejected")
+}
+
+model Quotation {
+  id              String          @id @default(cuid())
+  quotationNumber String          @unique
+  clientId        String
+  client          Client          @relation(fields: [clientId], references: [id])
+  productName     String
+  quantity        Int
+  unit            String
+  notes           String?
+  estimatedTotal  Float
+  status          QuotationStatus
+  requestedAt     DateTime
+  respondedAt     DateTime?
+  vendorName      String
+}
+
+enum VendorDeliveryStatus {
+  ORDERED  @map("ordered")
+  SHIPPED  @map("shipped")
+  RECEIVED @map("received")
+}
+
+enum VendorPurchaseInvoiceStatus {
+  UNBILLED @map("unbilled")
+  BILLED   @map("billed")
+  PAID     @map("paid")
+}
+
+model VendorPurchase {
+  id                   String                      @id @default(cuid())
+  vendorId             String
+  vendor               Vendor                      @relation(fields: [vendorId], references: [id])
+  vendorName           String
+  productName          String
+  quantity             Int
+  purchaseCost         Float
+  purchaseDate         DateTime
+  expectedDeliveryDate DateTime
+  deliveryDate         DateTime?
+  deliveryStatus       VendorDeliveryStatus
+  invoiceStatus        VendorPurchaseInvoiceStatus
+}
+
+enum TenderStatus {
+  OPEN       @map("open")
+  EVALUATING @map("evaluating")
+  AWARDED    @map("awarded")
+  CLOSED     @map("closed")
+}
+
+model Tender {
+  id       String       @id @default(cuid())
+  title    String
+  category String
+  budget   Float
+  deadline DateTime
+  status   TenderStatus
+  bidCount Int          @default(0)
+
+  bids Bid[] @relation("TenderBids")
+}
+
+enum RfqStatus {
+  DRAFT           @map("draft")
+  RFQ_SENT        @map("rfq-sent")
+  QUOTES_RECEIVED @map("quotes-received")
+  VENDOR_SELECTED @map("vendor-selected")
+  PO_ISSUED       @map("po-issued")
+  APPROVED        @map("approved")
+  RECEIVING       @map("receiving")
+  COMPLETED       @map("completed")
+}
+
+model RfqRequest {
+  id             String    @id @default(cuid())
+  title          String
+  requestedBy    String
+  department     String
+  category       String
+  quantity       Int
+  status         RfqStatus
+  createdAt      DateTime  @default(now())
+  estimatedValue Float
+
+  bids Bid[] @relation("RfqBids")
+}
+
+// Shared shape for both tender bids and RFQ vendor quotes.
+model Bid {
+  id           String      @id @default(cuid())
+  tenderId     String?
+  tender       Tender?     @relation("TenderBids", fields: [tenderId], references: [id], onDelete: Cascade)
+  rfqId        String?
+  rfq          RfqRequest? @relation("RfqBids", fields: [rfqId], references: [id], onDelete: Cascade)
+  vendorName   String
+  amount       Float
+  deliveryDays Int
+  rating       Float
+  score        Float
+  recommended  Boolean     @default(false)
+}
+
+// ---------------------------------------------------------------------------
+// Inventory / warehouses
+// ---------------------------------------------------------------------------
+
+model WarehouseStock {
+  id            String @id @default(cuid())
+  warehouseName String
+  location      String
+  utilization   Float
+  capacityUnits Int
+  usedUnits     Int
+
+  inventoryItems InventoryItem[]
+}
+
+enum InventoryStatus {
+  HEALTHY   @map("healthy")
+  LOW       @map("low")
+  CRITICAL  @map("critical")
+  OVERSTOCK @map("overstock")
+}
+
+model InventoryItem {
+  id            String           @id @default(cuid())
+  sku           String           @unique
+  name          String
+  warehouseId   String?
+  warehouse     WarehouseStock?  @relation(fields: [warehouseId], references: [id])
+  onHand        Int
+  reserved      Int
+  reorderPoint  Int
+  reorderQty    Int
+  status        InventoryStatus
+  category      String
+  unitCost      Float
+}
+
+// ---------------------------------------------------------------------------
+// Delivery
+// ---------------------------------------------------------------------------
+
+enum DeliveryStatus {
+  PROCESSING       @map("processing")
+  PACKED           @map("packed")
+  DISPATCHED       @map("dispatched")
+  OUT_FOR_DELIVERY @map("out-for-delivery")
+  DELIVERED        @map("delivered")
+  DELAYED          @map("delayed")
+  FAILED           @map("failed")
+}
+
+enum DeliveryAttemptOutcome {
+  SUCCESS @map("success")
+  FAILED  @map("failed")
+}
+
+enum DeliveredByRole {
+  ADMIN    @map("admin")
+  CUSTOMER @map("customer")
+}
+
+model DeliveryJob {
+  id              String           @id @default(cuid())
+  orderNumber     String
+  customer        String
+  driver          String
+  driverPhone     String
+  vehicle         String
+  status          DeliveryStatus
+  progress        Int
+  eta             String
+  origin          String
+  destination     String
+  trackingNumber  String?
+  maxAttempts     Int              @default(3)
+  scheduledWindow String?
+  deliveredBy     DeliveredByRole?
+  deliveredAt     DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now()) @updatedAt
+
+  attempts DeliveryAttempt[]
+
+  @@index([orderNumber])
+}
+
+model DeliveryAttempt {
+  id            String                  @id @default(cuid())
+  deliveryJobId String
+  deliveryJob   DeliveryJob             @relation(fields: [deliveryJobId], references: [id], onDelete: Cascade)
+  attemptNumber Int
+  outcome       DeliveryAttemptOutcome
+  reason        String?
+  attemptedAt   DateTime                @default(now())
+  nextAttemptAt DateTime?
+
+  @@unique([deliveryJobId, attemptNumber])
+}
+
+// ---------------------------------------------------------------------------
+// Support, assets, AI forecasting
+// ---------------------------------------------------------------------------
+
+enum TicketPriority {
+  LOW    @map("low")
+  MEDIUM @map("medium")
+  HIGH   @map("high")
+  URGENT @map("urgent")
+}
+
+enum TicketStatus {
+  OPEN     @map("open")
+  PENDING  @map("pending")
+  RESOLVED @map("resolved")
+}
+
+enum TicketChannel {
+  EMAIL @map("email")
+  CHAT  @map("chat")
+  PHONE @map("phone")
+}
+
+model SupportTicket {
+  id        String         @id @default(cuid())
+  subject   String
+  customer  String
+  priority  TicketPriority
+  status    TicketStatus
+  updatedAt DateTime
+  channel   TicketChannel
+}
+
+enum AssetStatus {
+  IN_USE     @map("in-use")
+  IN_STORAGE @map("in-storage")
+  MAINTENANCE @map("maintenance")
+  RETIRED    @map("retired")
+}
+
+model Asset {
+  id              String      @id @default(cuid())
+  tag             String      @unique
+  name            String
+  category        String
+  assignedTo      String
+  location        String
+  status          AssetStatus
+  purchaseDate    DateTime
+  value           Float
+  nextMaintenance DateTime?
+}
+
+enum ForecastTrend {
+  UP     @map("up")
+  DOWN   @map("down")
+  STABLE @map("stable")
+}
+
+enum RiskLevel {
+  LOW    @map("low")
+  MEDIUM @map("medium")
+  HIGH   @map("high")
+}
+
+model DemandForecastItem {
+  id                  String        @id @default(cuid())
+  product             String
+  category            String
+  currentStock        Int
+  predictedDemand      Int
+  confidence          Float
+  trend               ForecastTrend
+  riskLevel           RiskLevel
+  suggestedReorderQty Int
+  suggestedVendor     String
+}
+
+// ---------------------------------------------------------------------------
+// Chat (CRM)
+// ---------------------------------------------------------------------------
+
+enum ChatSenderRole {
+  CUSTOMER @map("customer")
+  ADMIN    @map("admin")
+}
+
+model ChatThread {
+  id                   String   @id @default(cuid())
+  clientId             String
+  client               Client   @relation(fields: [clientId], references: [id])
+  subject              String
+  relatedOrderNumber   String?
+  relatedInvoiceNumber String?
+  lastMessagePreview   String
+  lastMessageAt        DateTime
+  unreadForAdmin       Int      @default(0)
+  unreadForCustomer    Int      @default(0)
+
+  messages ChatMessage[]
+}
+
+model ChatMessage {
+  id         String         @id @default(cuid())
+  threadId   String
+  thread     ChatThread     @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  senderRole ChatSenderRole
+  senderId   String?
+  sender     User?          @relation(fields: [senderId], references: [id])
+  senderName String
+  body       String
+  createdAt  DateTime       @default(now())
+  readAt     DateTime?
+
+  attachments ChatAttachment[]
+}
+
+enum ChatAttachmentType {
+  IMAGE @map("image")
+  PDF   @map("pdf")
+  FILE  @map("file")
+}
+
+model ChatAttachment {
+  id        String             @id @default(cuid())
+  messageId String
+  message   ChatMessage        @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  name      String
+  type      ChatAttachmentType
+  url       String
+  size      String
+}
+
+// ---------------------------------------------------------------------------
+// Notifications
+// ---------------------------------------------------------------------------
+
+enum NotificationType {
+  INVOICE  @map("invoice")
+  PAYMENT  @map("payment")
+  DELIVERY @map("delivery")
+  CREDIT   @map("credit")
+}
+
+model AppNotification {
+  id        String           @id @default(cuid())
+  clientId  String?
+  client    Client?          @relation(fields: [clientId], references: [id])
+  type      NotificationType
+  title     String
+  message   String
+  createdAt DateTime         @default(now())
+  read      Boolean          @default(false)
+  href      String?
+}
