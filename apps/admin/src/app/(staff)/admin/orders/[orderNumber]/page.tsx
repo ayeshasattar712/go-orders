@@ -17,6 +17,8 @@ import { Loader } from '@/components/ui/loader';
 import { OrderStatusBadge } from '@/features/orders/order-status-badge';
 import { OrderTimeline } from '@/features/orders/components/order-timeline';
 import { TrackingNumberCard } from '@/features/orders/components/tracking-number-card';
+import { DownloadOrderPdfButton } from '@/features/orders/components/download-order-pdf-button';
+import { DownloadChallanPdfButton } from '@/features/delivery/download-challan-pdf-button';
 import { useAdminOrder, useUpdateOrderStatus } from '@/services/queries';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import type { OrderStatus } from '@/types/catalog';
@@ -65,6 +67,8 @@ export default function AdminOrderDetailPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <DownloadOrderPdfButton orderNumber={order.orderNumber} variant="outline" />
+          <DownloadChallanPdfButton orderNumber={order.orderNumber} />
           <Select
             value={order.status}
             onValueChange={(value) =>

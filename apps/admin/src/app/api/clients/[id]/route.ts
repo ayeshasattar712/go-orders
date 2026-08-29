@@ -2,7 +2,7 @@ import { ClientStatus } from '@prisma/client';
 import { PERMISSIONS } from '@/constants/roles';
 import { isResponse, requirePermission, requireStaffSession } from '@/lib/api-guard';
 import { prisma } from '@/lib/prisma';
-import { serializeClient } from '@/lib/enterprise-mapper';
+import { CREDIT_TERMS_FROM_STRING, serializeClient } from '@/lib/enterprise-mapper';
 import { errorResponse, successResponse } from '@/lib/api-response';
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -17,6 +17,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     status?: 'active' | 'suspended';
     creditLimit?: number;
     creditFrozen?: boolean;
+    creditTerms?: 'cod' | 'prepaid' | 'net-15' | 'net-30' | 'net-45' | 'net-60';
   };
 
   const client = await prisma.client.findUnique({ where: { id }, include: { addresses: true } });
@@ -31,6 +32,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       ...(body.status === 'suspended' ? { status: ClientStatus.SUSPENDED } : {}),
       ...(typeof body.creditLimit === 'number' ? { creditLimit: body.creditLimit } : {}),
       ...(typeof body.creditFrozen === 'boolean' ? { creditFrozen: body.creditFrozen } : {}),
+      ...(body.creditTerms ? { creditTerms: CREDIT_TERMS_FROM_STRING[body.creditTerms] } : {}),
     },
     include: { addresses: true },
   });

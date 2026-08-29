@@ -78,9 +78,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="bg-muted/30 min-h-screen">
-      <aside className="bg-background fixed inset-y-0 left-0 z-30 hidden w-64 border-r md:flex md:flex-col">
-        <div className="flex h-16 items-center border-b px-6 font-semibold">
+    <div className="min-h-screen bg-[#f8f9fa]">
+      <aside className="bg-sidebar text-sidebar-foreground border-sidebar-border fixed inset-y-0 left-0 z-30 hidden w-64 border-r md:flex md:flex-col">
+        <div className="font-display flex h-16 items-center border-b border-white/10 px-6 font-semibold text-white">
           {clientEnv.NEXT_PUBLIC_APP_NAME}
         </div>
         <nav className="flex-1 space-y-1 p-4">
@@ -92,10 +92,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
+                  'flex items-center gap-3 rounded-full px-3 py-2 text-sm transition-colors',
                   active
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30'
+                    : 'text-sidebar-muted hover:bg-white/10 hover:text-white',
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -109,13 +109,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
-        <div className="border-t p-4">
+        <div className="border-t border-white/10 p-4">
           <div className="mb-3 text-sm">
-            <p className="font-medium">
+            <p className="font-medium text-white">
               {user?.firstName} {user?.lastName}
             </p>
-            <p className="text-muted-foreground">{user?.email}</p>
-            <p className="text-muted-foreground mt-1 text-xs tracking-wide uppercase">
+            <p className="text-sidebar-muted">{user?.email}</p>
+            <p className="text-primary mt-1 text-xs tracking-wide uppercase">
               {user?.role}
             </p>
           </div>
@@ -162,7 +162,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <div className="md:pl-64">
-        <header className="bg-background/80 sticky top-0 z-20 flex h-16 items-center justify-between border-b px-4 backdrop-blur md:px-8">
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b bg-white px-4 md:px-8">
           <h1 className="text-lg font-semibold capitalize">
             {pathname.split('/').filter(Boolean)[0] ?? 'Dashboard'}
           </h1>

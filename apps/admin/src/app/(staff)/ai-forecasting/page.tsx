@@ -1,4 +1,5 @@
-import type { Metadata } from 'next';
+'use client';
+
 import {
   AlertTriangle,
   ArrowDownRight,
@@ -15,8 +16,6 @@ import { Button } from '@/components/ui/button';
 import { useDemandForecasts } from '@/services/queries';
 import { cn } from '@/lib/utils';
 
-export const metadata: Metadata = { title: 'AI Demand Forecasting' };
-
 const riskVariant: Record<string, BadgeProps['variant']> = {
   low: 'success',
   medium: 'warning',
@@ -26,8 +25,7 @@ const riskVariant: Record<string, BadgeProps['variant']> = {
 const trendIcon = { up: ArrowUpRight, down: ArrowDownRight, stable: Minus };
 
 export default function AiForecastingPage() {
-  const { data: forecastsData } = useDemandForecasts();
-  const demandForecasts = forecastsData?.items ?? [];
+  const { data: demandForecasts = [] } = useDemandForecasts();
 
   const highRiskCount = demandForecasts.filter((f) => f.riskLevel === 'high').length;
   const avgConfidence = demandForecasts.length

@@ -49,7 +49,7 @@ function emptyForm(categoryId: string, vendorId: string): CreateProductInput {
     categoryId,
     vendorId,
     price: 0,
-    currency: 'USD',
+    currency: 'PKR',
     stock: 0,
     stockStatus: 'in-stock',
     sku: '',

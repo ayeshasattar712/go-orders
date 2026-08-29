@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { usersService } from '@/services/api';
-import type { CreateStaffInput, UpdateUserInput } from '@/schemas/user.schema';
+import type { CreateClientLoginInput, CreateStaffInput, UpdateUserInput } from '@/schemas/user.schema';
 
 export const userKeys = {
   all: ['users'] as const,
@@ -19,6 +19,17 @@ export function useCreateStaff() {
   return useMutation({
     mutationFn: (payload: CreateStaffInput) => usersService.create(payload),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: userKeys.all }),
+  });
+}
+
+export function useCreateClientLogin() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: CreateClientLoginInput) => usersService.createClientLogin(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
+    },
   });
 }
 

@@ -48,10 +48,14 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold tracking-tight">Admin dashboard</h2>
-        <p className="text-muted-foreground">
-          The central control panel — revenue, orders, customers, vendors, credit, and inventory at
-          a glance.
+        <p className="text-primary mb-1 text-[11px] font-semibold tracking-[0.2em] uppercase">
+          Overview
+        </p>
+        <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+          Admin dashboard
+        </h2>
+        <p className="text-muted-foreground mt-1">
+          Revenue, orders, customers, vendors, credit, and inventory at a glance.
         </p>
       </div>
 

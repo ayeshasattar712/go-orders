@@ -5,6 +5,7 @@ import { getCustomerSession } from '@/lib/auth/customer-auth';
 import { prisma } from '@/lib/prisma';
 import { serializeOrder, loadDeliveriesByOrderNumbers } from '@/lib/orders/order-mapper';
 import { OrderStatusBadge } from '@/features/orders/order-status-badge';
+import { DownloadOrderPdfButton } from '@/features/orders/components/download-order-pdf-button';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/empty-state';
 
@@ -29,7 +30,7 @@ export default async function OrdersPage() {
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">Your orders</h2>
         <p className="text-muted-foreground">
-          Track deliveries, view invoices, and reorder easily.
+          Track deliveries, download a PDF order form, and reorder easily.
         </p>
       </div>
 
@@ -38,12 +39,11 @@ export default async function OrdersPage() {
       ) : (
         <div className="overflow-hidden rounded-xl border">
           {orders.map((order) => (
-            <Link
+            <div
               key={order.id}
-              href={`/orders/${order.orderNumber}`}
               className="hover:bg-muted/50 flex items-center justify-between gap-4 border-b p-4 last:border-0"
             >
-              <div className="min-w-0">
+              <Link href={`/orders/${order.orderNumber}`} className="min-w-0 flex-1">
                 <p className="font-medium">{order.orderNumber}</p>
                 <p className="text-muted-foreground text-sm">
                   {order.vendorName} · {formatDate(order.date)} · {order.itemCount} items
@@ -51,13 +51,16 @@ export default async function OrdersPage() {
                 <p className="text-muted-foreground mt-0.5 text-xs">
                   Tracking: <span className="font-mono">{order.trackingNumber}</span>
                 </p>
-              </div>
-              <div className="flex shrink-0 items-center gap-4">
+              </Link>
+              <div className="flex shrink-0 items-center gap-3">
                 <span className="font-semibold">{formatCurrency(order.total)}</span>
                 <OrderStatusBadge status={order.status} />
-                <ChevronRight className="text-muted-foreground h-4 w-4" />
+                <DownloadOrderPdfButton orderNumber={order.orderNumber} />
+                <Link href={`/orders/${order.orderNumber}`} aria-label="Open order">
+                  <ChevronRight className="text-muted-foreground h-4 w-4" />
+                </Link>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}

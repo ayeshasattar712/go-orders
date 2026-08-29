@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Outfit } from 'next/font/google';
 import { AppProviders } from '@/providers/app-providers';
 import { clientEnv } from '@/lib/env';
 import '@/styles/globals.css';
@@ -11,6 +11,11 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
+  subsets: ['latin'],
+});
+
+const outfit = Outfit({
+  variable: '--font-outfit',
   subsets: ['latin'],
 });
 
@@ -49,8 +54,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0b1220' },
+    { media: '(prefers-color-scheme: light)', color: '#7C3AED' },
+    { media: '(prefers-color-scheme: dark)', color: '#0B0B0F' },
   ],
   width: 'device-width',
   initialScale: 1,
@@ -61,7 +66,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full`}
+      className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} h-full`}
     >
       <body className="min-h-full antialiased">
         <AppProviders>{children}</AppProviders>

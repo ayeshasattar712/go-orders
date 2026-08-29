@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { AlertCircle, BellRing, Plus } from 'lucide-react';
+import { AlertCircle, BellRing, Download, Plus } from 'lucide-react';
 import { KpiCard } from '@/components/shared/kpi-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -20,7 +20,9 @@ import { Modal } from '@/components/ui/modal';
 import { Loader } from '@/components/ui/loader';
 import { InvoiceStatusBadge } from '@/features/finance/invoice-status-badge';
 import { useClients, useCreateInvoice, useInvoices, useUpdateInvoice } from '@/services/queries';
+import { invoicesService } from '@/services/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import { saveBlobFile } from '@/lib/save-blob';
 import type { Invoice, InvoiceStatus } from '@/types/enterprise';
 
 type InvoiceForm = {
@@ -47,17 +49,21 @@ function emptyForm(clientId: string, clientName: string): InvoiceForm {
 function InvoiceTable({
   items,
   onStatusChange,
+  onDownload,
   pending,
+  downloadingId,
 }: {
   items: Invoice[];
   onStatusChange: (invoice: Invoice, status: InvoiceStatus) => void;
+  onDownload: (invoice: Invoice) => void;
   pending: boolean;
+  downloadingId: string | null;
 }) {
   if (items.length === 0)
     return <p className="text-muted-foreground py-8 text-center text-sm">No invoices here.</p>;
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[820px] text-sm">
+      <table className="w-full min-w-[920px] text-sm">
         <thead className="text-muted-foreground text-left text-xs tracking-wide uppercase">
           <tr className="border-b">
             <th className="py-2.5 pr-4 font-medium">Invoice</th>
@@ -90,22 +96,33 @@ function InvoiceTable({
                 <InvoiceStatusBadge status={invoice.status} />
               </td>
               <td className="py-3 pr-4">
-                <Select
-                  value={invoice.status}
-                  disabled={pending}
-                  onValueChange={(value) => onStatusChange(invoice, value as InvoiceStatus)}
-                >
-                  <SelectTrigger className="h-8 w-36 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="sent">Sent</SelectItem>
-                    <SelectItem value="partial">Partial paid</SelectItem>
-                    <SelectItem value="paid">Paid (bank / online)</SelectItem>
-                    <SelectItem value="overdue">Overdue</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    disabled={downloadingId === invoice.id}
+                    onClick={() => onDownload(invoice)}
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    {downloadingId === invoice.id ? 'Saving...' : 'PDF'}
+                  </Button>
+                  <Select
+                    value={invoice.status}
+                    disabled={pending}
+                    onValueChange={(value) => onStatusChange(invoice, value as InvoiceStatus)}
+                  >
+                    <SelectTrigger className="h-8 w-36 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="draft">Draft</SelectItem>
+                      <SelectItem value="sent">Sent</SelectItem>
+                      <SelectItem value="partial">Partial paid</SelectItem>
+                      <SelectItem value="paid">Paid (bank / online)</SelectItem>
+                      <SelectItem value="overdue">Overdue</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </td>
             </tr>
           ))}
@@ -123,6 +140,7 @@ export default function AdminInvoicesPage() {
 
   const [open, setOpen] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [form, setForm] = useState<InvoiceForm>(() => emptyForm('', ''));
 
   const receivables = invoices.filter((i) => i.type === 'receivable');
@@ -135,10 +153,19 @@ export default function AdminInvoicesPage() {
   const defaultClient = useMemo(() => clients[0], [clients]);
 
   async function handleCreate() {
-    if (!form.clientId || form.amount <= 0) return;
+    if (!form.clientId) {
+      setFormError('Select a client.');
+      return;
+    }
+    if (form.amount <= 0) {
+      setFormError('Enter an amount greater than 0.');
+      return;
+    }
     setFormError(null);
     try {
-      await createInvoice.mutateAsync(form);
+      const invoice = await createInvoice.mutateAsync(form);
+      const file = await invoicesService.downloadPdf(invoice.id);
+      saveBlobFile(file.blob, file.filename);
       setOpen(false);
     } catch (error) {
       setFormError(error instanceof Error ? error.message : 'Unable to create invoice');
@@ -153,6 +180,16 @@ export default function AdminInvoicesPage() {
     });
   }
 
+  async function handleDownload(invoice: Invoice) {
+    setDownloadingId(invoice.id);
+    try {
+      const file = await invoicesService.downloadPdf(invoice.id);
+      saveBlobFile(file.blob, file.filename);
+    } finally {
+      setDownloadingId(null);
+    }
+  }
+
   if (isLoading) {
     return <Loader label="Loading invoices..." />;
   }
@@ -163,7 +200,8 @@ export default function AdminInvoicesPage() {
         <div>
           <h2 className="text-2xl font-semibold tracking-tight">Invoices</h2>
           <p className="text-muted-foreground">
-            Generate invoices, mark bank / online transfers as paid, and post to the general ledger.
+            Generate fillable PDF invoices, mark bank / online transfers as paid, and post to the
+            general ledger.
           </p>
         </div>
         <div className="flex gap-2">
@@ -242,14 +280,18 @@ export default function AdminInvoicesPage() {
               <InvoiceTable
                 items={receivables}
                 onStatusChange={handleStatusChange}
+                onDownload={handleDownload}
                 pending={updateInvoice.isPending}
+                downloadingId={downloadingId}
               />
             </TabsContent>
             <TabsContent value="payables">
               <InvoiceTable
                 items={payables}
                 onStatusChange={handleStatusChange}
+                onDownload={handleDownload}
                 pending={updateInvoice.isPending}
+                downloadingId={downloadingId}
               />
             </TabsContent>
           </Tabs>
@@ -260,14 +302,17 @@ export default function AdminInvoicesPage() {
         open={open}
         onOpenChange={setOpen}
         title="Generate invoice"
-        description="Creates an invoice, notifies the client, and posts ledger entries."
+        description="Creates an invoice, notifies the client, posts ledger entries, and saves a PDF."
         footer={
           <>
             <Button variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleCreate} disabled={createInvoice.isPending}>
-              {createInvoice.isPending ? 'Creating...' : 'Generate invoice'}
+            <Button
+              onClick={handleCreate}
+              disabled={createInvoice.isPending || !form.clientId || form.amount <= 0}
+            >
+              {createInvoice.isPending ? 'Generating PDF...' : 'Generate invoice'}
             </Button>
           </>
         }

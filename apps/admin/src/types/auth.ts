@@ -1,10 +1,13 @@
 import type { Permission, Role } from '@/constants/roles';
 
+export type UserType = 'STAFF' | 'CUSTOMER';
+
 export interface User {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
+  userType?: UserType;
   role: Role;
   permissions: Permission[];
   avatarUrl?: string | null;

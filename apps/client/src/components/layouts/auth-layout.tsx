@@ -11,7 +11,7 @@ export function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="via-background to-background flex min-h-screen flex-col items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-orange-100 px-4 dark:from-orange-950/40">
+    <div className="via-background to-background flex min-h-screen flex-col items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-100 px-4 dark:from-blue-950/40">
       <div className="mb-8 text-center">
         <Link href="/" className="inline-flex items-center gap-2 text-2xl font-bold tracking-tight">
           <span className="bg-hero-gradient flex h-9 w-9 items-center justify-center rounded-xl text-[11px] font-bold text-white">

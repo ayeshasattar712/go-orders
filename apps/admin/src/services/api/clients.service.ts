@@ -15,6 +15,7 @@ export const clientsService = {
     phone?: string;
     address?: string;
     creditLimit?: number;
+    creditTerms?: Client['creditTerms'];
   }) {
     const { data } = await apiClient.post<ApiSuccessResponse<{ client: Client }>>(
       '/clients',
@@ -25,7 +26,12 @@ export const clientsService = {
 
   async update(
     id: string,
-    payload: { status?: Client['status']; creditLimit?: number; creditFrozen?: boolean },
+    payload: {
+      status?: Client['status'];
+      creditLimit?: number;
+      creditFrozen?: boolean;
+      creditTerms?: Client['creditTerms'];
+    },
   ) {
     const { data } = await apiClient.patch<ApiSuccessResponse<{ client: Client }>>(
       `/clients/${id}`,

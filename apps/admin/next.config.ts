@@ -63,7 +63,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/',
-        destination: '/admin/register',
+        destination: '/admin/login',
         permanent: false,
       },
       {
@@ -73,7 +73,12 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/register',
-        destination: '/admin/register',
+        destination: '/admin/login',
+        permanent: false,
+      },
+      {
+        source: '/admin/register',
+        destination: '/admin/login',
         permanent: false,
       },
     ];

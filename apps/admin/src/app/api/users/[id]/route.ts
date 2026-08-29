@@ -29,7 +29,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     return errorResponse('Invalid update payload', { status: 400, code: 'VALIDATION_ERROR' });
   }
 
-  const existing = await prisma.user.findFirst({ where: { id, userType: 'STAFF' } });
+  const existing = await prisma.user.findUnique({ where: { id } });
   if (!existing) {
     return errorResponse('User not found', { status: 404, code: 'NOT_FOUND' });
   }
@@ -39,7 +39,9 @@ export async function PATCH(request: Request, context: RouteContext) {
     data: {
       ...(parsed.data.firstName !== undefined ? { firstName: parsed.data.firstName } : {}),
       ...(parsed.data.lastName !== undefined ? { lastName: parsed.data.lastName } : {}),
-      ...(parsed.data.role !== undefined ? { role: parsed.data.role } : {}),
+      ...(parsed.data.role !== undefined && existing.userType === 'STAFF'
+        ? { role: parsed.data.role }
+        : {}),
       ...(parsed.data.isActive !== undefined ? { isActive: parsed.data.isActive } : {}),
     },
   });
@@ -62,11 +64,14 @@ export async function DELETE(request: Request, context: RouteContext) {
     });
   }
 
-  const existing = await prisma.user.findFirst({ where: { id, userType: 'STAFF' } });
+  const existing = await prisma.user.findUnique({ where: { id } });
   if (!existing) {
     return errorResponse('User not found', { status: 404, code: 'NOT_FOUND' });
   }
 
+  await prisma.client.updateMany({ where: { userId: id }, data: { userId: null } });
+  await prisma.order.updateMany({ where: { userId: id }, data: { userId: null } });
+  await prisma.chatMessage.updateMany({ where: { senderId: id }, data: { senderId: null } });
   await prisma.user.delete({ where: { id } });
   return new NextResponse(null, { status: 204 });
 }

@@ -13,14 +13,14 @@ const channels = [
 export function ChannelShortcuts() {
   return (
     <section className="mx-auto max-w-7xl px-3 sm:px-4">
-      <div className="bg-card grid grid-cols-3 gap-2 rounded-sm p-3 shadow-sm sm:grid-cols-6">
+      <div className="surface-panel grid grid-cols-3 gap-1 rounded-2xl border p-2 sm:grid-cols-6 sm:p-3">
         {channels.map((channel) => (
           <Link
             key={channel.href}
             href={channel.href}
-            className="hover:text-primary flex flex-col items-center gap-2 rounded-sm px-2 py-2 text-center text-xs font-medium"
+            className="hover:bg-primary/5 hover:text-primary flex flex-col items-center gap-2.5 rounded-xl px-2 py-3 text-center text-xs font-semibold transition-colors"
           >
-            <span className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-full">
+            <span className="bg-hero-gradient flex h-12 w-12 items-center justify-center rounded-2xl text-white shadow-md shadow-primary/25">
               <channel.icon className="h-5 w-5" />
             </span>
             {channel.label}

@@ -50,6 +50,7 @@ import type {
   ChatAttachment as PrismaChatAttachment,
   ChatAttachmentType as PrismaChatAttachmentType,
   User as PrismaUser,
+  CreditTerms as PrismaCreditTerms,
 } from '@prisma/client';
 import type {
   Client,
@@ -73,6 +74,25 @@ import type {
 } from '@/types/admin';
 import type { Invoice, LedgerEntry, ReceivedPayment } from '@/types/enterprise';
 import type { User } from '@/types/auth';
+import type { CreditTerms } from '@/constants/credit-terms';
+
+export const CREDIT_TERMS_TO_STRING: Record<PrismaCreditTerms, CreditTerms> = {
+  COD: 'cod',
+  PREPAID: 'prepaid',
+  NET_15: 'net-15',
+  NET_30: 'net-30',
+  NET_45: 'net-45',
+  NET_60: 'net-60',
+};
+
+export const CREDIT_TERMS_FROM_STRING: Record<CreditTerms, PrismaCreditTerms> = {
+  cod: 'COD',
+  prepaid: 'PREPAID',
+  'net-15': 'NET_15',
+  'net-30': 'NET_30',
+  'net-45': 'NET_45',
+  'net-60': 'NET_60',
+};
 
 export const CLIENT_STATUS_TO_STRING: Record<PrismaClientStatus, Client['status']> = {
   ACTIVE: 'active',
@@ -93,6 +113,7 @@ export function serializeClient(
     creditLimit: client.creditLimit,
     creditUsed: client.creditUsed,
     creditFrozen: client.creditFrozen,
+    creditTerms: CREDIT_TERMS_TO_STRING[client.creditTerms] ?? 'net-30',
     outstandingBalance: client.outstandingBalance,
     dueAmount: client.dueAmount,
     nextDueDate: client.nextDueDate ? client.nextDueDate.toISOString().slice(0, 10) : null,
@@ -176,8 +197,8 @@ export function serializeInvoiceAlertRule(rule: PrismaInvoiceAlertRule): Invoice
     timing: ALERT_TIMING_TO_STRING[rule.timing],
     label: rule.label,
     description: rule.description,
-    channels: rule.channels.map(ALERT_CHANNEL_TO_STRING),
-    recipients: rule.recipients.map(ALERT_RECIPIENT_TO_STRING),
+    channels: rule.channels.map((channel) => ALERT_CHANNEL_TO_STRING[channel]),
+    recipients: rule.recipients.map((recipient) => ALERT_RECIPIENT_TO_STRING[recipient]),
     enabled: rule.enabled,
   };
 }
@@ -603,9 +624,13 @@ export function serializePublicUser(user: PrismaUser): User {
     email: user.email,
     firstName: user.firstName,
     lastName: user.lastName,
+    userType: user.userType,
     role: user.role,
+    permissions: [],
     avatarUrl: user.avatarUrl ?? undefined,
     isActive: user.isActive,
-    emailVerified: user.emailVerified ? user.emailVerified.toISOString() : null,
+    emailVerified: Boolean(user.emailVerified),
+    createdAt: user.createdAt.toISOString(),
+    updatedAt: user.updatedAt.toISOString(),
   };
 }

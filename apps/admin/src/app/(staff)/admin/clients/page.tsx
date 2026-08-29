@@ -11,6 +11,8 @@ import { Input } from '@/components/ui/input';
 import { Modal } from '@/components/ui/modal';
 import { Loader } from '@/components/ui/loader';
 import { EmptyState } from '@/components/ui/empty-state';
+import { CreditTermsSelect } from '@/components/shared/credit-terms-select';
+import { creditTermsLabel } from '@/constants/credit-terms';
 import { useClients, useCreateClient, useUpdateClient } from '@/services/queries';
 import { formatCurrency } from '@/lib/utils';
 
@@ -21,6 +23,7 @@ const emptyForm = {
   phone: '',
   address: '',
   creditLimit: 5000,
+  creditTerms: 'net-30' as const,
 };
 
 export default function AdminClientsPage() {
@@ -80,6 +83,7 @@ export default function AdminClientsPage() {
                     <th className="py-2.5 pr-4 font-medium">Company</th>
                     <th className="py-2.5 pr-4 font-medium">Contact</th>
                     <th className="py-2.5 pr-4 font-medium">Credit limit</th>
+                    <th className="py-2.5 pr-4 font-medium">Terms</th>
                     <th className="py-2.5 pr-4 font-medium">Outstanding</th>
                     <th className="py-2.5 pr-4 font-medium">Orders</th>
                     <th className="py-2.5 pr-4 font-medium">Status</th>
@@ -102,6 +106,7 @@ export default function AdminClientsPage() {
                         <p className="text-xs">{client.email}</p>
                       </td>
                       <td className="py-3 pr-4">{formatCurrency(client.creditLimit)}</td>
+                      <td className="py-3 pr-4">{creditTermsLabel(client.creditTerms)}</td>
                       <td className="py-3 pr-4">
                         <span className={client.outstandingBalance > 0 ? 'text-warning' : ''}>
                           {formatCurrency(client.outstandingBalance)}
@@ -214,6 +219,13 @@ export default function AdminClientsPage() {
                 min={0}
                 value={form.creditLimit}
                 onChange={(e) => setForm({ ...form, creditLimit: Number(e.target.value) })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Credit terms</Label>
+              <CreditTermsSelect
+                value={form.creditTerms}
+                onChange={(creditTerms) => setForm({ ...form, creditTerms })}
               />
             </div>
           </div>

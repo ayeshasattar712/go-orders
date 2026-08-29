@@ -31,8 +31,8 @@ export async function POST(request: Request) {
     credit?: number;
   };
 
-  if (!body.account?.trim() || !body.description?.trim()) {
-    return errorResponse('Account and description are required', {
+  if (!body.account?.trim()) {
+    return errorResponse('Account is required', {
       status: 422,
       code: 'VALIDATION_ERROR',
     });
@@ -46,12 +46,18 @@ export async function POST(request: Request) {
       code: 'VALIDATION_ERROR',
     });
   }
+  if (debit > 0 && credit > 0) {
+    return errorResponse('Enter either a debit or a credit on one line', {
+      status: 422,
+      code: 'VALIDATION_ERROR',
+    });
+  }
 
   const entry = await prisma.ledgerEntry.create({
     data: {
       date: body.date ? new Date(body.date) : new Date(),
       account: body.account.trim(),
-      description: body.description.trim(),
+      description: body.description?.trim() || `Journal entry — ${body.account.trim()}`,
       debit,
       credit,
     },

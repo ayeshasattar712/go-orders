@@ -1,4 +1,5 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { AlertTriangle, Boxes, PackageSearch, Warehouse } from 'lucide-react';
 import { KpiCard } from '@/components/shared/kpi-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,16 +8,10 @@ import { StockStatusBadge } from '@/features/inventory/stock-status-badge';
 import { useInventoryItems, useWarehouses, useDemandForecasts } from '@/services/queries';
 import { cn } from '@/lib/utils';
 
-export const metadata: Metadata = { title: 'Inventory Management' };
-
 export default function InventoryPage() {
-  const { data: inventoryData } = useInventoryItems();
-  const { data: warehousesData } = useWarehouses();
-  const { data: forecastsData } = useDemandForecasts();
-
-  const inventoryItems = inventoryData?.items ?? [];
-  const warehouses = warehousesData?.warehouses ?? [];
-  const demandForecasts = forecastsData?.items ?? [];
+  const { data: inventoryItems = [] } = useInventoryItems();
+  const { data: warehouses = [] } = useWarehouses();
+  const { data: demandForecasts = [] } = useDemandForecasts();
 
   const criticalCount = inventoryItems.filter((i) => i.status === 'critical').length;
   const lowCount = inventoryItems.filter((i) => i.status === 'low').length;

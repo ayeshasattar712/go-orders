@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { BookOpen, Landmark, PiggyBank, Plus, Scale } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { BookOpen, CheckCircle2, Landmark, PiggyBank, Plus, Scale } from 'lucide-react';
 import { KpiCard } from '@/components/shared/kpi-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -27,6 +27,9 @@ export default function AccountingPage() {
   const createEntry = useCreateLedgerEntry();
 
   const [open, setOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('ledger');
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [highlightEntryId, setHighlightEntryId] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [form, setForm] = useState({
     date: new Date().toISOString().slice(0, 10),
@@ -76,11 +79,37 @@ export default function AccountingPage() {
   const totalAssets = cashBalance + Math.max(arBalance, 0);
   const totalLiabilities = Math.max(apBalance, 0);
 
+  useEffect(() => {
+    if (!successMessage) return;
+    const timer = window.setTimeout(() => setSuccessMessage(null), 6000);
+    return () => window.clearTimeout(timer);
+  }, [successMessage]);
+
   async function handlePost() {
-    if (!form.account.trim() || !form.description.trim()) return;
+    if (!form.account.trim()) {
+      setFormError('Account is required.');
+      return;
+    }
+    if (form.debit <= 0 && form.credit <= 0) {
+      setFormError('Enter a debit or credit amount greater than 0.');
+      return;
+    }
+    if (form.debit > 0 && form.credit > 0) {
+      setFormError('Enter either a debit or a credit, not both on one line.');
+      return;
+    }
+
     setFormError(null);
     try {
-      await createEntry.mutateAsync(form);
+      const entry = await createEntry.mutateAsync({
+        ...form,
+        description: form.description.trim() || `Journal entry — ${form.account.trim()}`,
+      });
+      setSuccessMessage(
+        `Saved — ${entry.account} ${entry.debit > 0 ? `debit ${formatCurrency(entry.debit)}` : `credit ${formatCurrency(entry.credit)}`}. See Journal Entries tab.`,
+      );
+      setHighlightEntryId(entry.id);
+      setActiveTab('journal');
       setOpen(false);
       setForm({
         date: new Date().toISOString().slice(0, 10),
@@ -113,6 +142,13 @@ export default function AccountingPage() {
         </Button>
       </div>
 
+      {successMessage ? (
+        <div className="border-success/30 bg-success/10 text-success flex items-center gap-2 rounded-lg border px-4 py-3 text-sm">
+          <CheckCircle2 className="h-4 w-4 shrink-0" />
+          <p>{successMessage}</p>
+        </div>
+      ) : null}
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
           label="Net income"
@@ -140,7 +176,7 @@ export default function AccountingPage() {
         />
       </div>
 
-      <Tabs defaultValue="ledger">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="flex-wrap">
           <TabsTrigger value="pnl">Profit & Loss</TabsTrigger>
           <TabsTrigger value="balance-sheet">Balance Sheet</TabsTrigger>
@@ -263,7 +299,15 @@ export default function AccountingPage() {
             <CardHeader>
               <CardTitle>General ledger — account balances</CardTitle>
               <p className="text-muted-foreground text-sm">
-                Aggregated debit/credit activity grouped by account.
+                Aggregated debit/credit activity grouped by account. For each posted line, open{' '}
+                <button
+                  type="button"
+                  className="text-primary font-medium hover:underline"
+                  onClick={() => setActiveTab('journal')}
+                >
+                  Journal Entries
+                </button>
+                .
               </p>
             </CardHeader>
             <CardContent className="overflow-x-auto">
@@ -308,32 +352,41 @@ export default function AccountingPage() {
               <p className="text-muted-foreground text-sm">Chronological double-entry postings.</p>
             </CardHeader>
             <CardContent className="overflow-x-auto">
-              <table className="w-full min-w-[640px] text-sm">
-                <thead className="text-muted-foreground text-left text-xs tracking-wide uppercase">
-                  <tr className="border-b">
-                    <th className="py-2.5 pr-4 font-medium">Date</th>
-                    <th className="py-2.5 pr-4 font-medium">Account</th>
-                    <th className="py-2.5 pr-4 font-medium">Description</th>
-                    <th className="py-2.5 pr-4 text-right font-medium">Debit</th>
-                    <th className="py-2.5 pr-4 text-right font-medium">Credit</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ledgerEntries.map((entry) => (
-                    <tr key={entry.id} className="border-b last:border-0">
-                      <td className="text-muted-foreground py-3 pr-4">{formatDate(entry.date)}</td>
-                      <td className="py-3 pr-4 font-medium">{entry.account}</td>
-                      <td className="text-muted-foreground py-3 pr-4">{entry.description}</td>
-                      <td className="py-3 pr-4 text-right">
-                        {entry.debit ? formatCurrency(entry.debit) : '—'}
-                      </td>
-                      <td className="py-3 pr-4 text-right">
-                        {entry.credit ? formatCurrency(entry.credit) : '—'}
-                      </td>
+              {ledgerEntries.length === 0 ? (
+                <p className="text-muted-foreground py-8 text-center text-sm">
+                  No journal entries yet. Post one with the button above.
+                </p>
+              ) : (
+                <table className="w-full min-w-[640px] text-sm">
+                  <thead className="text-muted-foreground text-left text-xs tracking-wide uppercase">
+                    <tr className="border-b">
+                      <th className="py-2.5 pr-4 font-medium">Date</th>
+                      <th className="py-2.5 pr-4 font-medium">Account</th>
+                      <th className="py-2.5 pr-4 font-medium">Description</th>
+                      <th className="py-2.5 pr-4 text-right font-medium">Debit</th>
+                      <th className="py-2.5 pr-4 text-right font-medium">Credit</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {ledgerEntries.map((entry) => (
+                      <tr
+                        key={entry.id}
+                        className={`border-b last:border-0 ${highlightEntryId === entry.id ? 'bg-primary/10' : ''}`}
+                      >
+                        <td className="text-muted-foreground py-3 pr-4">{formatDate(entry.date)}</td>
+                        <td className="py-3 pr-4 font-medium">{entry.account}</td>
+                        <td className="text-muted-foreground py-3 pr-4">{entry.description}</td>
+                        <td className="py-3 pr-4 text-right">
+                          {entry.debit ? formatCurrency(entry.debit) : '—'}
+                        </td>
+                        <td className="py-3 pr-4 text-right">
+                          {entry.credit ? formatCurrency(entry.credit) : '—'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -472,13 +525,21 @@ export default function AccountingPage() {
         open={open}
         onOpenChange={setOpen}
         title="Post journal entry"
-        description="Adds a single-sided line. Post a matching debit and credit as two entries to stay in balance."
+        description="Adds a single-sided line. After posting, it is saved under Journal Entries and updates General Ledger totals."
         footer={
           <>
             <Button variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handlePost} disabled={createEntry.isPending}>
+            <Button
+              onClick={handlePost}
+              disabled={
+                createEntry.isPending ||
+                !form.account.trim() ||
+                (form.debit <= 0 && form.credit <= 0) ||
+                (form.debit > 0 && form.credit > 0)
+              }
+            >
               {createEntry.isPending ? 'Posting...' : 'Post entry'}
             </Button>
           </>
@@ -498,9 +559,10 @@ export default function AccountingPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label>Description</Label>
+            <Label>Description (optional)</Label>
             <Input
               value={form.description}
+              placeholder="e.g. Bank deposit, petty cash"
               onChange={(e) => setForm({ ...form, description: e.target.value })}
             />
           </div>

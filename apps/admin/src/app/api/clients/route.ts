@@ -1,7 +1,8 @@
+import { CreditTerms } from '@prisma/client';
 import { PERMISSIONS } from '@/constants/roles';
 import { isResponse, requirePermission, requireStaffSession } from '@/lib/api-guard';
 import { prisma } from '@/lib/prisma';
-import { serializeClient } from '@/lib/enterprise-mapper';
+import { CREDIT_TERMS_FROM_STRING, serializeClient } from '@/lib/enterprise-mapper';
 import { successResponse } from '@/lib/api-response';
 
 export async function GET(request: Request) {
@@ -36,6 +37,10 @@ export async function POST(request: Request) {
       address: body.address || '—',
       status: body.status === 'suspended' ? 'SUSPENDED' : 'ACTIVE',
       creditLimit: Number(body.creditLimit ?? 0),
+      creditTerms:
+        typeof body.creditTerms === 'string' && body.creditTerms in CREDIT_TERMS_FROM_STRING
+          ? CREDIT_TERMS_FROM_STRING[body.creditTerms as keyof typeof CREDIT_TERMS_FROM_STRING]
+          : CreditTerms.NET_30,
       joinedAt: new Date(),
     },
     include: { addresses: true },

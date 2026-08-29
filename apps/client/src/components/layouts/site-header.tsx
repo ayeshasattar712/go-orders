@@ -40,10 +40,11 @@ import { useLogout } from '@/features/auth/hooks/use-logout';
 import { clientEnv } from '@/lib/env';
 
 const topLinks = [
-  { href: '/deals', label: 'Flash Sale' },
-  { href: '/products', label: 'All products' },
-  { href: '/categories', label: 'Categories' },
-  { href: '/vendors', label: 'Mall' },
+  { href: '/products', label: 'Shop' },
+  { href: '/categories', label: 'Categories', mega: true },
+  { href: '/deals', label: 'Deals' },
+  { href: '/products?sort=new', label: 'New Arrival' },
+  { href: '/vendors', label: 'Brands' },
 ];
 
 export function SiteHeader() {
@@ -64,24 +65,8 @@ export function SiteHeader() {
   }
 
   return (
-    <header className="bg-background/85 sticky top-0 z-40 w-full border-b backdrop-blur-md">
-      <div className="bg-primary/95 text-primary-foreground border-b">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-1.5 text-xs sm:px-6">
-          <p className="hidden sm:block">
-            Free delivery over $500 · Pay by bank or JazzCash/Raast · Track every parcel
-          </p>
-          <div className="flex items-center gap-4">
-            <Link href="/vendors/apply" className="hover:underline">
-              Become a vendor
-            </Link>
-            <Link href="/support" className="hover:underline">
-              Support
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6">
+    <header className="sticky top-0 z-40 w-full border-b bg-white">
+      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6">
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="lg:hidden">
@@ -117,120 +102,137 @@ export function SiteHeader() {
           </SheetContent>
         </Sheet>
 
-        <Link href="/home" className="flex shrink-0 items-center gap-2">
-          <span className="bg-hero-gradient flex h-9 w-9 items-center justify-center rounded-xl text-white shadow-sm">
+        <Link href="/home" className="flex shrink-0 items-center gap-2.5">
+          <span className="bg-hero-gradient flex h-10 w-10 items-center justify-center rounded-2xl text-white shadow-md shadow-primary/30">
             <Boxes className="h-5 w-5" />
           </span>
-          <span className="text-xl font-bold tracking-tight">{clientEnv.NEXT_PUBLIC_APP_NAME}</span>
+          <span className="font-display text-xl font-semibold tracking-tight">
+            {clientEnv.NEXT_PUBLIC_APP_NAME}
+          </span>
         </Link>
 
-        <div className="relative hidden lg:block">
-          <button
-            type="button"
-            onClick={() => setCategoryOpen((v) => !v)}
-            onBlur={() => setTimeout(() => setCategoryOpen(false), 150)}
-            className="hover:bg-muted flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium"
-          >
-            <Menu className="h-4 w-4" />
-            Categories
-            <ChevronDown
-              className={cn('h-3.5 w-3.5 transition-transform', categoryOpen && 'rotate-180')}
-            />
-          </button>
-          <AnimatePresence>
-            {categoryOpen ? (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 8 }}
-                transition={{ duration: 0.15 }}
-                className="bg-popover absolute top-full left-0 z-50 mt-2 flex w-[720px] overflow-hidden rounded-xl border shadow-xl"
-              >
-                <div className="w-64 shrink-0 border-r p-2">
-                  {categories.map((category) => (
-                    <Link
-                      key={category.id}
-                      href={`/categories/${category.slug}`}
-                      onMouseEnter={() => setActiveCategory(category.slug)}
-                      className={cn(
-                        'hover:bg-muted flex items-center gap-3 rounded-lg p-3 transition-colors',
-                        activeCategory === category.slug && 'bg-muted',
-                      )}
+        <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex">
+          {topLinks.map((link) =>
+            link.mega ? (
+              <div key={link.href} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setCategoryOpen((v) => !v)}
+                  onBlur={() => setTimeout(() => setCategoryOpen(false), 150)}
+                  className={cn(
+                    'flex items-center gap-1 rounded-full px-3 py-2 text-sm font-medium',
+                    categoryOpen || pathname.startsWith('/categories')
+                      ? 'text-primary'
+                      : 'text-foreground/70 hover:text-primary',
+                  )}
+                >
+                  {link.label}
+                  <ChevronDown className={cn('h-3.5 w-3.5', categoryOpen && 'rotate-180')} />
+                </button>
+                <AnimatePresence>
+                  {categoryOpen ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 8 }}
+                      transition={{ duration: 0.15 }}
+                      className="bg-popover absolute top-full left-1/2 z-50 mt-2 flex w-[720px] -translate-x-1/2 overflow-hidden rounded-xl border shadow-xl"
                     >
-                      <span className="bg-primary/10 text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
-                        <CategoryIcon name={category.icon} className="h-4 w-4" />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium">{category.name}</p>
-                        <p className="text-muted-foreground text-xs">
-                          {category.productCount.toLocaleString()} products
-                        </p>
+                      <div className="w-64 shrink-0 border-r p-2">
+                        {categories.map((category) => (
+                          <Link
+                            key={category.id}
+                            href={`/categories/${category.slug}`}
+                            onMouseEnter={() => setActiveCategory(category.slug)}
+                            className={cn(
+                              'hover:bg-muted flex items-center gap-3 rounded-lg p-3 transition-colors',
+                              activeCategory === category.slug && 'bg-muted',
+                            )}
+                          >
+                            <span className="bg-primary/10 text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
+                              <CategoryIcon name={category.icon} className="h-4 w-4" />
+                            </span>
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium">{category.name}</p>
+                              <p className="text-muted-foreground text-xs">
+                                {category.productCount.toLocaleString()} products
+                              </p>
+                            </div>
+                          </Link>
+                        ))}
                       </div>
-                    </Link>
-                  ))}
-                </div>
-
-                <div className="flex flex-1 flex-col p-4">
-                  <div className="mb-3 flex items-center justify-between">
-                    <p className="text-sm font-semibold">
-                      Popular in {activeCategoryData?.name ?? 'this category'}
-                    </p>
-                    <Link
-                      href={`/categories/${activeCategory}`}
-                      className="text-primary text-xs font-medium hover:underline"
-                    >
-                      View all
-                    </Link>
-                  </div>
-                  <div className="grid flex-1 grid-cols-2 gap-3">
-                    {activeCategoryProducts.map((product) => (
-                      <Link
-                        key={product.id}
-                        href={`/products/${product.slug}`}
-                        className="hover:bg-muted flex items-center gap-3 rounded-lg p-2 transition-colors"
-                      >
-                        <span className="bg-muted relative h-12 w-12 shrink-0 overflow-hidden rounded-md border">
-                          <Image
-                            src={product.images[0] ?? ''}
-                            alt={product.name}
-                            fill
-                            className="object-cover"
-                            sizes="48px"
-                          />
-                        </span>
-                        <div className="min-w-0">
-                          <p className="truncate text-xs font-medium">{product.name}</p>
-                          <p className="text-primary text-xs font-semibold">
-                            {formatCurrency(product.price)}
+                      <div className="flex flex-1 flex-col p-4">
+                        <div className="mb-3 flex items-center justify-between">
+                          <p className="text-sm font-semibold">
+                            Popular in {activeCategoryData?.name ?? 'this category'}
                           </p>
+                          <Link
+                            href={`/categories/${activeCategory}`}
+                            className="text-primary text-xs font-medium hover:underline"
+                          >
+                            View all
+                          </Link>
                         </div>
-                      </Link>
-                    ))}
-                    {activeCategoryProducts.length === 0 ? (
-                      <p className="text-muted-foreground col-span-2 text-sm">
-                        No products available yet.
-                      </p>
-                    ) : null}
-                  </div>
-                </div>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
-        </div>
+                        <div className="grid flex-1 grid-cols-2 gap-3">
+                          {activeCategoryProducts.map((product) => (
+                            <Link
+                              key={product.id}
+                              href={`/products/${product.slug}`}
+                              className="hover:bg-muted flex items-center gap-3 rounded-lg p-2 transition-colors"
+                            >
+                              <span className="bg-muted relative h-12 w-12 shrink-0 overflow-hidden rounded-md border">
+                                <Image
+                                  src={product.images[0] ?? ''}
+                                  alt={product.name}
+                                  fill
+                                  className="object-cover"
+                                  sizes="48px"
+                                />
+                              </span>
+                              <div className="min-w-0">
+                                <p className="truncate text-xs font-medium">{product.name}</p>
+                                <p className="text-primary text-xs font-semibold">
+                                  {formatCurrency(product.price)}
+                                </p>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  'rounded-full px-3 py-2 text-sm font-medium',
+                  pathname === link.href
+                    ? 'text-primary'
+                    : 'text-foreground/70 hover:text-primary',
+                )}
+              >
+                {link.label}
+              </Link>
+            ),
+          )}
+        </nav>
 
-        <form onSubmit={handleSearch} className="hidden flex-1 items-center md:flex">
+        <form onSubmit={handleSearch} className="hidden w-56 items-center xl:flex">
           <div className="relative w-full">
             <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
             <Input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search products, SKUs, or vendors..."
-              className="h-10 pl-10"
+              placeholder="Search..."
+              className="h-10 rounded-full bg-muted/70 pr-3 pl-9 shadow-none"
             />
           </div>
         </form>
 
-        <div className="ml-auto flex items-center gap-1.5">
+        <div className="ml-auto flex items-center gap-1 lg:ml-0">
           <Button variant="ghost" size="icon" asChild className="hidden sm:inline-flex">
             <Link href="/favorites" aria-label="Wishlist">
               <Heart className="h-5 w-5" />
@@ -298,34 +300,12 @@ export function SiteHeader() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <>
-              <Button asChild variant="outline" size="sm">
-                <Link href={`/?next=${encodeURIComponent(pathname)}`}>Sign up</Link>
-              </Button>
-              <Button asChild variant="default" size="sm" className="ml-1">
-                <Link href={`/login?next=${encodeURIComponent(pathname)}`}>
-                  <User className="h-4 w-4" /> Login
-                </Link>
-              </Button>
-            </>
+            <Button asChild variant="default" size="sm" className="ml-1">
+              <Link href={`/login?next=${encodeURIComponent(pathname)}`}>
+                <User className="h-4 w-4" /> Login
+              </Link>
+            </Button>
           )}
-        </div>
-      </div>
-
-      <div className="hidden border-t lg:block">
-        <div className="mx-auto flex max-w-7xl items-center gap-6 px-6 py-2 text-sm">
-          {topLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                'text-muted-foreground hover:text-foreground font-medium transition-colors',
-                pathname === link.href && 'text-foreground',
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
         </div>
       </div>
     </header>

@@ -1,4 +1,8 @@
 import type { BulkPriceTier, Product, ProductReview } from '@/types/catalog';
+import { OFFICE_PENS_IMAGE, OFFICE_SUPPLIES_IMAGE } from './categories';
+
+const SNACK_BOX_IMAGE = '/images/products/snack-box.jpg';
+const MODULAR_SHELVING_IMAGE = '/images/products/modular-shelving.jpg';
 
 function bulkTiers(base: number): BulkPriceTier[] {
   return [
@@ -53,16 +57,16 @@ export const products: Product[] = [
     description:
       'The ApexErgoFlex combines breathable mesh, adjustable lumbar support, and a synchro-tilt mechanism engineered for long workdays. Rated for continuous 12-hour use and backed by a 5-year warranty, it is the top choice for enterprise workstation rollouts.',
     images: [
+      'https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?q=80&w=1200&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?q=80&w=1200&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1519677100203-a0e668c92439?q=80&w=1200&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1505797149-0b3f8c8b5cd3?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_furniture',
     categorySlug: 'office-furniture',
     vendorId: 'vnd_apex',
     price: 249.0,
     compareAtPrice: 319.0,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.7,
     reviewCount: 812,
     stock: 340,
@@ -92,15 +96,16 @@ export const products: Product[] = [
     description:
       'Enterprise-grade standing desk with dual-motor lift, four programmable height presets, anti-collision detection, and a scratch-resistant laminate top. Ideal for standardized office rollouts and wellness initiatives.',
     images: [
+      'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?q=80&w=1200&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?q=80&w=1200&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_furniture',
     categorySlug: 'office-furniture',
     vendorId: 'vnd_apex',
     price: 449.0,
     compareAtPrice: 549.0,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.8,
     reviewCount: 561,
     stock: 128,
@@ -129,13 +134,14 @@ export const products: Product[] = [
     description:
       'Heavy-duty modular shelving with powder-coated steel frame, adjustable shelf heights, and 800 lb per-shelf capacity. Designed for storage rooms, warehouses, and back-office archives.',
     images: [
+      MODULAR_SHELVING_IMAGE,
       'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_furniture',
     categorySlug: 'office-furniture',
     vendorId: 'vnd_apex',
     price: 189.0,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.4,
     reviewCount: 233,
     stock: 60,
@@ -163,6 +169,7 @@ export const products: Product[] = [
       'Medium-roast Arabica beans sourced from certified sustainable farms, packed in resealable 5 lb bulk bags optimized for high-volume office breakroom brewing.',
     images: [
       'https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1511920170033-f8396924c348?q=80&w=1200&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_grocery',
@@ -170,7 +177,7 @@ export const products: Product[] = [
     vendorId: 'vnd_freshstock',
     price: 42.5,
     compareAtPrice: 52.0,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.9,
     reviewCount: 1420,
     stock: 900,
@@ -198,13 +205,14 @@ export const products: Product[] = [
     description:
       'BPA-free bottled spring water in convenient 24-packs, ideal for office pantries, conference rooms, and corporate events. Sourced and bottled under FDA-registered facilities.',
     images: [
+      'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?q=80&w=1200&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1523362628745-0c100150b504?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_grocery',
     categorySlug: 'grocery-pantry',
     vendorId: 'vnd_freshstock',
     price: 8.99,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.6,
     reviewCount: 640,
     stock: 2200,
@@ -231,13 +239,14 @@ export const products: Product[] = [
     description:
       'A curated assortment of 60 individually packaged snacks including nuts, granola bars, and dried fruit — perfect for stocking corporate breakrooms with minimal management overhead.',
     images: [
+      SNACK_BOX_IMAGE,
       'https://images.unsplash.com/photo-1599490659213-e2b9527bd087?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_grocery',
     categorySlug: 'grocery-pantry',
     vendorId: 'vnd_freshstock',
     price: 64.0,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.5,
     reviewCount: 380,
     stock: 410,
@@ -262,15 +271,13 @@ export const products: Product[] = [
     shortDescription: '20 lb, 92 bright multipurpose paper for everyday printing.',
     description:
       'Reliable, jam-resistant multipurpose paper engineered for high-volume office printers and copiers. 92 brightness rating ensures crisp print quality for reports and presentations.',
-    images: [
-      'https://images.unsplash.com/photo-1586953208448-b95a79798f07?q=80&w=1200&auto=format&fit=crop',
-    ],
+    images: [OFFICE_SUPPLIES_IMAGE, OFFICE_PENS_IMAGE],
     categoryId: 'cat_office',
     categorySlug: 'office-supplies',
     vendorId: 'vnd_apex',
     price: 54.99,
     compareAtPrice: 64.99,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.7,
     reviewCount: 1230,
     stock: 1500,
@@ -297,14 +304,12 @@ export const products: Product[] = [
     shortDescription: 'Quick-dry gel ink pens for daily office writing needs.',
     description:
       'Comfortable-grip gel pens with quick-dry ink to prevent smudging. Bulk pack of 100 in classic black, ideal for procurement teams standardizing office supplies.',
-    images: [
-      'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?q=80&w=1200&auto=format&fit=crop',
-    ],
+    images: [OFFICE_PENS_IMAGE, OFFICE_SUPPLIES_IMAGE],
     categoryId: 'cat_office',
     categorySlug: 'office-supplies',
     vendorId: 'vnd_apex',
     price: 32.0,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.5,
     reviewCount: 512,
     stock: 3000,
@@ -330,15 +335,16 @@ export const products: Product[] = [
     description:
       'Purpose-built for enterprise fleets: 14th-gen enterprise processor, hardware security module, vPro remote manageability, and 14-hour battery life. Includes 3-year on-site warranty support.',
     images: [
-      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=1200&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1484788984921-03950022c9ef?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_it',
     categorySlug: 'it-equipment',
     vendorId: 'vnd_technova',
     price: 1099.0,
     compareAtPrice: 1299.0,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.8,
     reviewCount: 940,
     stock: 210,
@@ -369,12 +375,13 @@ export const products: Product[] = [
       '34-inch curved QHD monitor with USB-C power delivery, KVM switch, and factory color calibration. Designed for financial analysts, designers, and multitasking power users.',
     images: [
       'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_it',
     categorySlug: 'it-equipment',
     vendorId: 'vnd_technova',
     price: 449.0,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.7,
     reviewCount: 388,
     stock: 145,
@@ -403,12 +410,13 @@ export const products: Product[] = [
       'Enterprise-grade managed switch with 24 Gigabit ports, PoE+ support up to 370W total budget, and full L2/L3 management for structured office and warehouse networks.',
     images: [
       'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_it',
     categorySlug: 'it-equipment',
     vendorId: 'vnd_technova',
     price: 389.0,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.6,
     reviewCount: 214,
     stock: 88,
@@ -435,6 +443,7 @@ export const products: Product[] = [
     description:
       'Hospital-grade disinfectant concentrate effective against a broad spectrum of pathogens. Dilutes up to 1:256, providing significant cost savings for large facility cleaning programs.',
     images: [
+      'https://images.unsplash.com/photo-1583947215259-38e31be8751f?q=80&w=1200&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1584744982491-665216d95f8b?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_cleaning',
@@ -442,7 +451,7 @@ export const products: Product[] = [
     vendorId: 'vnd_clearline',
     price: 78.0,
     compareAtPrice: 95.0,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.6,
     reviewCount: 302,
     stock: 260,
@@ -468,13 +477,13 @@ export const products: Product[] = [
     description:
       'High-density polyethylene liners rated for heavy commercial use, resistant to punctures and tears. Packed 250 per case for facility-wide standardization.',
     images: [
-      'https://images.unsplash.com/photo-1610557892470-55d587e2b53f?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_cleaning',
     categorySlug: 'cleaning-supplies',
     vendorId: 'vnd_clearline',
     price: 44.5,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.4,
     reviewCount: 198,
     stock: 520,
@@ -500,13 +509,13 @@ export const products: Product[] = [
     description:
       'Reusable, machine-washable microfiber cloths ideal for surface cleaning, glass, and electronics. Color-coded packs available for cross-contamination control programs.',
     images: [
-      'https://images.unsplash.com/photo-1610557892470-55d587e2b53f?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1563453392212-326f5e854473?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_cleaning',
     categorySlug: 'cleaning-supplies',
     vendorId: 'vnd_clearline',
     price: 36.0,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.7,
     reviewCount: 156,
     stock: 700,
@@ -533,14 +542,15 @@ export const products: Product[] = [
     description:
       'Energy-efficient LED panel delivering 5000 lumens with dimmable driver compatibility. Designed for drop-ceiling grids in commercial office environments, DLC listed for utility rebates.',
     images: [
-      'https://images.unsplash.com/photo-1517420704952-d9f39e95b43e?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_electrical',
     categorySlug: 'electrical-products',
     vendorId: 'vnd_voltedge',
     price: 38.0,
     compareAtPrice: 46.0,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.6,
     reviewCount: 421,
     stock: 980,
@@ -568,13 +578,13 @@ export const products: Product[] = [
     description:
       'Rack-mountable power distribution unit with 24 outlets, surge suppression, and remote monitoring capability for server rooms and data closets.',
     images: [
-      'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_electrical',
     categorySlug: 'electrical-products',
     vendorId: 'vnd_voltedge',
     price: 215.0,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.5,
     reviewCount: 132,
     stock: 75,
@@ -601,13 +611,14 @@ export const products: Product[] = [
     description:
       'THHN-rated stranded copper wire, 12 AWG, in a 500ft spool. Suitable for conduit runs in commercial building electrical installations, UL listed.',
     images: [
+      'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?q=80&w=1200&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_electrical',
     categorySlug: 'electrical-products',
     vendorId: 'vnd_voltedge',
     price: 129.0,
-    currency: 'USD',
+    currency: 'PKR',
     rating: 4.7,
     reviewCount: 187,
     stock: 340,

@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Bolt } from 'lucide-react';
-import { ProductCard } from '@/components/shared/product-card';
+import Image from 'next/image';
+import { ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { formatCurrency } from '@/lib/utils';
 import type { Product } from '@/types/catalog';
 
 function pad(value: number) {
@@ -23,37 +25,51 @@ export function FlashSaleSection({ products }: { products: Product[] }) {
   const hours = Math.floor(remaining / 3600);
   const minutes = Math.floor((remaining % 3600) / 60);
   const seconds = remaining % 60;
+  const spotlight = products[0];
 
   return (
-    <section className="mx-auto max-w-7xl px-3 py-3 sm:px-4">
-      <div className="bg-card rounded-sm p-3 shadow-sm sm:p-4">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <h2 className="text-primary flex items-center gap-1.5 text-lg font-black tracking-tight italic">
-              <Bolt className="h-5 w-5 fill-current" /> Flash Sale
-            </h2>
-            <div className="flex items-center gap-1 font-mono text-sm font-bold">
-              <span className="bg-foreground text-background rounded-sm px-1.5 py-0.5">
-                {pad(hours)}
-              </span>
-              <span>:</span>
-              <span className="bg-foreground text-background rounded-sm px-1.5 py-0.5">
-                {pad(minutes)}
-              </span>
-              <span>:</span>
-              <span className="bg-foreground text-background rounded-sm px-1.5 py-0.5">
-                {pad(seconds)}
-              </span>
-            </div>
+    <section className="bg-navy-glow text-white">
+      <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2">
+        <div>
+          <p className="text-primary mb-3 text-xs font-semibold tracking-[0.22em] uppercase">
+            Limited time offer
+          </p>
+          <h2 className="font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+            Up to 50% off
+          </h2>
+          <p className="mt-3 max-w-md text-white/65">
+            Flash deals on office, IT, and pantry staples. Timer resets tonight.
+          </p>
+          <div className="mt-6 flex items-center gap-2 font-mono text-lg font-bold">
+            <span className="rounded-lg bg-white/10 px-3 py-2">{pad(hours)}</span>
+            <span className="text-white/40">:</span>
+            <span className="rounded-lg bg-white/10 px-3 py-2">{pad(minutes)}</span>
+            <span className="text-white/40">:</span>
+            <span className="rounded-lg bg-white/10 px-3 py-2">{pad(seconds)}</span>
           </div>
-          <Link href="/deals" className="text-primary text-sm font-medium hover:underline">
-            Shop more
-          </Link>
+          <Button asChild size="lg" className="mt-8">
+            <Link href="/deals">
+              Grab the deal <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
         </div>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} compact />
-          ))}
+        <div className="relative mx-auto aspect-square w-full max-w-md">
+          <div className="absolute inset-[12%] rounded-full bg-primary/25 blur-3xl" />
+          <div className="absolute inset-[22%] rounded-full border border-primary/30" />
+          {spotlight ? (
+            <Link href={`/products/${spotlight.slug}`} className="relative block h-full">
+              <Image
+                src={spotlight.images[0] ?? ''}
+                alt={spotlight.name}
+                fill
+                className="object-contain drop-shadow-[0_20px_60px_rgba(37,99,235,0.4)]"
+                sizes="400px"
+              />
+              <span className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-2 text-sm backdrop-blur-md">
+                {spotlight.name.split(' ').slice(0, 3).join(' ')} · {formatCurrency(spotlight.price)}
+              </span>
+            </Link>
+          ) : null}
         </div>
       </div>
     </section>

@@ -1,11 +1,6 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { BadgeCheck, MapPin } from 'lucide-react';
 import { getProducts, getVendors } from '@/lib/catalog/catalog-repository';
-import { Rating } from '@/components/ui/rating';
-import { Badge } from '@/components/ui/badge';
-import { VendorAvatar } from '@/components/shared/vendor-avatar';
+import { VendorCard } from '@/components/shared/vendor-card';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,54 +27,7 @@ export default async function VendorsPage() {
         {approvedVendors.map((vendor) => {
           const productCount = products.filter((p) => p.vendorId === vendor.id).length;
           return (
-            <Link
-              key={vendor.id}
-              href={`/vendors/${vendor.slug}`}
-              className="card-hover bg-card rounded-2xl border"
-            >
-              <div className="relative h-28 w-full overflow-hidden rounded-t-2xl">
-                <Image
-                  src={vendor.banner}
-                  alt={vendor.name}
-                  fill
-                  className="object-cover"
-                  sizes="400px"
-                />
-              </div>
-              <div className="flex items-start gap-3 p-5">
-                <VendorAvatar
-                  name={vendor.name}
-                  className="border-card -mt-12 h-16 w-16 shrink-0 rounded-xl border-4 text-base"
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <p className="truncate font-semibold">{vendor.name}</p>
-                    {vendor.verified ? <BadgeCheck className="text-info h-4 w-4 shrink-0" /> : null}
-                  </div>
-                  <p className="text-muted-foreground flex items-center gap-1 text-xs">
-                    <MapPin className="h-3 w-3" /> {vendor.location}
-                  </p>
-                  <Rating
-                    value={vendor.rating}
-                    count={vendor.reviewCount}
-                    size="sm"
-                    className="mt-1.5"
-                  />
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center justify-between gap-2 px-5 pb-5">
-                <span className="text-muted-foreground text-xs">
-                  {productCount} products listed
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {vendor.certifications.slice(0, 2).map((cert) => (
-                    <Badge key={cert} variant="secondary" className="text-[10px]">
-                      {cert}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </Link>
+            <VendorCard key={vendor.id} vendor={vendor} productCount={productCount} />
           );
         })}
       </div>

@@ -33,6 +33,7 @@ export function useUpdateClient() {
       status?: Client['status'];
       creditLimit?: number;
       creditFrozen?: boolean;
+      creditTerms?: Client['creditTerms'];
     }) => clientsService.update(id, payload),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: clientKeys.all }),
   });

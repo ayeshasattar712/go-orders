@@ -24,10 +24,13 @@ export function ProductRail({ title, description, products, viewAllHref }: Produ
   }
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-      <div className="mb-5 flex items-end justify-between gap-4">
+    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <div className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
+          <p className="text-primary mb-1 text-[11px] font-semibold tracking-[0.2em] uppercase">
+            Shop
+          </p>
+          <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>
           {description ? <p className="text-muted-foreground mt-1 text-sm">{description}</p> : null}
         </div>
         <div className="hidden shrink-0 items-center gap-2 sm:flex">

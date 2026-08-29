@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { InvoiceStatusBadge } from '@/features/finance/invoice-status-badge';
 import { invoicesService } from '@/services/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import { saveBlobFile } from '@/lib/save-blob';
 import type { Invoice } from '@/types/enterprise';
 
 function InvoiceTable({
@@ -50,7 +51,7 @@ function InvoiceTable({
               </td>
               <td className="py-3 pr-4">
                 <Button size="sm" variant="ghost" onClick={() => onDownload(invoice)}>
-                  <Download className="h-3.5 w-3.5" /> Download
+                  <Download className="h-3.5 w-3.5" /> PDF
                 </Button>
               </td>
             </tr>
@@ -82,14 +83,8 @@ export default function CustomerInvoicesPage() {
     .reduce((sum, i) => sum + (i.amount - i.amountPaid), 0);
 
   async function handleDownload(invoice: Invoice) {
-    const file = await invoicesService.download(invoice.id);
-    const blob = new Blob([file.content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = file.filename;
-    link.click();
-    URL.revokeObjectURL(url);
+    const file = await invoicesService.downloadPdf(invoice.id);
+    saveBlobFile(file.blob, file.filename);
   }
 
   return (
@@ -97,7 +92,7 @@ export default function CustomerInvoicesPage() {
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">Invoices</h2>
         <p className="text-muted-foreground">
-          Every purchase generates an invoice you can download.
+          Every purchase generates a fillable PDF invoice you can download and save.
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

@@ -9,7 +9,14 @@ export const rfqRequestsService = {
     return data.data.rfqs;
   },
 
-  async create(payload: Partial<RfqRequest>) {
+  async create(payload: {
+    title: string;
+    requestedBy: string;
+    department: string;
+    category: string;
+    quantity: number;
+    estimatedValue: number;
+  }) {
     const { data } = await apiClient.post<ApiSuccessResponse<{ rfq: RfqRequest }>>(
       '/rfq-requests',
       payload,

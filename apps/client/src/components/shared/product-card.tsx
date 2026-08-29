@@ -51,7 +51,7 @@ export function ProductCard({
       >
         <Link
           href={`/products/${product.slug}`}
-          className="bg-muted relative h-32 w-32 shrink-0 overflow-hidden rounded-sm"
+        className="bg-white relative h-32 w-32 shrink-0 overflow-hidden rounded-lg border"
         >
           <Image
             src={product.images[0] ?? ''}
@@ -109,7 +109,7 @@ export function ProductCard({
       >
         <Link
           href={`/products/${product.slug}`}
-          className="bg-muted relative aspect-square overflow-hidden"
+          className="relative aspect-square overflow-hidden bg-white"
         >
           <Image
             src={product.images[0] ?? ''}
@@ -173,7 +173,7 @@ export function ProductCard({
     >
       <Link
         href={`/products/${product.slug}`}
-        className="bg-muted relative aspect-square overflow-hidden"
+        className="bg-white relative aspect-square overflow-hidden"
       >
         <Image
           src={product.images[0] ?? ''}
@@ -191,12 +191,12 @@ export function ProductCard({
           type="button"
           onClick={(event) => {
             event.preventDefault();
-            handleToggleWishlist();
+            handleAddToCart();
           }}
-          aria-label="Save to wishlist"
-          className="bg-background/90 absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full shadow-sm"
+          aria-label="Add to cart"
+          className="bg-primary text-primary-foreground absolute right-2 bottom-2 flex h-8 w-8 items-center justify-center rounded-lg shadow-md"
         >
-          <Heart className={cn('h-4 w-4', isSaved && 'fill-destructive text-destructive')} />
+          <ShoppingCart className="h-4 w-4" />
         </button>
       </Link>
 
@@ -225,14 +225,13 @@ export function ProductCard({
           <div className="flex min-w-0 items-stretch gap-2">
             <Button
               size="icon"
-              variant="secondary"
-              className="h-9 w-9 shrink-0"
+              className="h-9 w-9 shrink-0 rounded-lg"
               onClick={handleAddToCart}
               aria-label="Add to cart"
             >
               <ShoppingCart className="h-4 w-4" />
             </Button>
-            <Button size="sm" className="h-9 min-w-0 flex-1 px-2" onClick={handleBuyNow}>
+            <Button size="sm" variant="outline" className="h-9 min-w-0 flex-1 rounded-lg px-2" onClick={handleBuyNow}>
               Buy now
             </Button>
           </div>

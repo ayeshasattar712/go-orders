@@ -17,7 +17,13 @@ const columns: { status: RfqRequest['status']; label: string; tone: string }[] =
   { status: 'completed', label: 'Completed', tone: 'bg-success' },
 ];
 
-export function ProcurementBoard({ requests }: { requests: RfqRequest[] }) {
+export function ProcurementBoard({
+  requests,
+  highlightId,
+}: {
+  requests: RfqRequest[];
+  highlightId?: string | null;
+}) {
   return (
     <div className="flex scrollbar-none gap-4 overflow-x-auto pb-4">
       {columns.map((column, colIndex) => {
@@ -39,7 +45,7 @@ export function ProcurementBoard({ requests }: { requests: RfqRequest[] }) {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.25, delay: (colIndex * items.length + index) * 0.03 }}
-                  className="card-hover bg-card rounded-xl border p-4"
+                  className={`card-hover bg-card rounded-xl border p-4 ${highlightId === request.id ? 'ring-primary ring-2' : ''}`}
                 >
                   <p className="text-sm leading-snug font-medium">{request.title}</p>
                   <div className="text-muted-foreground mt-2 flex items-center gap-1.5 text-xs">

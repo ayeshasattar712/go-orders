@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Star, Store, PackageCheck } from 'lucide-react';
 import { CategoryIcon } from '@/components/shared/category-icon';
-import { getCategoryChildren } from '@/lib/mock-data';
+import { getCategoryChildren, IT_EQUIPMENT_IMAGE, OFFICE_SUPPLIES_IMAGE } from '@/lib/mock-data/categories';
 import { formatCompactNumber } from '@/lib/utils';
 import type { Category } from '@/types/catalog';
 
@@ -12,38 +12,47 @@ interface CategoryHeroProps {
   avgRating: number;
 }
 
+function categoryHeroImage(category: Category) {
+  if (category.slug === 'office-supplies') return OFFICE_SUPPLIES_IMAGE;
+  if (category.slug === 'it-equipment') return IT_EQUIPMENT_IMAGE;
+  return category.image;
+}
+
 export function CategoryHero({ category, vendorCount, avgRating }: CategoryHeroProps) {
   const children = getCategoryChildren(category.slug);
+  const imageSrc = categoryHeroImage(category);
 
   return (
-    <div>
-      <div className="relative h-52 w-full sm:h-72">
-        <Image
-          src={category.image}
-          alt={category.name}
-          fill
-          priority
-          className="object-cover"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10" />
-        <div className="absolute inset-x-0 bottom-0 mx-auto max-w-7xl px-4 pb-5 sm:px-6 sm:pb-7">
-          <div className="flex min-w-0 items-center gap-3">
-            <span className="bg-hero-gradient flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-white shadow-md">
-              <CategoryIcon name={category.icon} className="h-6 w-6" />
-            </span>
-            <div className="min-w-0">
-              <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-                {category.name}
-              </h1>
-              <p className="mt-1 max-w-2xl text-sm text-white/80">{category.description}</p>
+    <div className="border-b bg-[#f8f9fa]">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+        <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_420px]">
+          <div className="min-w-0">
+            <div className="flex items-start gap-4">
+              <span className="bg-hero-gradient flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-white shadow-md shadow-primary/25">
+                <CategoryIcon name={category.icon} className="h-7 w-7" />
+              </span>
+              <div className="min-w-0">
+                <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{category.name}</h1>
+                <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-relaxed sm:text-base">
+                  {category.description}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="grid grid-cols-3 gap-3 py-6 sm:max-w-xl">
+          <div className="relative mx-auto aspect-[4/3] w-full max-w-[420px] overflow-hidden rounded-2xl border bg-white shadow-lg lg:mx-0">
+            <Image
+              src={imageSrc}
+              alt={category.name}
+              fill
+              priority
+              className="object-cover"
+              sizes="(max-width: 1024px) 90vw, 420px"
+            />
+          </div>
+        </div>
+
+        <div className="mt-8 grid grid-cols-3 gap-3 sm:max-w-xl">
           <div className="bg-card rounded-xl border p-4 text-center">
             <p className="flex items-center justify-center gap-1.5 text-lg font-bold">
               <PackageCheck className="text-primary h-4 w-4" />
@@ -68,12 +77,12 @@ export function CategoryHero({ category, vendorCount, avgRating }: CategoryHeroP
         </div>
 
         {children.length ? (
-          <div className="flex flex-wrap gap-2 pb-2">
+          <div className="mt-6 flex flex-wrap gap-2">
             {children.map((child) => (
               <Link
                 key={child.slug}
                 href={`/products?category=${category.slug}&q=${encodeURIComponent(child.name)}`}
-                className="hover:border-primary hover:text-primary hover:bg-primary/5 rounded-full border px-3 py-1.5 text-sm"
+                className="hover:border-primary hover:text-primary hover:bg-primary/5 rounded-full border bg-white px-3 py-1.5 text-sm"
               >
                 {child.name}
               </Link>

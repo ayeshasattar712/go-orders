@@ -34,7 +34,10 @@ export default function CreditPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-2xl font-semibold tracking-tight">Credit management</h2>
-          <p className="text-muted-foreground">Your Net terms credit line with GoOrder.</p>
+          <p className="text-muted-foreground">
+            Your {(client.creditTerms ?? 'net-30').replace('net-', 'Net-')} credit line with
+            GoOrder.
+          </p>
         </div>
         {client.creditFrozen ? (
           <Badge variant="destructive" className="gap-1.5">

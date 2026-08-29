@@ -1,7 +1,9 @@
+import { NextResponse } from 'next/server';
 import { InvoiceStatus as PrismaInvoiceStatus, InvoiceType } from '@prisma/client';
 import { isResponse, requireCustomerSession } from '@/lib/api-guard';
 import { prisma } from '@/lib/prisma';
 import { errorResponse, successResponse } from '@/lib/api-response';
+import { buildInvoicePdf, invoiceToPdfInput, pdfDownloadHeaders } from '@/lib/invoice-pdf';
 import type { Invoice } from '@/types/enterprise';
 
 const STATUS: Record<PrismaInvoiceStatus, Invoice['status']> = {
@@ -57,21 +59,17 @@ export async function POST(request: Request) {
   }
 
   const client = await prisma.client.findUnique({ where: { userId: session.sub } });
-  const invoice = await prisma.invoice.findUnique({ where: { id: body.invoiceId } });
-  if (!invoice || invoice.clientId !== client?.id) {
+  const invoice = await prisma.invoice.findUnique({
+    where: { id: body.invoiceId },
+    include: { client: true },
+  });
+  if (!client || !invoice || invoice.clientId !== client.id) {
     return errorResponse('Invoice not found', { status: 404, code: 'NOT_FOUND' });
   }
 
-  const text = [
-    'GoOrder Invoice',
-    `Invoice: ${invoice.invoiceNumber}`,
-    `Order: ${invoice.orderNumber ?? '—'}`,
-    `Customer: ${invoice.vendorOrCustomer}`,
-    `Issued: ${invoice.issueDate.toISOString().slice(0, 10)}`,
-    `Amount: ${invoice.amount.toFixed(2)}`,
-    `Paid: ${invoice.amountPaid.toFixed(2)}`,
-    `Status: ${invoice.status}`,
-  ].join('\n');
-
-  return successResponse({ filename: `${invoice.invoiceNumber}.txt`, content: text });
+  const bytes = await buildInvoicePdf(invoiceToPdfInput(invoice, invoice.client));
+  return new NextResponse(Buffer.from(bytes), {
+    status: 200,
+    headers: pdfDownloadHeaders(`${invoice.invoiceNumber}.pdf`),
+  });
 }

@@ -1,4 +1,5 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { Award, Calendar, Gavel, ListChecks } from 'lucide-react';
 import { KpiCard } from '@/components/shared/kpi-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,8 +7,6 @@ import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { BidComparisonTable } from '@/features/procurement/components/bid-comparison-table';
 import { useTenders, useBidsByTender } from '@/services/queries';
 import { formatCurrency, formatDate } from '@/lib/utils';
-
-export const metadata: Metadata = { title: 'Tender Management' };
 
 const statusVariant: Record<string, BadgeProps['variant']> = {
   open: 'info',

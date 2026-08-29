@@ -1,4 +1,5 @@
 export type ClientStatus = 'active' | 'suspended';
+export type CreditTerms = 'cod' | 'prepaid' | 'net-15' | 'net-30' | 'net-45' | 'net-60';
 
 export interface ClientAddress {
   id: string;
@@ -23,6 +24,7 @@ export interface Client {
   creditLimit: number;
   creditUsed: number;
   creditFrozen: boolean;
+  creditTerms: CreditTerms;
   outstandingBalance: number;
   dueAmount: number;
   nextDueDate: string | null;

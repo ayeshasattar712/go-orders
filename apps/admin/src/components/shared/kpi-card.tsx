@@ -32,7 +32,7 @@ export function KpiCard({
   const isPositive = (delta ?? 0) >= 0;
 
   return (
-    <Card className={className}>
+    <Card className={cn('card-hover', className)}>
       <CardContent className="pt-6">
         <div className="flex items-start justify-between">
           <div>

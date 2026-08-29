@@ -7,7 +7,7 @@ export function TestimonialsSection() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
       <div className="mb-8 text-center">
-        <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+        <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
           Trusted by procurement teams everywhere
         </h2>
         <p className="text-muted-foreground mt-2 text-sm">

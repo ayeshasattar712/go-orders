@@ -11,6 +11,8 @@ import { OrderTimeline } from '@/features/orders/components/order-timeline';
 import { OrderJourney } from '@/features/orders/components/order-journey';
 import { CustomerDeliveryTracker } from '@/features/delivery/customer-delivery-tracker';
 import { TrackingNumberCard } from '@/features/orders/components/tracking-number-card';
+import { DownloadOrderPdfButton } from '@/features/orders/components/download-order-pdf-button';
+import { DownloadChallanPdfButton } from '@/features/delivery/download-challan-pdf-button';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency, formatDate } from '@/lib/utils';
@@ -60,6 +62,8 @@ export default async function OrderDetailPage({
           </p>
         </div>
         <div className="flex gap-2">
+          <DownloadOrderPdfButton orderNumber={order.orderNumber} variant="outline" />
+          <DownloadChallanPdfButton orderNumber={order.orderNumber} />
           <Button variant="outline" size="sm" asChild>
             <Link href="/invoices">
               <Download className="h-4 w-4" /> Invoice

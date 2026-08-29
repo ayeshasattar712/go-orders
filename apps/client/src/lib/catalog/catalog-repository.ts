@@ -1,7 +1,22 @@
 import { cache } from 'react';
 import { prisma } from '@/lib/prisma';
 import { serializeCategory, serializeProduct, serializeVendor } from '@/lib/catalog/catalog-mapper';
+import { categories as mockCategories } from '@/lib/mock-data/categories';
+import { products as mockProducts } from '@/lib/mock-data/products';
 import type { Category, Product, Vendor } from '@/types/catalog';
+
+const mockCategoryImageBySlug = new Map(mockCategories.map((category) => [category.slug, category.image]));
+const mockProductImagesById = new Map(mockProducts.map((product) => [product.id, product.images]));
+
+function withMockCategoryImage(category: Category): Category {
+  const image = mockCategoryImageBySlug.get(category.slug);
+  return image ? { ...category, image } : category;
+}
+
+function withMockProductImages(product: Product): Product {
+  const images = mockProductImagesById.get(product.id);
+  return images?.length ? { ...product, images } : product;
+}
 
 const PRODUCT_INCLUDE = {
   category: true,
@@ -16,7 +31,7 @@ const PRODUCT_INCLUDE = {
  */
 export const getCategories = cache(async (): Promise<Category[]> => {
   const categories = await prisma.category.findMany({ orderBy: { name: 'asc' } });
-  return categories.map(serializeCategory);
+  return categories.map(serializeCategory).map(withMockCategoryImage);
 });
 
 export const getVendors = cache(async (): Promise<Vendor[]> => {
@@ -32,7 +47,7 @@ export const getProducts = cache(async (): Promise<Product[]> => {
     include: PRODUCT_INCLUDE,
     orderBy: { createdAt: 'desc' },
   });
-  return products.map(serializeProduct);
+  return products.map(serializeProduct).map(withMockProductImages);
 });
 
 export async function getCategoryBySlug(slug: string): Promise<Category | undefined> {

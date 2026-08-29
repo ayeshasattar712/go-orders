@@ -1,9 +1,10 @@
 'use client';
 
-import { Printer } from 'lucide-react';
+import { useState } from 'react';
 import { Modal } from '@/components/ui/modal';
 import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/utils';
+import { saveChallanPdf } from '@/features/delivery/download-challan-pdf-button';
 import type { DeliveryJob } from '@/types/enterprise';
 
 export function DeliveryChallanModal({
@@ -15,21 +16,31 @@ export function DeliveryChallanModal({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const [saving, setSaving] = useState(false);
   if (!job) return null;
+
+  async function handleSavePdf() {
+    setSaving(true);
+    try {
+      await saveChallanPdf(job.orderNumber);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <Modal
       open={open}
       onOpenChange={onOpenChange}
       title="Delivery challan"
-      description="Printable proof-of-dispatch document for this shipment."
+      description="Generates a fillable PDF form for this shipment and saves it to your device."
       footer={
         <>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Close
           </Button>
-          <Button onClick={() => window.print()}>
-            <Printer className="h-4 w-4" /> Print / Download
+          <Button onClick={() => void handleSavePdf()} disabled={saving}>
+            {saving ? 'Saving...' : 'Save PDF form'}
           </Button>
         </>
       }
@@ -41,9 +52,7 @@ export function DeliveryChallanModal({
             <p className="text-muted-foreground text-xs">Delivery Challan</p>
           </div>
           <div className="text-right">
-            <p className="text-muted-foreground font-mono text-xs">
-              Challan #{job.id.toUpperCase()}
-            </p>
+            <p className="text-muted-foreground font-mono text-xs">CHL-{job.orderNumber}</p>
             <p className="text-muted-foreground text-xs">{formatDate(new Date().toISOString())}</p>
           </div>
         </div>
@@ -98,8 +107,7 @@ export function DeliveryChallanModal({
           </div>
         </div>
         <p className="text-muted-foreground border-t pt-3 text-xs">
-          This challan confirms dispatch of goods for the above order. Please retain for warehouse
-          and delivery reconciliation records.
+          Saving the challan downloads a PDF form with receiver name, signature, and remarks fields.
         </p>
       </div>
     </Modal>

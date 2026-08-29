@@ -21,7 +21,7 @@ export const createProductSchema = z.object({
   vendorId: z.string().trim().min(1),
   price: z.number().nonnegative(),
   compareAtPrice: z.number().nonnegative().optional(),
-  currency: z.string().trim().length(3).default('USD'),
+  currency: z.string().trim().length(3).default('PKR'),
   stock: z.number().int().nonnegative(),
   stockStatus: z.enum(['in-stock', 'low-stock', 'out-of-stock', 'preorder']),
   sku: z.string().trim().min(1).max(60),

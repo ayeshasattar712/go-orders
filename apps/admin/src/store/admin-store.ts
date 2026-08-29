@@ -202,6 +202,7 @@ export const useAdminStore = create<AdminState>()(
           status: 'active',
           creditUsed: 0,
           creditFrozen: false,
+          creditTerms: input.creditTerms ?? 'net-30',
           outstandingBalance: 0,
           dueAmount: 0,
           nextDueDate: null,

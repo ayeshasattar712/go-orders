@@ -6,7 +6,7 @@ import { AuthPromptModal } from '@/components/auth/auth-prompt-modal';
 export default function ShopGroupLayout({ children }: { children: React.ReactNode }) {
   return (
     <CustomerAuthProvider>
-      <div className="dark:bg-background flex min-h-screen flex-col bg-[#f5f5f5]">
+      <div className="dark:bg-background flex min-h-screen flex-col bg-[#f8f9fa]">
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <SiteFooter />

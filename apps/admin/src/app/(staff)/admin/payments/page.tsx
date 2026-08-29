@@ -31,8 +31,8 @@ export default function AdminPaymentsPage() {
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">Payments received</h2>
         <p className="text-muted-foreground">
-          Confirm bank transfers and online transfers from checkout. Confirmed payments settle
-          matching invoices and post to cash / bank in the ledger.
+          Confirm bank transfers and online transfers in Pakistani rupees (PKR). Confirmed payments
+          settle matching invoices and post to cash / bank in the ledger.
         </p>
       </div>
 

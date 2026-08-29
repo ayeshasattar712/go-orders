@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 function initialsFromName(name: string) {
@@ -11,13 +12,23 @@ function initialsFromName(name: string) {
 
 export function VendorAvatar({
   name,
+  logo,
   className,
   textClassName,
 }: {
   name: string;
+  logo?: string;
   className?: string;
   textClassName?: string;
 }) {
+  if (logo) {
+    return (
+      <div className={cn('relative overflow-hidden bg-white', className)}>
+        <Image src={logo} alt="" fill className="object-cover" sizes="64px" />
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn(

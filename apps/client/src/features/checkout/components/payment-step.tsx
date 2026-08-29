@@ -48,8 +48,8 @@ export function PaymentStep({
     <div className="space-y-4">
       <h2 className="text-lg font-semibold">Payment method</h2>
       <p className="text-muted-foreground text-sm">
-        Pay by bank deposit or online transfer. Your invoice and tracking number are created as soon
-        as you place the order.
+        Pay in Pakistani rupees (PKR) by bank deposit or online transfer. Your invoice and tracking
+        number are created as soon as you place the order.
       </p>
 
       <div className="space-y-3">

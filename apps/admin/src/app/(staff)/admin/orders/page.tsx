@@ -14,6 +14,7 @@ import {
 import { EmptyState } from '@/components/ui/empty-state';
 import { Loader } from '@/components/ui/loader';
 import { OrderStatusBadge } from '@/features/orders/order-status-badge';
+import { DownloadOrderPdfButton } from '@/features/orders/components/download-order-pdf-button';
 import { useAdminOrders } from '@/services/queries';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import type { OrderStatus } from '@/types/catalog';
@@ -47,7 +48,7 @@ export default function AdminOrdersPage() {
         <div>
           <h2 className="text-2xl font-semibold tracking-tight">Orders</h2>
           <p className="text-muted-foreground">
-            Process every customer order — confirm, ship, and mark delivered.
+            Process every customer order — confirm, ship, mark delivered, and save a PDF form.
           </p>
         </div>
         <Select
@@ -81,24 +82,26 @@ export default function AdminOrdersPage() {
           ) : (
             <div className="overflow-hidden rounded-xl border">
               {filtered.map((order) => (
-                <Link
+                <div
                   key={order.id}
-                  href={`/admin/orders/${order.orderNumber}`}
                   className="hover:bg-muted/50 flex items-center justify-between gap-4 border-b p-4 last:border-0"
                 >
-                  <div className="min-w-0">
+                  <Link href={`/admin/orders/${order.orderNumber}`} className="min-w-0 flex-1">
                     <p className="font-medium">{order.orderNumber}</p>
                     <p className="text-muted-foreground text-sm">
                       {order.customer ? `${order.customer.name} · ` : ''}
                       {order.vendorName} · {formatDate(order.date)} · {order.itemCount} items
                     </p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-4">
+                  </Link>
+                  <div className="flex shrink-0 items-center gap-3">
                     <span className="font-semibold">{formatCurrency(order.total)}</span>
                     <OrderStatusBadge status={order.status} />
-                    <ChevronRight className="text-muted-foreground h-4 w-4" />
+                    <DownloadOrderPdfButton orderNumber={order.orderNumber} />
+                    <Link href={`/admin/orders/${order.orderNumber}`} aria-label="Open order">
+                      <ChevronRight className="text-muted-foreground h-4 w-4" />
+                    </Link>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           )}

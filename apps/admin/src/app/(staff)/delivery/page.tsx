@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DeliveryStatusBadge } from '@/features/delivery/delivery-status-badge';
 import { DeliveryChallanModal } from '@/features/delivery/delivery-challan-modal';
+import { saveChallanPdf } from '@/features/delivery/download-challan-pdf-button';
 import { useDeliveryStore } from '@/store/delivery-store';
 import { useDeliveryJobs, useRecordDeliveryAttempt } from '@/services/queries';
 import type { DeliveryJob } from '@/types/enterprise';
@@ -36,7 +37,7 @@ export default function DeliveryPage() {
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">Delivery management</h2>
         <p className="text-muted-foreground">
-          Track parcels, record up to 3 delivery attempts, and alert customers after each try.
+          Track parcels, record up to 3 delivery attempts, and save each challan as a PDF form.
         </p>
       </div>
 
@@ -103,7 +104,14 @@ export default function DeliveryPage() {
                     </ul>
                   ) : null}
                   <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <Button size="sm" variant="outline" onClick={() => setChallanJob(job)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setChallanJob(job);
+                        void saveChallanPdf(job.orderNumber);
+                      }}
+                    >
                       <FileText className="h-3.5 w-3.5" /> Delivery challan
                     </Button>
                     {canAttempt ? (

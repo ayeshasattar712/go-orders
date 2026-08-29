@@ -11,7 +11,7 @@ export default function UsersPage() {
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">User management</h2>
         <p className="text-muted-foreground">
-          Role-gated directory of users. Requires <code>users:read</code>.
+          Create client shop logins with auto-generated email and password, or register staff.
         </p>
       </div>
       <UsersTable />

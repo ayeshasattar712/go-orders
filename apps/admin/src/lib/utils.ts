@@ -18,10 +18,13 @@ export function absoluteUrl(path = ''): string {
   return `${base.replace(/\/$/, '')}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
-export function formatCurrency(value: number, currency = 'USD'): string {
-  return new Intl.NumberFormat('en-US', {
+export const APP_CURRENCY = 'PKR';
+
+export function formatCurrency(value: number, currency = APP_CURRENCY): string {
+  return new Intl.NumberFormat('en-PK', {
     style: 'currency',
     currency,
+    currencyDisplay: 'narrowSymbol',
     minimumFractionDigits: 2,
   }).format(value);
 }

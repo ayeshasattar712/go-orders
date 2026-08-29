@@ -2,6 +2,7 @@
 
 import { CheckCircle2, Clock, MapPin, PackageCheck, Truck, XCircle } from 'lucide-react';
 import { DeliveryStatusBadge } from '@/features/delivery/delivery-status-badge';
+import { DownloadChallanPdfButton } from '@/features/delivery/download-challan-pdf-button';
 import type { DeliveryStatus } from '@/types/enterprise';
 import type { Order } from '@/types/catalog';
 import { formatDateTime } from '@/lib/utils';
@@ -26,7 +27,10 @@ export function CustomerDeliveryTracker({
           <span className="font-semibold">{delivery?.eta ?? fallbackEta}</span>
           <DeliveryStatusBadge status={status} />
         </div>
-        <p className="font-mono text-xs">{order.trackingNumber}</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="font-mono text-xs">{order.trackingNumber}</p>
+          <DownloadChallanPdfButton orderNumber={order.orderNumber} />
+        </div>
       </div>
       <p className="text-muted-foreground flex items-center gap-2 text-xs">
         <MapPin className="h-3.5 w-3.5" />

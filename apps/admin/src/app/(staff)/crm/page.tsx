@@ -1,4 +1,5 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { Bell, Clock, MessagesSquare, Users } from 'lucide-react';
 import { KpiCard } from '@/components/shared/kpi-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,8 +8,6 @@ import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { ChatPanel } from '@/features/crm/chat-panel';
 import { supportTickets } from '@/lib/mock-data';
 import { formatDateTime } from '@/lib/utils';
-
-export const metadata: Metadata = { title: 'CRM & Communication' };
 
 const priorityVariant: Record<string, BadgeProps['variant']> = {
   low: 'secondary',

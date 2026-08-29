@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Boxes } from 'lucide-react';
 import { clientEnv } from '@/lib/env';
 
 export function AuthLayout({
@@ -11,18 +12,21 @@ export function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="via-background to-background flex min-h-screen flex-col items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-orange-100 px-4 dark:from-orange-950/40">
+    <div className="bg-navy-glow flex min-h-screen flex-col items-center justify-center px-4 text-white">
       <div className="mb-8 text-center">
-        <Link href="/" className="inline-flex items-center gap-2 text-2xl font-bold tracking-tight">
-          <span className="bg-hero-gradient flex h-9 w-9 items-center justify-center rounded-xl text-[11px] font-bold text-white">
-            GO
+        <Link href="/" className="inline-flex items-center gap-2.5 text-2xl font-semibold tracking-tight">
+          <span className="bg-hero-gradient flex h-10 w-10 items-center justify-center rounded-2xl text-white shadow-lg shadow-primary/35">
+            <Boxes className="h-5 w-5" />
           </span>
-          {clientEnv.NEXT_PUBLIC_APP_NAME}
+          <span className="font-display">{clientEnv.NEXT_PUBLIC_APP_NAME}</span>
         </Link>
+        <p className="text-primary mt-3 text-xs font-semibold tracking-[0.24em] uppercase">
+          Staff control panel
+        </p>
       </div>
-      <div className="bg-card shadow-primary/10 w-full max-w-md rounded-2xl border p-8 shadow-lg">
+      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white p-8 text-foreground shadow-2xl">
         <div className="mb-6 space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+          <h1 className="font-display text-2xl font-semibold tracking-tight">{title}</h1>
           <p className="text-muted-foreground text-sm">{description}</p>
         </div>
         {children}

@@ -12,6 +12,8 @@ import { Input } from '@/components/ui/input';
 import { Loader } from '@/components/ui/loader';
 import { useClients, useInvoices, useUpdateClient } from '@/services/queries';
 import { formatCurrency } from '@/lib/utils';
+import { CreditTermsSelect } from '@/components/shared/credit-terms-select';
+import { creditTermsLabel } from '@/constants/credit-terms';
 import type { Client } from '@/types/admin';
 
 type PaymentRisk = 'low' | 'medium' | 'high';
@@ -56,7 +58,7 @@ export default function AdminCreditPage() {
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">Credit management</h2>
         <p className="text-muted-foreground">
-          Set limits, review utilization, and freeze accounts across all clients.
+          Set credit terms, limits, utilization, and freeze accounts across all clients.
         </p>
       </div>
 
@@ -132,8 +134,8 @@ export default function AdminCreditPage() {
                       {client.companyName}
                     </Link>
                     <p className="text-muted-foreground text-xs">
-                      Due {formatCurrency(client.dueAmount)} · Outstanding{' '}
-                      {formatCurrency(client.outstandingBalance)}
+                      {creditTermsLabel(client.creditTerms)} · Due {formatCurrency(client.dueAmount)}{' '}
+                      · Outstanding {formatCurrency(client.outstandingBalance)}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -158,6 +160,14 @@ export default function AdminCreditPage() {
                   />
                 </div>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <div className="w-44">
+                    <CreditTermsSelect
+                      value={client.creditTerms}
+                      onChange={(creditTerms) =>
+                        updateClient.mutate({ id: client.id, creditTerms })
+                      }
+                    />
+                  </div>
                   <Input
                     type="number"
                     min={0}
@@ -185,7 +195,7 @@ export default function AdminCreditPage() {
                       updateClient.mutate({ id: client.id, creditLimit: client.creditLimit + 5000 })
                     }
                   >
-                    +$5,000
+                    +Rs 5,000
                   </Button>
                   <Button
                     size="sm"
@@ -197,7 +207,7 @@ export default function AdminCreditPage() {
                       })
                     }
                   >
-                    -$5,000
+                    −Rs 5,000
                   </Button>
                   {client.creditFrozen ? (
                     <Button

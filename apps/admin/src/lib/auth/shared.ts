@@ -37,6 +37,7 @@ export interface PublicUser {
   email: string;
   firstName: string;
   lastName: string;
+  userType: UserType;
   role: Role;
   permissions: Permission[];
   avatarUrl: string | null;
@@ -52,6 +53,7 @@ export function toPublicUser(user: PrismaUser): PublicUser {
     email: user.email,
     firstName: user.firstName,
     lastName: user.lastName,
+    userType: user.userType,
     role: user.role as Role,
     permissions: buildPermissions(user.role as Role),
     avatarUrl: user.avatarUrl,

@@ -9,7 +9,7 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row-reverse">
-      <div className="bg-muted relative aspect-square w-full overflow-hidden rounded-2xl border sm:flex-1">
+      <div className="relative aspect-square w-full overflow-hidden rounded-2xl border bg-white sm:flex-1">
         <Image
           src={images[active] ?? images[0] ?? ''}
           alt={name}

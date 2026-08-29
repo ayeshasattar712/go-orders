@@ -23,7 +23,7 @@ export function useQuotesByRfq() {
   return data?.quotesByRfq ?? {};
 }
 
-export function useRfqRequests() {
+export function useTenderRfqs() {
   const { data } = useTenders();
   return data?.rfqs ?? [];
 }

@@ -135,7 +135,7 @@ model Product {
   vendor               Vendor      @relation(fields: [vendorId], references: [id])
   price                Float
   compareAtPrice       Float?
-  currency             String      @default("USD")
+  currency             String      @default("PKR")
   rating               Float       @default(0)
   reviewCount          Int         @default(0)
   stock                Int         @default(0)
@@ -304,6 +304,15 @@ enum ClientStatus {
   SUSPENDED @map("suspended")
 }
 
+enum CreditTerms {
+  COD     @map("cod")
+  PREPAID @map("prepaid")
+  NET_15  @map("net-15")
+  NET_30  @map("net-30")
+  NET_45  @map("net-45")
+  NET_60  @map("net-60")
+}
+
 model Client {
   id                 String       @id @default(cuid())
   userId             String?      @unique
@@ -317,6 +326,7 @@ model Client {
   creditLimit        Float        @default(0)
   creditUsed         Float        @default(0)
   creditFrozen       Boolean      @default(false)
+  creditTerms        CreditTerms  @default(NET_30)
   outstandingBalance Float        @default(0)
   dueAmount          Float        @default(0)
   nextDueDate        DateTime?

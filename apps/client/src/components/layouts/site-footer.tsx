@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { AtSign, Boxes, Globe, Rss } from 'lucide-react';
+import { AtSign, Boxes, Globe } from 'lucide-react';
 import { clientEnv } from '@/lib/env';
 import { categories } from '@/lib/mock-data';
 
@@ -44,30 +44,27 @@ const footerColumns = [
 
 export function SiteFooter() {
   return (
-    <footer className="bg-muted/30 mt-24 border-t">
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+    <footer className="bg-navy text-white">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="grid gap-10 lg:grid-cols-6">
           <div className="lg:col-span-2">
-            <Link href="/home" className="flex items-center gap-2">
-              <span className="bg-hero-gradient flex h-9 w-9 items-center justify-center rounded-xl text-white">
+            <Link href="/home" className="flex items-center gap-2.5">
+              <span className="bg-hero-gradient flex h-10 w-10 items-center justify-center rounded-2xl text-white">
                 <Boxes className="h-5 w-5" />
               </span>
-              <span className="text-xl font-bold tracking-tight">
+              <span className="font-display text-xl font-semibold tracking-tight">
                 {clientEnv.NEXT_PUBLIC_APP_NAME}
               </span>
             </Link>
-            <p className="text-muted-foreground mt-4 max-w-xs text-sm">
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/65">
               Everything your business needs in one place — procurement, vendor management,
               inventory, and accounting, unified.
             </p>
-            <div className="text-muted-foreground mt-5 flex gap-3">
-              <Link href="#" aria-label="Social profile" className="hover:text-foreground">
+            <div className="mt-5 flex gap-3 text-white/55">
+              <Link href="#" aria-label="Social profile" className="hover:text-white">
                 <AtSign className="h-4 w-4" />
               </Link>
-              <Link href="#" aria-label="Blog" className="hover:text-foreground">
-                <Rss className="h-4 w-4" />
-              </Link>
-              <Link href="#" aria-label="Website" className="hover:text-foreground">
+              <Link href="#" aria-label="Website" className="hover:text-white">
                 <Globe className="h-4 w-4" />
               </Link>
             </div>
@@ -75,14 +72,11 @@ export function SiteFooter() {
 
           {footerColumns.map((column) => (
             <div key={column.title}>
-              <h4 className="text-sm font-semibold">{column.title}</h4>
+              <h4 className="text-sm font-semibold tracking-wide">{column.title}</h4>
               <ul className="mt-4 space-y-2.5">
                 {column.links.map((link) => (
                   <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-muted-foreground hover:text-foreground text-sm"
-                    >
+                    <Link href={link.href} className="text-sm text-white/60 hover:text-white">
                       {link.label}
                     </Link>
                   </li>
@@ -92,23 +86,23 @@ export function SiteFooter() {
           ))}
         </div>
 
-        <div className="mt-10 flex flex-wrap gap-2 border-t pt-8">
+        <div className="mt-12 flex flex-wrap gap-2 border-t border-white/10 pt-8">
           {categories.map((category) => (
             <Link
               key={category.id}
               href={`/categories/${category.slug}`}
-              className="text-muted-foreground hover:border-primary hover:text-primary rounded-full border px-3 py-1.5 text-xs"
+              className="rounded-full border border-white/15 px-3 py-1.5 text-xs text-white/70 hover:border-white/40 hover:text-white"
             >
               {category.name}
             </Link>
           ))}
         </div>
 
-        <div className="text-muted-foreground mt-8 flex flex-col items-center justify-between gap-3 border-t pt-6 text-xs sm:flex-row">
+        <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/50 sm:flex-row">
           <p>
             © {new Date().getFullYear()} {clientEnv.NEXT_PUBLIC_APP_NAME}, Inc. All rights reserved.
           </p>
-          <p>SOC 2 Type II · ISO 27001 · PCI DSS Compliant</p>
+          <p className="tracking-wide">Visa · Mastercard · JazzCash · Raast · Bank transfer</p>
         </div>
       </div>
     </footer>
