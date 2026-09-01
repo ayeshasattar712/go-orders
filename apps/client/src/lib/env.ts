@@ -32,6 +32,13 @@ function formatZodError(error: z.ZodError): string {
   return error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`).join('\n');
 }
 
+function isBuildPhase(): boolean {
+  return (
+    process.env.NEXT_PHASE === 'phase-production-build' ||
+    process.env.NEXT_PHASE === 'phase-production-compile'
+  );
+}
+
 /**
  * Server-only env. Do not import from Client Components.
  */
@@ -48,6 +55,14 @@ export function getServerEnv(): ServerEnv {
   });
 
   if (!parsed.success) {
+    if (isBuildPhase()) {
+      return serverSchema.parse({
+        NODE_ENV: process.env.NODE_ENV ?? 'production',
+        DATABASE_URL: process.env.DATABASE_URL || 'postgresql://build:build@127.0.0.1:5432/build',
+        NEXTAUTH_SECRET_CUSTOMER:
+          process.env.NEXTAUTH_SECRET_CUSTOMER || 'vercel-build-placeholder-secret-min-32-chars',
+      });
+    }
     throw new Error(`Invalid server environment variables:\n${formatZodError(parsed.error)}`);
   }
 

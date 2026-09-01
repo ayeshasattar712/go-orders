@@ -2,6 +2,7 @@ import path from 'node:path';
 import type { NextConfig } from 'next';
 
 const isProd = process.env.NODE_ENV === 'production';
+const monorepoRoot = path.join(__dirname, '../..');
 
 /**
  * Production-grade security headers.
@@ -37,9 +38,9 @@ const nextConfig: NextConfig = {
   compress: true,
   // Workspace package consumed as raw TS source — Next needs to transpile it.
   transpilePackages: ['@goorder/db'],
+  outputFileTracingRoot: monorepoRoot,
   turbopack: {
-    // Monorepo root (one lockfile up at the repo root, not per-app).
-    root: path.join(process.cwd(), '..', '..'),
+    root: monorepoRoot,
   },
   images: {
     formats: ['image/avif', 'image/webp'],

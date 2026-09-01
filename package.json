@@ -12,6 +12,7 @@
     "dev:client": "npm run dev --workspace=apps/client",
     "dev:admin": "npm run dev --workspace=apps/admin",
     "build": "npm run build --workspaces --if-present",
+    "vercel-build": "node scripts/vercel-build.cjs",
     "start:client": "npm run start --workspace=apps/client",
     "start:admin": "npm run start --workspace=apps/admin",
     "lint": "npm run lint --workspaces --if-present",
