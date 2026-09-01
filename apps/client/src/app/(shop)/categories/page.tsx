@@ -4,6 +4,8 @@ import Image from 'next/image';
 import { ArrowUpRight } from 'lucide-react';
 import { getCategories } from '@/lib/catalog/catalog-repository';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Shop by Category',
   description:

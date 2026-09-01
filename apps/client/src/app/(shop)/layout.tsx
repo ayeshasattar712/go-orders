@@ -3,6 +3,8 @@ import { SiteFooter } from '@/components/layouts/site-footer';
 import { CustomerAuthProvider } from '@/providers/customer-auth-provider';
 import { AuthPromptModal } from '@/components/auth/auth-prompt-modal';
 
+export const dynamic = 'force-dynamic';
+
 export default function ShopGroupLayout({ children }: { children: React.ReactNode }) {
   return (
     <CustomerAuthProvider>
