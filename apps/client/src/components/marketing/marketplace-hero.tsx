@@ -16,12 +16,11 @@ export function MarketplaceHero() {
             Corporate marketplace
           </p>
           <h1 className="font-display text-4xl leading-[1.08] font-semibold tracking-tight sm:text-6xl">
-            Future technology.{' '}
-            <span className="text-gradient-brand">Today.</span>
+            Everything Your Business Needs in <span className="text-gradient-brand">One Place</span>
           </h1>
-          <p className="mt-5 max-w-md text-base leading-relaxed text-white/65">
-            Smart office gear, IT, pantry, and facility supplies — bulk pricing, Net-30 credit,
-            and live tracking for procurement teams.
+          <p className="mt-5 max-w-md text-base leading-relaxed font-medium text-white/80">
+            Shop office supplies, furniture, groceries, and IT equipment while managing procurement,
+            invoices, deliveries, and credit purchases effortlessly.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Button asChild size="lg">
@@ -34,8 +33,8 @@ export function MarketplaceHero() {
         </div>
 
         <div className="relative mx-auto aspect-square w-full max-w-[480px]">
-          <div className="absolute inset-[8%] rounded-full bg-primary/35 blur-3xl" />
-          <div className="glow-purple absolute inset-[16%] rounded-full border border-primary/40" />
+          <div className="bg-primary/35 absolute inset-[8%] rounded-full blur-3xl" />
+          <div className="glow-purple border-primary/40 absolute inset-[16%] rounded-full border" />
           {featured[0] ? (
             <div className="absolute top-[16%] left-1/2 z-10 h-[48%] w-[48%] -translate-x-1/2 overflow-hidden rounded-3xl border border-white/15 shadow-2xl">
               <Image
