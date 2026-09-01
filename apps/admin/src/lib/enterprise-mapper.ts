@@ -59,6 +59,14 @@ import type {
   Quotation,
   VendorPurchase,
   AppNotification,
+  ChatThread,
+  ChatMessage,
+  ChatAttachment,
+} from '@/types/admin';
+import type {
+  Invoice,
+  LedgerEntry,
+  ReceivedPayment,
   DeliveryJob,
   SupportTicket,
   Asset,
@@ -68,11 +76,8 @@ import type {
   DemandForecastItem,
   WarehouseStock,
   InventoryItem,
-  Testimonial,
-  ChatThread,
-  ChatMessage,
-} from '@/types/admin';
-import type { Invoice, LedgerEntry, ReceivedPayment } from '@/types/enterprise';
+} from '@/types/enterprise';
+import type { Testimonial } from '@/types/catalog';
 import type { User } from '@/types/auth';
 import type { CreditTerms } from '@/constants/credit-terms';
 
@@ -304,7 +309,10 @@ export const DELIVERY_STATUS_TO_STRING: Record<PrismaDeliveryStatus, DeliveryJob
   FAILED: 'failed',
 };
 
-export const DELIVERED_BY_TO_STRING: Record<PrismaDeliveredByRole, DeliveryJob['deliveredBy']> = {
+export const DELIVERED_BY_TO_STRING: Record<
+  PrismaDeliveredByRole,
+  NonNullable<DeliveryJob['deliveredBy']>
+> = {
   ADMIN: 'admin',
   CUSTOMER: 'customer',
 };
@@ -492,7 +500,9 @@ export const INVENTORY_STATUS_TO_STRING: Record<PrismaInventoryStatus, Inventory
   OVERSTOCK: 'overstock',
 };
 
-export function serializeInventoryItem(item: PrismaInventoryItem): InventoryItem {
+export function serializeInventoryItem(
+  item: PrismaInventoryItem & { warehouse?: Pick<PrismaWarehouseStock, 'warehouseName'> | null },
+): InventoryItem {
   return {
     id: item.id,
     sku: item.sku,
@@ -568,11 +578,13 @@ export function serializeTestimonial(testimonial: PrismaTestimonial): Testimonia
   };
 }
 
-export function serializeChatThread(thread: PrismaChatThread): ChatThread {
+export function serializeChatThread(
+  thread: PrismaChatThread & { client?: Pick<PrismaClient, 'companyName'> | null },
+): ChatThread {
   return {
     id: thread.id,
     clientId: thread.clientId,
-    clientName: thread.client.companyName,
+    clientName: thread.client?.companyName ?? '',
     subject: thread.subject,
     relatedOrderNumber: thread.relatedOrderNumber ?? undefined,
     relatedInvoiceNumber: thread.relatedInvoiceNumber ?? undefined,
@@ -590,7 +602,7 @@ export const CHAT_SENDER_ROLE_TO_STRING: Record<PrismaChatSenderRole, ChatMessag
 
 export const CHAT_ATTACHMENT_TYPE_TO_STRING: Record<
   PrismaChatAttachmentType,
-  ChatMessage['attachments'][number]['type']
+  ChatAttachment['type']
 > = {
   IMAGE: 'image',
   PDF: 'pdf',

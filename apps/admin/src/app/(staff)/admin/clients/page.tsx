@@ -12,7 +12,7 @@ import { Modal } from '@/components/ui/modal';
 import { Loader } from '@/components/ui/loader';
 import { EmptyState } from '@/components/ui/empty-state';
 import { CreditTermsSelect } from '@/components/shared/credit-terms-select';
-import { creditTermsLabel } from '@/constants/credit-terms';
+import { creditTermsLabel, type CreditTerms } from '@/constants/credit-terms';
 import { useClients, useCreateClient, useUpdateClient } from '@/services/queries';
 import { formatCurrency } from '@/lib/utils';
 
@@ -23,7 +23,7 @@ const emptyForm = {
   phone: '',
   address: '',
   creditLimit: 5000,
-  creditTerms: 'net-30' as const,
+  creditTerms: 'net-30' as CreditTerms,
 };
 
 export default function AdminClientsPage() {

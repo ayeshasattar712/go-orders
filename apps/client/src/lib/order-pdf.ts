@@ -138,7 +138,7 @@ export async function buildOrderPdf(input: OrderPdfInput): Promise<Uint8Array> {
 
   const metaX = 360;
   let metaY = height - 140;
-  const meta = [
+  const meta: [string, string][] = [
     ['Order date', dateLabel(input.date)],
     ['Status', statusLabel(input.status)],
     ['Vendor', input.vendorName],

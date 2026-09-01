@@ -100,7 +100,7 @@ export async function buildChallanPdf(input: ChallanPdfInput): Promise<Uint8Arra
 
   const metaX = 360;
   let metaY = height - 140;
-  const meta = [
+  const meta: [string, string][] = [
     ['Order', input.orderNumber],
     ['Issued', dateLabel(input.issuedAt)],
     ['Status', statusLabel(input.status)],

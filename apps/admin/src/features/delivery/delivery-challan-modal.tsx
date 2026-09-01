@@ -18,11 +18,12 @@ export function DeliveryChallanModal({
 }) {
   const [saving, setSaving] = useState(false);
   if (!job) return null;
+  const selectedJob = job;
 
   async function handleSavePdf() {
     setSaving(true);
     try {
-      await saveChallanPdf(job.orderNumber);
+      await saveChallanPdf(selectedJob.orderNumber);
     } finally {
       setSaving(false);
     }

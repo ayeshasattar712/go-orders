@@ -12,6 +12,7 @@ export async function recordDeliveryAttempt(params: {
   if (!job) return null;
   if (job.status === 'DELIVERED' || job.status === 'FAILED') return job;
 
+  const orderNumber = job.orderNumber;
   const nextNumber = job.attempts.length + 1;
   if (nextNumber > job.maxAttempts) return job;
 
@@ -35,7 +36,7 @@ export async function recordDeliveryAttempt(params: {
   });
 
   const order = await prisma.order.findUnique({
-    where: { orderNumber: job.orderNumber },
+    where: { orderNumber },
     include: { user: { include: { client: true } } },
   });
   const clientId = order?.user?.client?.id;
@@ -43,7 +44,7 @@ export async function recordDeliveryAttempt(params: {
   async function notify(type: 'DELIVERY', title: string, message: string) {
     if (!clientId) return;
     await prisma.appNotification.create({
-      data: { clientId, type, title, message, href: `/orders/${job.orderNumber}` },
+      data: { clientId, type, title, message, href: `/orders/${orderNumber}` },
     });
   }
 

@@ -3,6 +3,7 @@ import { isResponse, requirePermission, requireStaffSession } from '@/lib/api-gu
 import { prisma } from '@/lib/prisma';
 import { serializeTender, serializeBid, serializeRfqRequest } from '@/lib/enterprise-mapper';
 import { successResponse } from '@/lib/api-response';
+import type { Bid } from '@/types/enterprise';
 
 export async function GET(request: Request) {
   const session = await requireStaffSession(request);

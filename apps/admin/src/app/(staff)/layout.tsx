@@ -6,6 +6,8 @@ import { hasPermission } from '@/lib/permissions';
 import { PERMISSIONS } from '@/constants/roles';
 import { ADMIN_DEFAULT_LOGOUT_REDIRECT } from '@/constants/routes';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Single shared layout for the entire staff/admin surface (admin/* plus the
  * former (workspace) modules — procurement, inventory, delivery, accounting,

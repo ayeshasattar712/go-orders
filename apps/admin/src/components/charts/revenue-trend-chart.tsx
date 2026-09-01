@@ -11,7 +11,7 @@ import {
 } from 'recharts';
 
 interface RevenueTrendChartProps {
-  data: Array<Record<string, string | number>>;
+  data: object[];
   xKey: string;
   series: { key: string; color: string; label: string }[];
   height?: number;

@@ -36,7 +36,9 @@ export default function AdminClientDetailPage() {
   const [editedLimit, setEditedLimit] = useState<{ clientId: string; value: number } | null>(null);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const newLimit =
-    editedLimit?.clientId === client?.id ? editedLimit.value : (client?.creditLimit ?? 0);
+    editedLimit && editedLimit.clientId === client?.id
+      ? editedLimit.value
+      : (client?.creditLimit ?? 0);
 
   async function handleDownloadPdf(invoiceId: string) {
     setDownloadingId(invoiceId);

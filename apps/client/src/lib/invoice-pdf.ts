@@ -97,7 +97,7 @@ export async function buildInvoicePdf(input: InvoicePdfInput): Promise<Uint8Arra
 
   const metaX = 360;
   let metaY = height - 140;
-  const meta = [
+  const meta: [string, string][] = [
     ['Issue date', dateLabel(input.issueDate)],
     ['Due date', dateLabel(input.dueDate)],
     ['Order', input.orderNumber || '—'],
@@ -145,7 +145,7 @@ export async function buildInvoicePdf(input: InvoicePdfInput): Promise<Uint8Arra
   });
 
   const balance = Math.max(0, input.amount - input.amountPaid);
-  const totals = [
+  const totals: [string, string][] = [
     ['Subtotal', money(input.amount)],
     ['Amount paid', money(input.amountPaid)],
     ['Balance due', money(balance)],
