@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginInput } from '@/schemas/auth.schema';
@@ -12,9 +12,15 @@ import { FormField } from '@/components/forms/form-field';
 import { Button } from '@/components/ui/button';
 import { CUSTOMER_DEFAULT_LOGIN_REDIRECT } from '@/constants/routes';
 
-export function LoginForm() {
+function safeNextPath(nextPath: string | undefined) {
+  if (!nextPath || !nextPath.startsWith('/') || nextPath.startsWith('//')) {
+    return CUSTOMER_DEFAULT_LOGIN_REDIRECT;
+  }
+  return nextPath;
+}
+
+export function LoginForm({ nextPath }: { nextPath?: string }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const setUser = useCustomerAuthStore((state) => state.setUser);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -36,8 +42,7 @@ export function LoginForm() {
     try {
       const result = await customerAuthService.login(values);
       setUser(result.user);
-      const next = searchParams.get('next') || CUSTOMER_DEFAULT_LOGIN_REDIRECT;
-      router.replace(next);
+      router.replace(safeNextPath(nextPath));
       router.refresh();
     } catch (error) {
       setFormError(error instanceof Error ? error.message : 'Unable to sign in');

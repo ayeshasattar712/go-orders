@@ -1,16 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { COOKIE_NAMES } from '@/constants/cookies';
 
-function generateNonce(): string {
-  const bytes = new Uint8Array(16);
-  crypto.getRandomValues(bytes);
-  return btoa(String.fromCharCode(...bytes));
-}
-
-function buildCsp(nonce: string, isDev: boolean): string {
-  const scriptSrc = isDev
-    ? `'self' 'nonce-${nonce}' 'unsafe-eval'`
-    : `'self' 'nonce-${nonce}' 'strict-dynamic'`;
+function buildCsp(isDev: boolean): string {
+  // Do not put a per-request nonce + 'strict-dynamic' on prerendered pages.
+  // 'strict-dynamic' ignores 'self', and a nonce that is not on Next.js
+  // bootstrap scripts blocks hydration — login stays on <Suspense> "Loading...".
+  const scriptSrc = isDev ? `'self' 'unsafe-inline' 'unsafe-eval'` : `'self' 'unsafe-inline'`;
 
   return [
     "default-src 'self'",
@@ -47,21 +42,19 @@ function isAllowedOriginHeader(request: NextRequest, origin: string): boolean {
 }
 
 /**
- * Applies security headers, CSP nonce, CSRF cookie, and origin checks.
+ * Applies security headers, CSRF cookie, and origin checks.
  */
 export function applySecurityMiddleware(
   request: NextRequest,
   response: NextResponse,
 ): NextResponse {
-  const nonce = generateNonce();
   const isDev = process.env.NODE_ENV !== 'production';
 
-  response.headers.set('Content-Security-Policy', buildCsp(nonce, isDev));
+  response.headers.set('Content-Security-Policy', buildCsp(isDev));
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-  response.headers.set('X-Nonce', nonce);
 
   const csrf = request.cookies.get(COOKIE_NAMES.CSRF_TOKEN)?.value;
   if (!csrf) {

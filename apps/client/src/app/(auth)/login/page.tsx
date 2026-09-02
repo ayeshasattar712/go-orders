@@ -1,22 +1,24 @@
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
 import { AuthLayout } from '@/components/layouts/auth-layout';
 import { LoginForm } from '@/features/auth/components/login-form';
-import { Loader } from '@/components/ui/loader';
 
 export const metadata: Metadata = {
   title: 'Sign in',
 };
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { next } = await searchParams;
+
   return (
     <AuthLayout
       title="Customer sign in"
       description="Sign in to shop, track orders, and manage your account."
     >
-      <Suspense fallback={<Loader />}>
-        <LoginForm />
-      </Suspense>
+      <LoginForm nextPath={next} />
     </AuthLayout>
   );
 }
