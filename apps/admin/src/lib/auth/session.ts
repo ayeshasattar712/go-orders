@@ -52,7 +52,8 @@ export function sessionCookieOptions(maxAge = COOKIE_MAX_AGE.SESSION) {
     sameSite: 'lax' as const,
     path: '/',
     maxAge,
-    domain: env.COOKIE_DOMAIN === 'localhost' ? undefined : env.COOKIE_DOMAIN,
+    domain:
+      !env.COOKIE_DOMAIN || env.COOKIE_DOMAIN === 'localhost' ? undefined : env.COOKIE_DOMAIN,
   };
 }
 

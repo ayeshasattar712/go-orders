@@ -36,7 +36,6 @@ export function RegisterForm() {
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
     try {
-      debugger
       const result = await customerAuthService.register(values);
       setUser(result.user);
       router.replace(CUSTOMER_DEFAULT_LOGIN_REDIRECT);

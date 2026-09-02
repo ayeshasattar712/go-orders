@@ -6,9 +6,16 @@ import axios, {
 } from 'axios';
 import { clientEnv } from '@/lib/env';
 
+function resolveApiBaseUrl(): string {
+  // Browser must call the current origin. A localhost NEXT_PUBLIC_API_URL
+  // inlined at build time makes login/signup fail after deploy while the UI still loads.
+  if (typeof window !== 'undefined') return '/api';
+  return clientEnv.NEXT_PUBLIC_API_URL;
+}
+
 function createApiClient(): AxiosInstance {
   const instance = axios.create({
-    baseURL: clientEnv.NEXT_PUBLIC_API_URL,
+    baseURL: resolveApiBaseUrl(),
     timeout: 30_000,
     withCredentials: true,
     headers: {

@@ -27,11 +27,24 @@ function buildCsp(nonce: string, isDev: boolean): string {
   ].join('; ');
 }
 
-function getAllowedOrigins(): string[] {
-  return (process.env.ALLOWED_ORIGINS ?? 'http://localhost:3000')
+function isAllowedOriginHeader(request: NextRequest, origin: string): boolean {
+  // Same-origin POSTs (login/signup on Vercel) must always pass. ALLOWED_ORIGINS
+  // defaults to localhost, which would 403 every mutating request in production.
+  if (origin === request.nextUrl.origin) return true;
+
+  const configured = (process.env.ALLOWED_ORIGINS ?? 'http://localhost:3000')
     .split(',')
     .map((o) => o.trim())
     .filter(Boolean);
+  if (configured.includes(origin)) return true;
+
+  const vercelHost = process.env.VERCEL_URL;
+  if (vercelHost && origin === `https://${vercelHost}`) return true;
+
+  const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  if (productionHost && origin === `https://${productionHost}`) return true;
+
+  return false;
 }
 
 /**
@@ -68,7 +81,7 @@ export function applySecurityMiddleware(
   const origin = request.headers.get('origin');
   const method = request.method.toUpperCase();
   if (origin && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
-    if (!getAllowedOrigins().includes(origin)) {
+    if (!isAllowedOriginHeader(request, origin)) {
       return NextResponse.json(
         { success: false, message: 'Origin not allowed', code: 'ORIGIN_FORBIDDEN' },
         { status: 403 },
