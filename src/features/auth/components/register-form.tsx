@@ -84,7 +84,7 @@ export function RegisterForm() {
       {formError ? <p className="text-destructive text-sm">{formError}</p> : null}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? 'Creating account...' : 'Create account????'}
+        {isSubmitting ? 'Creating account...' : 'Create account'}
       </Button>
 
       <p className="text-muted-foreground text-center text-sm">
