@@ -36,6 +36,7 @@ export function RegisterForm() {
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
     try {
+      debugger
       const result = await customerAuthService.register(values);
       setUser(result.user);
       router.replace(CUSTOMER_DEFAULT_LOGIN_REDIRECT);
@@ -84,7 +85,7 @@ export function RegisterForm() {
       {formError ? <p className="text-destructive text-sm">{formError}</p> : null}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? 'Creating account...' : 'Create account'}
+        {isSubmitting ? 'Creating account...' : 'Create account????'}
       </Button>
 
       <p className="text-muted-foreground text-center text-sm">
