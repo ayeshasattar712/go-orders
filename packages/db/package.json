@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "tsx": "^4.19.2",
-    "bcrypt": "^5.1.1",
-    "@types/bcrypt": "^5.0.2"
+    "bcryptjs": "^2.4.3",
+    "@types/bcryptjs": "^2.4.6"
   }
 }

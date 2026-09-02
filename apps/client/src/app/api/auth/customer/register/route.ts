@@ -8,9 +8,13 @@ import { errorResponse, internalErrorResponse, successResponse } from '@/lib/api
 import { getClientIp, rateLimit } from '@/lib/rate-limit';
 import { sanitizeObjectStrings } from '@/lib/api-guard';
 import { logger } from '@/lib/logger';
+import { getServerEnv } from '@/lib/env';
+
+export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
   try {
+    getServerEnv();
     const ip = getClientIp(request);
     const limited = rateLimit(`register:customer:${ip}`, 10, 60_000);
     if (!limited.success) {

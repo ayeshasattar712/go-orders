@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { ROLE_PERMISSIONS, type Permission, type Role } from '@/constants/roles';
 import type { User as PrismaUser, UserType } from '@prisma/client';

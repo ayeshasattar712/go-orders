@@ -42,7 +42,21 @@ export function errorResponse(
 /**
  * Never leak stack traces or internal details to clients.
  */
+function isInfraError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return /DATABASE_URL|NEXTAUTH_SECRET|Can't reach database|P1001|P1017|P1000|Environment variable not found|Invalid server environment/i.test(
+    message,
+  );
+}
+
 export function internalErrorResponse(error: unknown) {
+  if (isInfraError(error)) {
+    return errorResponse(
+      'Database or auth secrets are not configured. Set DATABASE_URL and NEXTAUTH_SECRET_CUSTOMER in Vercel (hosted Postgres, not localhost).',
+      { status: 503, code: 'MISCONFIGURED' },
+    );
+  }
+
   if (process.env.NODE_ENV === 'development') {
     const message = error instanceof Error ? error.message : 'Internal server error';
     return errorResponse(message, { status: 500, code: 'INTERNAL_ERROR' });

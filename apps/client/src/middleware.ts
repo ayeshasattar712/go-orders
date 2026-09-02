@@ -38,9 +38,10 @@ export async function middleware(request: NextRequest) {
   if (authResult.response) return applySecurityMiddleware(request, authResult.response);
 
   const isCustomerAuthRoute = CUSTOMER_AUTH_ROUTES.some((route) => pathMatches(pathname, route));
-  const roleBlock = isCustomerAuthRoute
-    ? null
-    : applyRoleMiddleware(
+  const roleBlock =
+    isCustomerAuthRoute || pathname.startsWith('/api/')
+      ? null
+      : applyRoleMiddleware(
         request,
         authResult.session,
         CUSTOMER_ROUTE_PERMISSIONS,

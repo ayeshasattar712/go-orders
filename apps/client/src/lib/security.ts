@@ -1,5 +1,4 @@
 import { createHash, randomBytes, timingSafeEqual } from 'crypto';
-import DOMPurify from 'isomorphic-dompurify';
 
 /**
  * Application security utilities:
@@ -7,16 +6,20 @@ import DOMPurify from 'isomorphic-dompurify';
  * - CSRF token helpers
  * - Nonce / CSP helpers
  * - Safe comparison
+ *
+ * Avoid isomorphic-dompurify/jsdom here — loading it in a Vercel serverless
+ * function crashes auth routes with an empty 500.
  */
 
 export function sanitizeHtml(dirty: string): string {
-  return DOMPurify.sanitize(dirty, {
-    USE_PROFILES: { html: true },
-  });
+  return dirty
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
+    .replace(/\son\w+="[^"]*"/gi, '')
+    .replace(/javascript:/gi, '');
 }
 
 export function sanitizeText(input: string): string {
-  return DOMPurify.sanitize(input, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim();
+  return input.replace(/<\/?[^>]+>/g, '').trim();
 }
 
 export function generateNonce(bytes = 16): string {

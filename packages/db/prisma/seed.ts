@@ -10,7 +10,7 @@
  *
  * Run with: npm run db:seed
  */
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import {
   PrismaClient,
   UserType,

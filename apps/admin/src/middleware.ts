@@ -36,9 +36,10 @@ export async function middleware(request: NextRequest) {
   // skip the permission check entirely on auth routes so login never
   // redirects to itself.
   const isAdminAuthRoute = ADMIN_AUTH_ROUTES.some((route) => pathMatches(pathname, route));
-  const roleBlock = isAdminAuthRoute
-    ? null
-    : applyRoleMiddleware(
+  const roleBlock =
+    isAdminAuthRoute || pathname.startsWith('/api/')
+      ? null
+      : applyRoleMiddleware(
         request,
         authResult.session,
         ADMIN_ROUTE_PERMISSIONS,
