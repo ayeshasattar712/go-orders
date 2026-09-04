@@ -46,8 +46,8 @@ export function SiteFooter() {
   return (
     <footer className="bg-navy text-white">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-        <div className="grid gap-10 lg:grid-cols-6">
-          <div className="lg:col-span-2">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-6">
+          <div className="sm:col-span-2">
             <Link href="/home" className="flex items-center gap-2.5">
               <span className="bg-hero-gradient flex h-10 w-10 items-center justify-center rounded-2xl text-white">
                 <Boxes className="h-5 w-5" />

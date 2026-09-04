@@ -69,7 +69,7 @@ export default function CartPage() {
 
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <div className="rounded-2xl border p-5">
+          <div className="rounded-2xl border p-4 sm:p-5">
             <h2 className="mb-1 font-semibold">
               {activeItems.length} item{activeItems.length !== 1 ? 's' : ''} in cart
             </h2>
@@ -79,7 +79,7 @@ export default function CartPage() {
           </div>
 
           {savedItems.length > 0 ? (
-            <div className="mt-6 rounded-2xl border p-5">
+            <div className="mt-6 rounded-2xl border p-4 sm:p-5">
               <h2 className="mb-1 font-semibold">Saved for later ({savedItems.length})</h2>
               {savedItems.map((item) => (
                 <CartItemRow key={item.productId} item={item} />
@@ -89,14 +89,14 @@ export default function CartPage() {
         </div>
 
         <div className="space-y-5">
-          <div className="rounded-2xl border p-5">
+          <div className="rounded-2xl border p-4 sm:p-5">
             <h2 className="mb-4 font-semibold">Order summary</h2>
 
             <div className="space-y-1.5">
               <label htmlFor="coupon" className="text-muted-foreground text-xs font-medium">
                 Coupon code
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row">
                 <Input
                   id="coupon"
                   placeholder="Enter code (try GOORDER10)"

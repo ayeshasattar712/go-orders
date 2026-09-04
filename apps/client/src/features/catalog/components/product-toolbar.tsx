@@ -41,9 +41,9 @@ export function ProductToolbar({
       <p className="text-muted-foreground text-sm">
         <span className="text-foreground font-medium">{resultCount}</span> products found
       </p>
-      <div className="flex items-center gap-2">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
         <Select value={sort} onValueChange={(value) => onSortChange(value as SortOption)}>
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="min-w-0 flex-1 sm:w-48 sm:flex-none">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>

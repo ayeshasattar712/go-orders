@@ -52,6 +52,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [query, setQuery] = useState('');
   const [categoryOpen, setCategoryOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(categories[0]?.slug ?? '');
   const activeCategoryData = categories.find((category) => category.slug === activeCategory);
   const activeCategoryProducts = activeCategory ? getProductsByCategory(activeCategory, 4) : [];
@@ -65,23 +66,46 @@ export function SiteHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-white">
-      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6">
-        <Sheet>
+    <header className="sticky top-0 z-40 w-full border-b bg-white pt-[env(safe-area-inset-top)]">
+      <div className="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2.5 sm:gap-4 sm:px-4 sm:py-3 lg:px-6">
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="lg:hidden">
+            <Button
+              variant="outline"
+              className="h-10 gap-2 border-2 px-3 lg:hidden"
+              aria-label="Open menu"
+            >
               <Menu className="h-5 w-5" />
+              Menu
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-80">
+          <SheetContent side="left" className="flex w-[min(20rem,88vw)] flex-col overflow-y-auto">
             <SheetHeader>
               <SheetTitle>GoOrder</SheetTitle>
             </SheetHeader>
-            <nav className="mt-6 space-y-1">
+            <form
+              onSubmit={(event) => {
+                handleSearch(event);
+                setMobileOpen(false);
+              }}
+              className="mt-4"
+            >
+              <div className="relative">
+                <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                <Input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Search products..."
+                  className="bg-muted/70 h-10 rounded-full pr-3 pl-9 shadow-none"
+                />
+              </div>
+            </form>
+            <nav className="mt-4 space-y-1">
               {categories.map((category) => (
                 <Link
                   key={category.id}
                   href={`/categories/${category.slug}`}
+                  onClick={() => setMobileOpen(false)}
                   className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm"
                 >
                   <CategoryIcon name={category.icon} className="text-primary h-4 w-4" />
@@ -93,20 +117,28 @@ export function SiteHeader() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  onClick={() => setMobileOpen(false)}
                   className="hover:bg-muted block rounded-lg px-3 py-2.5 text-sm"
                 >
                   {link.label}
                 </Link>
               ))}
+              <Link
+                href="/favorites"
+                onClick={() => setMobileOpen(false)}
+                className="hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm sm:hidden"
+              >
+                <Heart className="h-4 w-4" /> Wishlist
+              </Link>
             </nav>
           </SheetContent>
         </Sheet>
 
         <Link href="/home" className="flex shrink-0 items-center gap-2.5">
-          <span className="bg-hero-gradient flex h-10 w-10 items-center justify-center rounded-2xl text-white shadow-md shadow-primary/30">
+          <span className="bg-hero-gradient shadow-primary/30 flex h-10 w-10 items-center justify-center rounded-2xl text-white shadow-md">
             <Boxes className="h-5 w-5" />
           </span>
-          <span className="font-display text-xl font-semibold tracking-tight">
+          <span className="font-display hidden text-xl font-semibold tracking-tight min-[380px]:inline">
             {clientEnv.NEXT_PUBLIC_APP_NAME}
           </span>
         </Link>
@@ -209,9 +241,7 @@ export function SiteHeader() {
                 href={link.href}
                 className={cn(
                   'rounded-full px-3 py-2 text-sm font-medium',
-                  pathname === link.href
-                    ? 'text-primary'
-                    : 'text-foreground/70 hover:text-primary',
+                  pathname === link.href ? 'text-primary' : 'text-foreground/70 hover:text-primary',
                 )}
               >
                 {link.label}
@@ -227,7 +257,7 @@ export function SiteHeader() {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search..."
-              className="h-10 rounded-full bg-muted/70 pr-3 pl-9 shadow-none"
+              className="bg-muted/70 h-10 rounded-full pr-3 pl-9 shadow-none"
             />
           </div>
         </form>
@@ -300,14 +330,26 @@ export function SiteHeader() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button asChild variant="default" size="sm" className="ml-1">
+            <Button asChild variant="default" size="sm" className="ml-1 px-2.5 sm:px-3">
               <Link href={`/login?next=${encodeURIComponent(pathname)}`}>
-                <User className="h-4 w-4" /> Login
+                <User className="h-4 w-4" />
+                <span className="hidden min-[360px]:inline">Login</span>
               </Link>
             </Button>
           )}
         </div>
       </div>
+      <form onSubmit={handleSearch} className="border-t px-3 py-2 xl:hidden">
+        <div className="relative mx-auto max-w-7xl">
+          <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+          <Input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search products..."
+            className="bg-muted/70 h-10 rounded-full pr-3 pl-9 shadow-none"
+          />
+        </div>
+      </form>
     </header>
   );
 }

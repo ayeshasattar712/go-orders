@@ -55,7 +55,7 @@ export default function AdminOrdersPage() {
           value={statusFilter}
           onValueChange={(value) => setStatusFilter(value as OrderStatus | 'all')}
         >
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-full sm:w-48">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
@@ -84,7 +84,7 @@ export default function AdminOrdersPage() {
               {filtered.map((order) => (
                 <div
                   key={order.id}
-                  className="hover:bg-muted/50 flex items-center justify-between gap-4 border-b p-4 last:border-0"
+                  className="hover:bg-muted/50 flex flex-col gap-3 border-b p-4 last:border-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
                 >
                   <Link href={`/admin/orders/${order.orderNumber}`} className="min-w-0 flex-1">
                     <p className="font-medium">{order.orderNumber}</p>
@@ -93,7 +93,7 @@ export default function AdminOrdersPage() {
                       {order.vendorName} · {formatDate(order.date)} · {order.itemCount} items
                     </p>
                   </Link>
-                  <div className="flex shrink-0 items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:gap-3">
                     <span className="font-semibold">{formatCurrency(order.total)}</span>
                     <OrderStatusBadge status={order.status} />
                     <DownloadOrderPdfButton orderNumber={order.orderNumber} />

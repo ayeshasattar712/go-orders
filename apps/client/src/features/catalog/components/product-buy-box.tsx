@@ -39,7 +39,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
   const unitPrice = activeTier?.price ?? product.price;
 
   return (
-    <div className="rounded-2xl border p-6">
+    <div className="rounded-2xl border p-4 sm:p-6">
       <div className="flex items-center gap-2">
         <Badge variant={stock.variant}>{stock.label}</Badge>
         {product.stock > 0 ? (
@@ -67,7 +67,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
         Estimated delivery in {product.deliveryEstimateDays} business days
       </div>
 
-      <div className="mt-5 flex items-center gap-3">
+      <div className="mt-5 flex flex-wrap items-center gap-3">
         <div className="flex items-center rounded-lg border">
           <Button
             type="button"
@@ -121,7 +121,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
         </Button>
       </div>
 
-      <div className="mt-3 grid grid-cols-2 gap-3">
+      <div className="mt-3 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2">
         <Button
           type="button"
           size="lg"

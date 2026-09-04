@@ -32,12 +32,14 @@ export function KpiCard({
   const isPositive = (delta ?? 0) >= 0;
 
   return (
-    <Card className={cn('card-hover', className)}>
+    <Card className={cn('card-hover w-full min-w-0', className)}>
       <CardContent className="pt-6">
-        <div className="flex items-start justify-between">
-          <div>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
             <p className="text-muted-foreground text-sm">{label}</p>
-            <p className="mt-1.5 text-2xl font-bold tracking-tight">{value}</p>
+            <p className="mt-1.5 text-xl font-bold tracking-tight break-words sm:text-2xl">
+              {value}
+            </p>
           </div>
           <span
             className={cn(

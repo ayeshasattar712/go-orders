@@ -20,7 +20,7 @@ export function AuthLayout({
           {clientEnv.NEXT_PUBLIC_APP_NAME}
         </Link>
       </div>
-      <div className="bg-card shadow-primary/10 w-full max-w-md rounded-2xl border p-8 shadow-lg">
+      <div className="bg-card shadow-primary/10 w-full max-w-md rounded-2xl border p-5 shadow-lg sm:p-8">
         <div className="mb-6 space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
           <p className="text-muted-foreground text-sm">{description}</p>

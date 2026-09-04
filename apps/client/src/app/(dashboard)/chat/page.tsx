@@ -76,7 +76,7 @@ export default function CustomerChatPage() {
       </div>
 
       <Card className="overflow-hidden p-0">
-        <div className="grid md:grid-cols-[320px_1fr]" style={{ minHeight: '32rem' }}>
+        <div className="grid min-h-[24rem] md:min-h-[32rem] md:grid-cols-[320px_1fr]">
           <div className={`border-r ${showConversationOnMobile ? 'hidden md:block' : ''}`}>
             <div className="flex items-center justify-between border-b p-3">
               <p className="text-sm font-semibold">Conversations</p>

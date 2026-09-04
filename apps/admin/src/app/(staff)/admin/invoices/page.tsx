@@ -62,73 +62,131 @@ function InvoiceTable({
   if (items.length === 0)
     return <p className="text-muted-foreground py-8 text-center text-sm">No invoices here.</p>;
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[920px] text-sm">
-        <thead className="text-muted-foreground text-left text-xs tracking-wide uppercase">
-          <tr className="border-b">
-            <th className="py-2.5 pr-4 font-medium">Invoice</th>
-            <th className="py-2.5 pr-4 font-medium">Party</th>
-            <th className="py-2.5 pr-4 font-medium">Due</th>
-            <th className="py-2.5 pr-4 font-medium">Amount</th>
-            <th className="py-2.5 pr-4 font-medium">Status</th>
-            <th className="py-2.5 pr-4 font-medium" />
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((invoice) => (
-            <tr key={invoice.id} className="border-b last:border-0">
-              <td className="py-3 pr-4 font-medium">{invoice.invoiceNumber}</td>
-              <td className="text-muted-foreground py-3 pr-4">
-                {invoice.clientId ? (
-                  <Link
-                    href={`/admin/clients/${invoice.clientId}`}
-                    className="hover:text-primary hover:underline"
-                  >
-                    {invoice.vendorOrCustomer}
-                  </Link>
-                ) : (
-                  invoice.vendorOrCustomer
-                )}
-              </td>
-              <td className="text-muted-foreground py-3 pr-4">{formatDate(invoice.dueDate)}</td>
-              <td className="py-3 pr-4 font-medium">{formatCurrency(invoice.amount)}</td>
-              <td className="py-3 pr-4">
-                <InvoiceStatusBadge status={invoice.status} />
-              </td>
-              <td className="py-3 pr-4">
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    disabled={downloadingId === invoice.id}
-                    onClick={() => onDownload(invoice)}
-                  >
-                    <Download className="h-3.5 w-3.5" />
-                    {downloadingId === invoice.id ? 'Saving...' : 'PDF'}
-                  </Button>
-                  <Select
-                    value={invoice.status}
-                    disabled={pending}
-                    onValueChange={(value) => onStatusChange(invoice, value as InvoiceStatus)}
-                  >
-                    <SelectTrigger className="h-8 w-36 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="sent">Sent</SelectItem>
-                      <SelectItem value="partial">Partial paid</SelectItem>
-                      <SelectItem value="paid">Paid (bank / online)</SelectItem>
-                      <SelectItem value="overdue">Overdue</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </td>
+    <>
+      <div className="space-y-3 sm:hidden">
+        {items.map((invoice) => (
+          <div key={invoice.id} className="space-y-3 rounded-xl border p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-medium">{invoice.invoiceNumber}</p>
+                <p className="text-muted-foreground truncate text-sm">
+                  {invoice.clientId ? (
+                    <Link
+                      href={`/admin/clients/${invoice.clientId}`}
+                      className="hover:text-primary hover:underline"
+                    >
+                      {invoice.vendorOrCustomer}
+                    </Link>
+                  ) : (
+                    invoice.vendorOrCustomer
+                  )}
+                </p>
+                <p className="text-muted-foreground mt-0.5 text-xs">
+                  Due {formatDate(invoice.dueDate)}
+                </p>
+              </div>
+              <InvoiceStatusBadge status={invoice.status} />
+            </div>
+            <p className="font-semibold">{formatCurrency(invoice.amount)}</p>
+            <div className="flex flex-col gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full"
+                disabled={downloadingId === invoice.id}
+                onClick={() => onDownload(invoice)}
+              >
+                <Download className="h-3.5 w-3.5" />
+                {downloadingId === invoice.id ? 'Saving...' : 'PDF'}
+              </Button>
+              <Select
+                value={invoice.status}
+                disabled={pending}
+                onValueChange={(value) => onStatusChange(invoice, value as InvoiceStatus)}
+              >
+                <SelectTrigger className="h-9 w-full text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="sent">Sent</SelectItem>
+                  <SelectItem value="partial">Partial paid</SelectItem>
+                  <SelectItem value="paid">Paid (bank / online)</SelectItem>
+                  <SelectItem value="overdue">Overdue</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="hidden overflow-x-auto sm:block">
+        <table className="w-full min-w-[920px] text-sm">
+          <thead className="text-muted-foreground text-left text-xs tracking-wide uppercase">
+            <tr className="border-b">
+              <th className="py-2.5 pr-4 font-medium">Invoice</th>
+              <th className="py-2.5 pr-4 font-medium">Party</th>
+              <th className="py-2.5 pr-4 font-medium">Due</th>
+              <th className="py-2.5 pr-4 font-medium">Amount</th>
+              <th className="py-2.5 pr-4 font-medium">Status</th>
+              <th className="py-2.5 pr-4 font-medium" />
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {items.map((invoice) => (
+              <tr key={invoice.id} className="border-b last:border-0">
+                <td className="py-3 pr-4 font-medium">{invoice.invoiceNumber}</td>
+                <td className="text-muted-foreground py-3 pr-4">
+                  {invoice.clientId ? (
+                    <Link
+                      href={`/admin/clients/${invoice.clientId}`}
+                      className="hover:text-primary hover:underline"
+                    >
+                      {invoice.vendorOrCustomer}
+                    </Link>
+                  ) : (
+                    invoice.vendorOrCustomer
+                  )}
+                </td>
+                <td className="text-muted-foreground py-3 pr-4">{formatDate(invoice.dueDate)}</td>
+                <td className="py-3 pr-4 font-medium">{formatCurrency(invoice.amount)}</td>
+                <td className="py-3 pr-4">
+                  <InvoiceStatusBadge status={invoice.status} />
+                </td>
+                <td className="py-3 pr-4">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      disabled={downloadingId === invoice.id}
+                      onClick={() => onDownload(invoice)}
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      {downloadingId === invoice.id ? 'Saving...' : 'PDF'}
+                    </Button>
+                    <Select
+                      value={invoice.status}
+                      disabled={pending}
+                      onValueChange={(value) => onStatusChange(invoice, value as InvoiceStatus)}
+                    >
+                      <SelectTrigger className="h-8 w-36 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="draft">Draft</SelectItem>
+                        <SelectItem value="sent">Sent</SelectItem>
+                        <SelectItem value="partial">Partial paid</SelectItem>
+                        <SelectItem value="paid">Paid (bank / online)</SelectItem>
+                        <SelectItem value="overdue">Overdue</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }
 
@@ -204,13 +262,14 @@ export default function AdminInvoicesPage() {
             general ledger.
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" asChild>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+          <Button variant="outline" asChild className="w-full sm:w-auto">
             <Link href="/admin/invoices/alerts">
               <BellRing className="h-4 w-4" /> Alert settings
             </Link>
           </Button>
           <Button
+            className="w-full sm:w-auto"
             onClick={() => {
               setForm(emptyForm(defaultClient?.id ?? '', defaultClient?.companyName ?? ''));
               setFormError(null);

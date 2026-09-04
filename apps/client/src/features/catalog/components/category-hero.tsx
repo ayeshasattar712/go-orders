@@ -2,7 +2,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Star, Store, PackageCheck } from 'lucide-react';
 import { CategoryIcon } from '@/components/shared/category-icon';
-import { getCategoryChildren, IT_EQUIPMENT_IMAGE, OFFICE_SUPPLIES_IMAGE } from '@/lib/mock-data/categories';
+import {
+  getCategoryChildren,
+  IT_EQUIPMENT_IMAGE,
+  OFFICE_SUPPLIES_IMAGE,
+} from '@/lib/mock-data/categories';
 import { formatCompactNumber } from '@/lib/utils';
 import type { Category } from '@/types/catalog';
 
@@ -28,11 +32,11 @@ export function CategoryHero({ category, vendorCount, avgRating }: CategoryHeroP
         <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_420px]">
           <div className="min-w-0">
             <div className="flex items-start gap-4">
-              <span className="bg-hero-gradient flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-white shadow-md shadow-primary/25">
+              <span className="bg-hero-gradient shadow-primary/25 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-white shadow-md">
                 <CategoryIcon name={category.icon} className="h-7 w-7" />
               </span>
               <div className="min-w-0">
-                <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{category.name}</h1>
+                <h1 className="text-2xl font-bold tracking-tight sm:text-4xl">{category.name}</h1>
                 <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-relaxed sm:text-base">
                   {category.description}
                 </p>
@@ -52,22 +56,22 @@ export function CategoryHero({ category, vendorCount, avgRating }: CategoryHeroP
           </div>
         </div>
 
-        <div className="mt-8 grid grid-cols-3 gap-3 sm:max-w-xl">
-          <div className="bg-card rounded-xl border p-4 text-center">
+        <div className="mt-8 grid grid-cols-3 gap-2 sm:max-w-xl sm:gap-3">
+          <div className="bg-card rounded-xl border p-2.5 text-center sm:p-4">
             <p className="flex items-center justify-center gap-1.5 text-lg font-bold">
               <PackageCheck className="text-primary h-4 w-4" />
               {formatCompactNumber(category.productCount)}
             </p>
             <p className="text-muted-foreground mt-1 text-xs">Products</p>
           </div>
-          <div className="bg-card rounded-xl border p-4 text-center">
+          <div className="bg-card rounded-xl border p-2.5 text-center sm:p-4">
             <p className="flex items-center justify-center gap-1.5 text-lg font-bold">
               <Store className="text-primary h-4 w-4" />
               {vendorCount}
             </p>
             <p className="text-muted-foreground mt-1 text-xs">Vendors</p>
           </div>
-          <div className="bg-card rounded-xl border p-4 text-center">
+          <div className="bg-card rounded-xl border p-2.5 text-center sm:p-4">
             <p className="flex items-center justify-center gap-1.5 text-lg font-bold">
               <Star className="fill-warning text-warning h-4 w-4" />
               {avgRating.toFixed(1)}

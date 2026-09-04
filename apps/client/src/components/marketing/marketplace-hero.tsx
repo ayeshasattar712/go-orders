@@ -15,7 +15,7 @@ export function MarketplaceHero() {
           <p className="text-primary mb-4 text-xs font-semibold tracking-[0.28em] uppercase">
             Corporate marketplace
           </p>
-          <h1 className="font-display text-4xl leading-[1.08] font-semibold tracking-tight sm:text-6xl">
+          <h1 className="font-display text-3xl leading-[1.08] font-semibold tracking-tight sm:text-5xl lg:text-6xl">
             Everything Your Business Needs in <span className="text-gradient-brand">One Place</span>
           </h1>
           <p className="mt-5 max-w-md text-base leading-relaxed font-medium text-white/80">

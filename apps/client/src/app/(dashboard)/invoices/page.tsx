@@ -27,38 +27,61 @@ function InvoiceTable({
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[720px] text-sm">
-        <thead className="text-muted-foreground text-left text-xs tracking-wide uppercase">
-          <tr className="border-b">
-            <th className="py-2.5 pr-4 font-medium">Invoice</th>
-            <th className="py-2.5 pr-4 font-medium">Order</th>
-            <th className="py-2.5 pr-4 font-medium">Issued</th>
-            <th className="py-2.5 pr-4 font-medium">Amount</th>
-            <th className="py-2.5 pr-4 font-medium">Status</th>
-            <th className="py-2.5 pr-4 font-medium" />
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((invoice) => (
-            <tr key={invoice.id} className="border-b last:border-0">
-              <td className="py-3 pr-4 font-medium">{invoice.invoiceNumber}</td>
-              <td className="text-muted-foreground py-3 pr-4">{invoice.orderNumber ?? '—'}</td>
-              <td className="text-muted-foreground py-3 pr-4">{formatDate(invoice.issueDate)}</td>
-              <td className="py-3 pr-4 font-medium">{formatCurrency(invoice.amount)}</td>
-              <td className="py-3 pr-4">
-                <InvoiceStatusBadge status={invoice.status} />
-              </td>
-              <td className="py-3 pr-4">
-                <Button size="sm" variant="ghost" onClick={() => onDownload(invoice)}>
-                  <Download className="h-3.5 w-3.5" /> PDF
-                </Button>
-              </td>
+    <>
+      <div className="space-y-3 sm:hidden">
+        {items.map((invoice) => (
+          <div key={invoice.id} className="rounded-xl border p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-medium">{invoice.invoiceNumber}</p>
+                <p className="text-muted-foreground text-sm">
+                  {invoice.orderNumber ?? 'No order'} · {formatDate(invoice.issueDate)}
+                </p>
+              </div>
+              <InvoiceStatusBadge status={invoice.status} />
+            </div>
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <span className="font-semibold">{formatCurrency(invoice.amount)}</span>
+              <Button size="sm" variant="outline" onClick={() => onDownload(invoice)}>
+                <Download className="h-3.5 w-3.5" /> PDF
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="hidden overflow-x-auto sm:block">
+        <table className="w-full min-w-[720px] text-sm">
+          <thead className="text-muted-foreground text-left text-xs tracking-wide uppercase">
+            <tr className="border-b">
+              <th className="py-2.5 pr-4 font-medium">Invoice</th>
+              <th className="py-2.5 pr-4 font-medium">Order</th>
+              <th className="py-2.5 pr-4 font-medium">Issued</th>
+              <th className="py-2.5 pr-4 font-medium">Amount</th>
+              <th className="py-2.5 pr-4 font-medium">Status</th>
+              <th className="py-2.5 pr-4 font-medium" />
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {items.map((invoice) => (
+              <tr key={invoice.id} className="border-b last:border-0">
+                <td className="py-3 pr-4 font-medium">{invoice.invoiceNumber}</td>
+                <td className="text-muted-foreground py-3 pr-4">{invoice.orderNumber ?? '—'}</td>
+                <td className="text-muted-foreground py-3 pr-4">{formatDate(invoice.issueDate)}</td>
+                <td className="py-3 pr-4 font-medium">{formatCurrency(invoice.amount)}</td>
+                <td className="py-3 pr-4">
+                  <InvoiceStatusBadge status={invoice.status} />
+                </td>
+                <td className="py-3 pr-4">
+                  <Button size="sm" variant="ghost" onClick={() => onDownload(invoice)}>
+                    <Download className="h-3.5 w-3.5" /> PDF
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }
 

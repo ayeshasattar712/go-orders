@@ -193,10 +193,10 @@ export default function AdminProductsPage() {
       ) : null}
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between gap-3">
+        <CardHeader className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle>All products ({filteredProducts.length})</CardTitle>
           <Select value={filterCategory} onValueChange={setFilterCategory}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="Filter by category" />
             </SelectTrigger>
             <SelectContent>

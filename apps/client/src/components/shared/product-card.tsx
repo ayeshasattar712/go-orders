@@ -47,11 +47,14 @@ export function ProductCard({
   if (layout === 'list') {
     return (
       <div
-        className={cn('bg-card card-hover flex gap-4 rounded-xl border p-4 shadow-sm', className)}
+        className={cn(
+          'bg-card card-hover flex flex-col gap-4 rounded-xl border p-4 shadow-sm sm:flex-row',
+          className,
+        )}
       >
         <Link
           href={`/products/${product.slug}`}
-        className="bg-white relative h-32 w-32 shrink-0 overflow-hidden rounded-lg border"
+          className="relative h-40 w-full shrink-0 overflow-hidden rounded-lg border bg-white sm:h-32 sm:w-32"
         >
           <Image
             src={product.images[0] ?? ''}
@@ -173,7 +176,7 @@ export function ProductCard({
     >
       <Link
         href={`/products/${product.slug}`}
-        className="bg-white relative aspect-square overflow-hidden"
+        className="relative aspect-square overflow-hidden bg-white"
       >
         <Image
           src={product.images[0] ?? ''}
@@ -231,7 +234,12 @@ export function ProductCard({
             >
               <ShoppingCart className="h-4 w-4" />
             </Button>
-            <Button size="sm" variant="outline" className="h-9 min-w-0 flex-1 rounded-lg px-2" onClick={handleBuyNow}>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-9 min-w-0 flex-1 rounded-lg px-2"
+              onClick={handleBuyNow}
+            >
               Buy now
             </Button>
           </div>

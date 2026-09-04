@@ -46,20 +46,20 @@ export default function AdminDashboardPage() {
   const topProducts = getBestSellers(5);
 
   return (
-    <div className="space-y-6">
-      <div>
+    <div className="w-full max-w-full min-w-0 space-y-6">
+      <div className="min-w-0">
         <p className="text-primary mb-1 text-[11px] font-semibold tracking-[0.2em] uppercase">
           Overview
         </p>
-        <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+        <h2 className="font-display text-xl font-semibold tracking-tight sm:text-3xl">
           Admin dashboard
         </h2>
-        <p className="text-muted-foreground mt-1">
+        <p className="text-muted-foreground mt-1 text-sm">
           Revenue, orders, customers, vendors, credit, and inventory at a glance.
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid w-full min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
           label="Total revenue (7 mo)"
           value={formatCurrency(totalRevenue)}
@@ -149,14 +149,17 @@ export default function AdminDashboardPage() {
             <CardTitle>Revenue trend</CardTitle>
           </CardHeader>
           <CardContent>
-            <RevenueTrendChart
-              data={monthlyRevenue}
-              xKey="month"
-              series={[
-                { key: 'revenue', color: 'hsl(var(--chart-1))', label: 'Revenue' },
-                { key: 'profit', color: 'hsl(var(--chart-2))', label: 'Profit' },
-              ]}
-            />
+            <div className="h-[220px] w-full min-w-0 sm:h-[280px]">
+              <RevenueTrendChart
+                data={monthlyRevenue}
+                xKey="month"
+                series={[
+                  { key: 'revenue', color: 'hsl(var(--chart-1))', label: 'Revenue' },
+                  { key: 'profit', color: 'hsl(var(--chart-2))', label: 'Profit' },
+                ]}
+                height={220}
+              />
+            </div>
           </CardContent>
         </Card>
 

@@ -182,11 +182,24 @@ export function UsersTable() {
             <TabsTrigger value="clients">Client logins</TabsTrigger>
             <TabsTrigger value="staff">Staff</TabsTrigger>
           </TabsList>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => { setFormError(null); setClientOpen(true); }}>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            <Button
+              variant="outline"
+              className="w-full sm:w-auto"
+              onClick={() => {
+                setFormError(null);
+                setClientOpen(true);
+              }}
+            >
               <Plus className="h-4 w-4" /> New client login
             </Button>
-            <Button onClick={() => { setFormError(null); setStaffOpen(true); }}>
+            <Button
+              className="w-full sm:w-auto"
+              onClick={() => {
+                setFormError(null);
+                setStaffOpen(true);
+              }}
+            >
               <Plus className="h-4 w-4" /> Register staff
             </Button>
           </div>

@@ -41,7 +41,7 @@ export default async function OrdersPage() {
           {orders.map((order) => (
             <div
               key={order.id}
-              className="hover:bg-muted/50 flex items-center justify-between gap-4 border-b p-4 last:border-0"
+              className="hover:bg-muted/50 flex flex-col gap-3 border-b p-4 last:border-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
             >
               <Link href={`/orders/${order.orderNumber}`} className="min-w-0 flex-1">
                 <p className="font-medium">{order.orderNumber}</p>
@@ -52,7 +52,7 @@ export default async function OrdersPage() {
                   Tracking: <span className="font-mono">{order.trackingNumber}</span>
                 </p>
               </Link>
-              <div className="flex shrink-0 items-center gap-3">
+              <div className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:gap-3">
                 <span className="font-semibold">{formatCurrency(order.total)}</span>
                 <OrderStatusBadge status={order.status} />
                 <DownloadOrderPdfButton orderNumber={order.orderNumber} />

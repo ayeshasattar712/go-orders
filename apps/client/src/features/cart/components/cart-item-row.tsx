@@ -14,10 +14,10 @@ export function CartItemRow({ item }: { item: CartItem }) {
   const moveToCart = useCartStore((state) => state.moveToCart);
 
   return (
-    <div className="flex gap-4 border-b py-5 last:border-0">
+    <div className="flex flex-col gap-3 border-b py-5 last:border-0 sm:flex-row sm:gap-4">
       <Link
         href={`/products/${item.slug}`}
-        className="bg-muted relative h-24 w-24 shrink-0 overflow-hidden rounded-lg"
+        className="bg-muted relative h-20 w-20 shrink-0 overflow-hidden rounded-lg sm:h-24 sm:w-24"
       >
         <Image src={item.image} alt={item.name} fill className="object-cover" sizes="96px" />
       </Link>
@@ -35,7 +35,7 @@ export function CartItemRow({ item }: { item: CartItem }) {
           <p className="font-semibold">{formatCurrency(item.price * item.quantity)}</p>
         </div>
 
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           {item.savedForLater ? (
             <Button variant="ghost" size="sm" onClick={() => moveToCart(item.productId)}>
               <RotateCcw className="h-3.5 w-3.5" /> Move to cart

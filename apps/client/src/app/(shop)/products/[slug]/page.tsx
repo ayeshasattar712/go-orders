@@ -54,7 +54,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <nav className="text-muted-foreground mb-6 flex items-center gap-1.5 text-sm">
+      <nav className="text-muted-foreground mb-6 flex items-center gap-1.5 overflow-x-auto text-sm whitespace-nowrap">
         <Link href="/home" className="hover:text-foreground">
           Home
         </Link>

@@ -117,7 +117,7 @@ export default function CheckoutPage() {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
-        <div className="rounded-2xl border p-6">
+        <div className="rounded-2xl border p-4 sm:p-6">
           {stepIndex === 0 ? (
             <AddressStep
               selectedId={address.id}
@@ -162,7 +162,7 @@ export default function CheckoutPage() {
           ) : null}
         </div>
 
-        <div className="h-fit rounded-2xl border p-6">
+        <div className="h-fit rounded-2xl border p-4 sm:p-6">
           <h2 className="mb-4 font-semibold">Order summary</h2>
           <div className="space-y-3">
             {items.map((item) => (
