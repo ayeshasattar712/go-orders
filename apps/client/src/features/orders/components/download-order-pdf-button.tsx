@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Download } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useCallback } from 'react';
+import { PdfViewDownloadActions } from '@/components/shared/pdf-view-download-actions';
 import { ordersService } from '@/services/api';
 import { saveBlobFile } from '@/lib/save-blob';
 
@@ -15,24 +14,29 @@ export function DownloadOrderPdfButton({
   variant?: 'ghost' | 'outline';
   size?: 'sm' | 'default';
 }) {
-  const [pending, setPending] = useState(false);
+  const loadPreview = useCallback(async () => {
+    const file = await ordersService.downloadPdf(orderNumber, { inline: true });
+    return file.blob;
+  }, [orderNumber]);
 
-  async function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
-    event.preventDefault();
-    event.stopPropagation();
-    setPending(true);
-    try {
-      const file = await ordersService.downloadPdf(orderNumber);
-      saveBlobFile(file.blob, file.filename);
-    } finally {
-      setPending(false);
-    }
-  }
+  const onDownload = useCallback(async () => {
+    const file = await ordersService.downloadPdf(orderNumber);
+    const blob =
+      file.blob.type === 'application/pdf'
+        ? file.blob
+        : new Blob([file.blob], { type: 'application/pdf' });
+    saveBlobFile(blob, file.filename);
+  }, [orderNumber]);
 
   return (
-    <Button type="button" size={size} variant={variant} disabled={pending} onClick={handleClick}>
-      <Download className="h-3.5 w-3.5" />
-      {pending ? 'Saving...' : 'PDF'}
-    </Button>
+    <PdfViewDownloadActions
+      title="View order"
+      description={`Review order ${orderNumber} on screen. Use Download if you want to save a copy.`}
+      downloadLabel="Download"
+      variant={variant}
+      size={size}
+      loadPreview={loadPreview}
+      onDownload={onDownload}
+    />
   );
 }

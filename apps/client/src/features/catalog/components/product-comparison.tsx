@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Check, Minus as MinusIcon } from 'lucide-react';
-import { Rating } from '@/components/ui/rating';
 import { formatCurrency } from '@/lib/utils';
 import type { Product } from '@/types/catalog';
 
@@ -44,14 +43,6 @@ export function ProductComparison({ products }: { products: Product[] }) {
             {products.map((product) => (
               <td key={product.id} className="px-4 py-3 font-semibold">
                 {formatCurrency(product.price)}
-              </td>
-            ))}
-          </tr>
-          <tr className="border-b">
-            <td className="text-muted-foreground px-4 py-3">Rating</td>
-            {products.map((product) => (
-              <td key={product.id} className="px-4 py-3">
-                <Rating value={product.rating} count={product.reviewCount} size="sm" />
               </td>
             ))}
           </tr>

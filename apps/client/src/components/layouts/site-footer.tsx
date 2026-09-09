@@ -16,7 +16,6 @@ const footerColumns = [
   {
     title: 'For Business',
     links: [
-      { label: 'Become a vendor', href: '/vendors/apply' },
       { label: 'Enterprise procurement', href: '/procurement' },
       { label: 'Credit & Net-30 terms', href: '/credit' },
       { label: 'Bulk ordering', href: '/products' },
@@ -57,8 +56,8 @@ export function SiteFooter() {
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/65">
-              Everything your business needs in one place — procurement, vendor management,
-              inventory, and accounting, unified.
+              Everything your business needs in one place — procurement, inventory, and accounting,
+              unified.
             </p>
             <div className="mt-5 flex gap-3 text-white/55">
               <Link href="#" aria-label="Social profile" className="hover:text-white">
@@ -102,7 +101,7 @@ export function SiteFooter() {
           <p>
             © {new Date().getFullYear()} {clientEnv.NEXT_PUBLIC_APP_NAME}, Inc. All rights reserved.
           </p>
-          <p className="tracking-wide">Visa · Mastercard · JazzCash · Raast · Bank transfer</p>
+          <p className="tracking-wide">Visa · Mastercard · JazzCash · Raast · Bank transfer · Cheque</p>
         </div>
       </div>
     </footer>

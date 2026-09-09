@@ -18,6 +18,7 @@ const deliveryLabels: Record<DeliveryOption, string> = {
 const paymentLabels: Record<PaymentMethod, string> = {
   'bank-account': 'Bank account transfer',
   'online-transfer': 'Online transfer',
+  cheque: 'Pay via cheque',
 };
 
 interface ReviewStepProps {

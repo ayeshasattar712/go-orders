@@ -256,7 +256,12 @@ async function main() {
   for (const category of categories) {
     await prisma.category.upsert({
       where: { id: category.id },
-      update: {},
+      update: {
+        name: category.name,
+        productCount: category.productCount,
+        image: category.image,
+        description: category.description,
+      },
       create: {
         id: category.id,
         name: category.name,
@@ -300,11 +305,15 @@ async function main() {
     });
   }
 
+  const existingProductIds = new Set(
+    (await prisma.product.findMany({ select: { id: true } })).map((row) => row.id),
+  );
+
   for (const product of products) {
-    await prisma.product.upsert({
-      where: { id: product.id },
-      update: {},
-      create: {
+    if (existingProductIds.has(product.id)) continue;
+
+    await prisma.product.create({
+      data: {
         id: product.id,
         slug: product.slug,
         name: product.name,

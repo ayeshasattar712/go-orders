@@ -32,10 +32,11 @@ export const invoicesService = {
     return data.data.invoice;
   },
 
-  async downloadPdf(id: string) {
+  async downloadPdf(id: string, options?: { inline?: boolean }) {
     const response = await apiClient.get<Blob>(`/invoices/${id}/pdf`, {
       responseType: 'blob',
       headers: { Accept: 'application/pdf' },
+      params: options?.inline ? { inline: '1' } : undefined,
     });
     const blob = response.data;
     if (blob.type.includes('json')) {

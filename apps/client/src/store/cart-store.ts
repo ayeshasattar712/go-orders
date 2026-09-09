@@ -20,7 +20,10 @@ export interface CartItem {
 interface CartState {
   items: CartItem[];
   couponCode: string | null;
-  addItem: (product: Product, quantity?: number) => void;
+  /** Always adds exactly 1 unit. */
+  addItem: (product: Product) => void;
+  /** Adds an explicit quantity (product detail qty picker only). */
+  addItemQty: (product: Product, quantity: number) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   saveForLater: (productId: string) => void;
@@ -30,41 +33,49 @@ interface CartState {
   clearCart: () => void;
 }
 
+function normalizeQty(quantity: unknown): number {
+  if (typeof quantity !== 'number' || !Number.isFinite(quantity)) return 1;
+  return Math.max(1, Math.min(999, Math.floor(quantity)));
+}
+
+function upsertProduct(product: Product, qty: number, items: CartItem[]): CartItem[] {
+  const existing = items.find((item) => item.productId === product.id);
+  if (existing) {
+    return items.map((item) =>
+      item.productId === product.id
+        ? { ...item, quantity: item.quantity + qty, savedForLater: false }
+        : item,
+    );
+  }
+
+  return [
+    ...items,
+    {
+      productId: product.id,
+      slug: product.slug,
+      name: product.name,
+      image: product.images[0] ?? '',
+      price: product.price,
+      quantity: qty,
+      unit: product.unit,
+      vendorId: product.vendorId,
+      minOrderQty: 1,
+    },
+  ];
+}
+
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
       couponCode: null,
 
-      addItem: (product, quantity = product.minOrderQty || 1) => {
-        const existing = get().items.find((item) => item.productId === product.id);
-        if (existing) {
-          set({
-            items: get().items.map((item) =>
-              item.productId === product.id
-                ? { ...item, quantity: item.quantity + quantity, savedForLater: false }
-                : item,
-            ),
-          });
-          return;
-        }
+      addItem: (product) => {
+        set({ items: upsertProduct(product, 1, get().items) });
+      },
 
-        set({
-          items: [
-            ...get().items,
-            {
-              productId: product.id,
-              slug: product.slug,
-              name: product.name,
-              image: product.images[0] ?? '',
-              price: product.price,
-              quantity,
-              unit: product.unit,
-              vendorId: product.vendorId,
-              minOrderQty: product.minOrderQty,
-            },
-          ],
-        });
+      addItemQty: (product, quantity) => {
+        set({ items: upsertProduct(product, normalizeQty(quantity), get().items) });
       },
 
       removeItem: (productId) => {
@@ -75,7 +86,7 @@ export const useCartStore = create<CartState>()(
         set({
           items: get().items.map((item) =>
             item.productId === productId
-              ? { ...item, quantity: Math.max(item.minOrderQty, quantity) }
+              ? { ...item, quantity: normalizeQty(quantity) }
               : item,
           ),
         });
@@ -101,13 +112,14 @@ export const useCartStore = create<CartState>()(
       removeCoupon: () => set({ couponCode: null }),
       clearCart: () => set({ items: [], couponCode: null }),
     }),
-    { name: 'goorder-cart' },
+    { name: 'goorder-cart-v3' },
   ),
 );
 
 export function useCartSummary() {
-  const items = useCartStore((state) => state.items).filter((item) => !item.savedForLater);
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  return { items, subtotal, itemCount };
+  const items = useCartStore((state) => state.items);
+  const activeItems = items.filter((item) => !item.savedForLater);
+  const subtotal = activeItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const itemCount = activeItems.reduce((sum, item) => sum + item.quantity, 0);
+  return { items: activeItems, subtotal, itemCount };
 }

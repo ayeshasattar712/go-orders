@@ -30,19 +30,25 @@ interface CartState {
   clearCart: () => void;
 }
 
+function normalizeQty(quantity: unknown): number {
+  if (typeof quantity !== 'number' || !Number.isFinite(quantity)) return 1;
+  return Math.max(1, Math.min(999, Math.floor(quantity)));
+}
+
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
       couponCode: null,
 
-      addItem: (product, quantity = product.minOrderQty || 1) => {
+      addItem: (product, quantity) => {
+        const qty = quantity === undefined ? 1 : normalizeQty(quantity);
         const existing = get().items.find((item) => item.productId === product.id);
         if (existing) {
           set({
             items: get().items.map((item) =>
               item.productId === product.id
-                ? { ...item, quantity: item.quantity + quantity, savedForLater: false }
+                ? { ...item, quantity: item.quantity + qty, savedForLater: false }
                 : item,
             ),
           });
@@ -58,10 +64,10 @@ export const useCartStore = create<CartState>()(
               name: product.name,
               image: product.images[0] ?? '',
               price: product.price,
-              quantity,
+              quantity: qty,
               unit: product.unit,
               vendorId: product.vendorId,
-              minOrderQty: product.minOrderQty,
+              minOrderQty: 1,
             },
           ],
         });
@@ -75,7 +81,7 @@ export const useCartStore = create<CartState>()(
         set({
           items: get().items.map((item) =>
             item.productId === productId
-              ? { ...item, quantity: Math.max(item.minOrderQty, quantity) }
+              ? { ...item, quantity: normalizeQty(quantity) }
               : item,
           ),
         });
@@ -101,13 +107,14 @@ export const useCartStore = create<CartState>()(
       removeCoupon: () => set({ couponCode: null }),
       clearCart: () => set({ items: [], couponCode: null }),
     }),
-    { name: 'goorder-cart' },
+    { name: 'goorder-cart-v2' },
   ),
 );
 
 export function useCartSummary() {
-  const items = useCartStore((state) => state.items).filter((item) => !item.savedForLater);
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  return { items, subtotal, itemCount };
+  const items = useCartStore((state) => state.items);
+  const activeItems = items.filter((item) => !item.savedForLater);
+  const subtotal = activeItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const itemCount = activeItems.reduce((sum, item) => sum + item.quantity, 0);
+  return { items: activeItems, subtotal, itemCount };
 }

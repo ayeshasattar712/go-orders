@@ -38,7 +38,10 @@ function dateLabel(value: string) {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-export async function buildInvoicePdf(input: InvoicePdfInput): Promise<Uint8Array> {
+export async function buildInvoicePdf(
+  input: InvoicePdfInput,
+  options?: { flatten?: boolean },
+): Promise<Uint8Array> {
   const pdf = await PDFDocument.create();
   const page = pdf.addPage([612, 792]);
   const { width, height } = page.getSize();
@@ -213,6 +216,14 @@ export async function buildInvoicePdf(input: InvoicePdfInput): Promise<Uint8Arra
     color: MUTED,
   });
 
+  if (options?.flatten) {
+    try {
+      form.flatten();
+    } catch {
+      // Preview still works as a static PDF if flattening fails.
+    }
+  }
+
   return pdf.save();
 }
 
@@ -277,11 +288,15 @@ export function invoiceToPdfInput(
   };
 }
 
-export function pdfDownloadHeaders(filename: string) {
+export function pdfFileHeaders(filename: string, mode: 'inline' | 'attachment' = 'attachment') {
   const safe = filename.replace(/[^A-Za-z0-9._-]/g, '_');
   return {
     'Content-Type': 'application/pdf',
-    'Content-Disposition': `attachment; filename="${safe}"`,
+    'Content-Disposition': `${mode}; filename="${safe}"`,
     'Cache-Control': 'no-store',
   };
+}
+
+export function pdfDownloadHeaders(filename: string) {
+  return pdfFileHeaders(filename, 'attachment');
 }

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useWishlistStore } from '@/store/wishlist-store';
-import { products, vendors } from '@/lib/mock-data';
+import { products } from '@/lib/mock-data';
 import { formatCurrency } from '@/lib/utils';
 
 export function FavoritesPreview() {
@@ -13,7 +13,6 @@ export function FavoritesPreview() {
   const favoriteProducts = products
     .filter((product) => productIds.includes(product.id))
     .slice(0, 4);
-  const favoriteVendors = vendors.slice(0, 3);
 
   return (
     <Card>
@@ -50,23 +49,6 @@ export function FavoritesPreview() {
             ))}
           </div>
         )}
-
-        <div className="mt-4 border-t pt-4">
-          <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-            Favorite vendors
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {favoriteVendors.map((vendor) => (
-              <Link
-                key={vendor.id}
-                href={`/vendors/${vendor.slug}`}
-                className="hover:border-primary hover:text-primary rounded-full border px-3 py-1 text-xs"
-              >
-                {vendor.name}
-              </Link>
-            ))}
-          </div>
-        </div>
       </CardContent>
     </Card>
   );

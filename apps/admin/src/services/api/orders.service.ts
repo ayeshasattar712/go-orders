@@ -44,12 +44,13 @@ export const ordersService = {
     return data.data.order;
   },
 
-  async downloadPdf(orderNumber: string) {
+  async downloadPdf(orderNumber: string, options?: { inline?: boolean }) {
     const response = await apiClient.get<Blob>(
       `/orders/${encodeURIComponent(orderNumber)}/pdf`,
       {
         responseType: 'blob',
         headers: { Accept: 'application/pdf' },
+        params: options?.inline ? { inline: '1' } : undefined,
       },
     );
     const blob = response.data;
@@ -62,12 +63,13 @@ export const ordersService = {
     return { blob, filename: match?.[1] ?? `${orderNumber}.pdf` };
   },
 
-  async downloadChallanPdf(orderNumber: string) {
+  async downloadChallanPdf(orderNumber: string, options?: { inline?: boolean }) {
     const response = await apiClient.get<Blob>(
       `/orders/${encodeURIComponent(orderNumber)}/challan/pdf`,
       {
         responseType: 'blob',
         headers: { Accept: 'application/pdf' },
+        params: options?.inline ? { inline: '1' } : undefined,
       },
     );
     const blob = response.data;

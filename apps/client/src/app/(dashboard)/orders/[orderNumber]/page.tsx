@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ChevronLeft, Download, MessageCircle } from 'lucide-react';
+import { ChevronLeft, MessageCircle } from 'lucide-react';
 import { getCustomerSession } from '@/lib/auth/customer-auth';
 import { prisma } from '@/lib/prisma';
 import { serializeOrder, loadDeliveriesByOrderNumbers } from '@/lib/orders/order-mapper';
@@ -64,11 +64,6 @@ export default async function OrderDetailPage({
         <div className="flex gap-2">
           <DownloadOrderPdfButton orderNumber={order.orderNumber} variant="outline" />
           <DownloadChallanPdfButton orderNumber={order.orderNumber} />
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/invoices">
-              <Download className="h-4 w-4" /> Invoice
-            </Link>
-          </Button>
           <Button variant="outline" size="sm" asChild>
             <Link href="/chat">
               <MessageCircle className="h-4 w-4" /> Chat with GoOrder
@@ -139,11 +134,18 @@ export default async function OrderDetailPage({
               </CardHeader>
               <CardContent className="space-y-1 text-sm">
                 <p>
-                  {order.payment.method === 'bank-account' ? 'Bank transfer' : 'Online transfer'}
+                  {order.payment.method === 'bank-account'
+                    ? 'Bank transfer'
+                    : order.payment.method === 'cheque'
+                      ? 'Cheque'
+                      : 'Online transfer'}
                 </p>
                 <p className="text-muted-foreground">Ref: {order.payment.reference}</p>
                 {order.payment.transferReference ? (
-                  <p className="text-muted-foreground">Txn: {order.payment.transferReference}</p>
+                  <p className="text-muted-foreground">
+                    {order.payment.method === 'cheque' ? 'Cheque no: ' : 'Txn: '}
+                    {order.payment.transferReference}
+                  </p>
                 ) : null}
                 <p className="font-medium">{formatCurrency(order.payment.amount)} · confirmed</p>
                 <Button variant="outline" size="sm" className="mt-3 w-full" asChild>

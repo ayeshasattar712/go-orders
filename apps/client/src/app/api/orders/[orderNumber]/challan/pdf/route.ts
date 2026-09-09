@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { isResponse, requireCustomerSession } from '@/lib/api-guard';
 import { prisma } from '@/lib/prisma';
 import { errorResponse } from '@/lib/api-response';
-import { buildChallanPdf, challanToPdfInput, pdfDownloadHeaders } from '@/lib/challan-pdf';
+import { buildChallanPdf, challanToPdfInput, pdfFileHeaders } from '@/lib/challan-pdf';
 
 export async function GET(
   request: Request,
@@ -25,9 +25,10 @@ export async function GET(
     orderBy: { createdAt: 'desc' },
   });
 
-  const bytes = await buildChallanPdf(challanToPdfInput(order, job));
+  const inline = new URL(request.url).searchParams.get('inline') === '1';
+  const bytes = await buildChallanPdf(challanToPdfInput(order, job), { flatten: inline });
   return new NextResponse(Buffer.from(bytes), {
     status: 200,
-    headers: pdfDownloadHeaders(`${order.orderNumber}-challan.pdf`),
+    headers: pdfFileHeaders(`${order.orderNumber}-challan.pdf`, inline ? 'inline' : 'attachment'),
   });
 }

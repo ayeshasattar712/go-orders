@@ -71,6 +71,7 @@ export function buildCspHeader(nonce: string, isDev: boolean): string {
     "font-src 'self' data:",
     "connect-src 'self' https:",
     "media-src 'self' blob: https:",
+    "frame-src 'self' blob:",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",

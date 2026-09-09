@@ -23,7 +23,7 @@ export interface LedgerEntry {
   credit: number;
 }
 
-export type ReceivedPaymentMethod = 'bank-account' | 'online-transfer';
+export type ReceivedPaymentMethod = 'bank-account' | 'online-transfer' | 'cheque';
 export type ReceivedPaymentStatus = 'pending' | 'awaiting-transfer' | 'confirmed';
 
 export interface ReceivedPayment {

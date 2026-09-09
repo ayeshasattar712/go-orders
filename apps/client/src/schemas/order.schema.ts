@@ -16,16 +16,26 @@ export const checkoutAddressSchema = z.object({
   zip: z.string().trim().min(1).max(20),
 });
 
-export const createOrderSchema = z.object({
-  items: z.array(createOrderItemSchema).min(1, 'Cart is empty'),
-  vendorName: z.string().min(1).max(200),
-  shipping: z.number().nonnegative().max(10_000),
-  tax: z.number().nonnegative().max(1_000_000),
-  paymentMethod: z.enum(['bank-account', 'online-transfer']),
-  transferReference: z.string().trim().max(80).optional(),
-  deliveryOption: z.enum(['hour', 'standard', 'express', 'scheduled']),
-  address: checkoutAddressSchema,
-});
+export const createOrderSchema = z
+  .object({
+    items: z.array(createOrderItemSchema).min(1, 'Cart is empty'),
+    vendorName: z.string().min(1).max(200),
+    shipping: z.number().nonnegative().max(10_000),
+    tax: z.number().nonnegative().max(1_000_000),
+    paymentMethod: z.enum(['bank-account', 'online-transfer', 'cheque']),
+    transferReference: z.string().trim().max(80).optional(),
+    deliveryOption: z.enum(['hour', 'standard', 'express', 'scheduled']),
+    address: checkoutAddressSchema,
+  })
+  .superRefine((data, ctx) => {
+    if (data.paymentMethod === 'cheque' && !data.transferReference) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['transferReference'],
+        message: 'Cheque number is required',
+      });
+    }
+  });
 
 export type CreateOrderItemInput = z.infer<typeof createOrderItemSchema>;
 export type CreateOrderInput = z.infer<typeof createOrderSchema>;

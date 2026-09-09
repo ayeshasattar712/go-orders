@@ -35,11 +35,14 @@ export const ORDER_STATUS_FROM_STRING: Record<OrderStatus, PrismaOrderStatus> = 
   cancelled: 'CANCELLED',
 };
 
-const PAYMENT_METHOD_TO_STRING: Record<CheckoutPaymentMethod, 'bank-account' | 'online-transfer'> =
-  {
-    BANK_ACCOUNT: 'bank-account',
-    ONLINE_TRANSFER: 'online-transfer',
-  };
+const PAYMENT_METHOD_TO_STRING: Record<
+  CheckoutPaymentMethod,
+  'bank-account' | 'online-transfer' | 'cheque'
+> = {
+  BANK_ACCOUNT: 'bank-account',
+  ONLINE_TRANSFER: 'online-transfer',
+  CHEQUE: 'cheque',
+};
 
 const PAYMENT_STATUS_TO_STRING: Record<
   PrismaPaymentStatus,

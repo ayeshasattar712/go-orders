@@ -126,9 +126,9 @@ export interface Order {
   shippingName?: string;
   shippingLine1?: string;
   shippingCity?: string;
-  paymentMethod?: 'bank-account' | 'online-transfer';
+  paymentMethod?: 'bank-account' | 'online-transfer' | 'cheque';
   payment?: {
-    method: 'bank-account' | 'online-transfer';
+    method: 'bank-account' | 'online-transfer' | 'cheque';
     status: 'pending' | 'awaiting-transfer' | 'confirmed';
     amount: number;
     reference: string;

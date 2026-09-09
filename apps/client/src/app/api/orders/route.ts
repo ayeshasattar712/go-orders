@@ -45,7 +45,11 @@ export async function POST(request: Request) {
     }
 
     const paymentMethod =
-      parsed.data.paymentMethod === 'bank-account' ? 'BANK_ACCOUNT' : 'ONLINE_TRANSFER';
+      parsed.data.paymentMethod === 'bank-account'
+        ? 'BANK_ACCOUNT'
+        : parsed.data.paymentMethod === 'cheque'
+          ? 'CHEQUE'
+          : 'ONLINE_TRANSFER';
 
     const result = await placeMarketplaceOrder({
       userId: session.sub,

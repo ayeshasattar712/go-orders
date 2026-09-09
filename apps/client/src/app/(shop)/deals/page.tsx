@@ -1,14 +1,22 @@
 import type { Metadata } from 'next';
 import { FlashSaleSection } from '@/components/marketing/flash-sale-section';
 import { JustForYou } from '@/components/marketing/just-for-you';
-import { getFlashDeals, getJustForYou } from '@/lib/mock-data';
+import { getCustomerSession } from '@/lib/auth/customer-auth';
+import { getCatalogHighlight, getFlashDeals } from '@/lib/catalog/catalog-repository';
 
 export const metadata: Metadata = {
   title: 'Flash Sale',
   description: 'Limited-time marketplace deals with countdown pricing.',
 };
 
-export default function DealsPage() {
+export default async function DealsPage() {
+  const session = await getCustomerSession();
+  const [deals, highlight] = await Promise.all([
+    getFlashDeals(12),
+    getCatalogHighlight(session?.sub ?? null, 12),
+  ]);
+  const isRecommended = highlight.kind === 'recommended';
+
   return (
     <>
       <div className="relative z-10 border-b border-border/60 bg-[#f8f9fa]">
@@ -19,8 +27,17 @@ export default function DealsPage() {
           </p>
         </div>
       </div>
-      <FlashSaleSection products={getFlashDeals(12)} />
-      <JustForYou products={getJustForYou(12)} />
+      <FlashSaleSection products={deals} />
+      <JustForYou
+        products={highlight.products}
+        eyebrow={isRecommended ? 'Personalized' : 'Catalog'}
+        title={isRecommended ? 'Recommended for you' : 'Featured products'}
+        description={
+          isRecommended
+            ? 'Picked from categories you order — plus top-rated items to try next.'
+            : 'Hand-picked catalog highlights. Sign in to get personal recommendations.'
+        }
+      />
     </>
   );
 }

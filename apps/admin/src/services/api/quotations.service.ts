@@ -8,4 +8,12 @@ export const quotationsService = {
       await apiClient.get<ApiSuccessResponse<{ quotations: Quotation[] }>>('/quotations');
     return data.data.quotations;
   },
+
+  async update(id: string, payload: { status: Quotation['status'] }) {
+    const { data } = await apiClient.patch<ApiSuccessResponse<{ quotation: Quotation }>>(
+      `/quotations/${id}`,
+      payload,
+    );
+    return data.data.quotation;
+  },
 };

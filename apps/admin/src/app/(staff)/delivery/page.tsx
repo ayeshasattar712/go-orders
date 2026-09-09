@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DeliveryStatusBadge } from '@/features/delivery/delivery-status-badge';
 import { DeliveryChallanModal } from '@/features/delivery/delivery-challan-modal';
-import { saveChallanPdf } from '@/features/delivery/download-challan-pdf-button';
 import { useDeliveryStore } from '@/store/delivery-store';
 import { useDeliveryJobs, useRecordDeliveryAttempt } from '@/services/queries';
 import type { DeliveryJob } from '@/types/enterprise';
@@ -107,10 +106,7 @@ export default function DeliveryPage() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => {
-                        setChallanJob(job);
-                        void saveChallanPdf(job.orderNumber);
-                      }}
+                      onClick={() => setChallanJob(job)}
                     >
                       <FileText className="h-3.5 w-3.5" /> Delivery challan
                     </Button>

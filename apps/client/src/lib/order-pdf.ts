@@ -95,7 +95,10 @@ function drawChrome(
   });
 }
 
-export async function buildOrderPdf(input: OrderPdfInput): Promise<Uint8Array> {
+export async function buildOrderPdf(
+  input: OrderPdfInput,
+  options?: { flatten?: boolean },
+): Promise<Uint8Array> {
   const pdf = await PDFDocument.create();
   const font = await pdf.embedFont(StandardFonts.Helvetica);
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
@@ -257,14 +260,24 @@ export async function buildOrderPdf(input: OrderPdfInput): Promise<Uint8Array> {
   const totalPages = pages.length;
   pages.forEach((p, index) => drawHeader(p, index + 1, totalPages));
 
+  if (options?.flatten) {
+    try {
+      form.flatten();
+    } catch {
+      // Preview still works as a static PDF if flattening fails.
+    }
+  }
+
   return pdf.save();
 }
 
 const PAYMENT_METHOD_LABEL: Record<string, string> = {
   BANK_ACCOUNT: 'Bank transfer',
   ONLINE_TRANSFER: 'Online transfer',
+  CHEQUE: 'Cheque',
   'bank-account': 'Bank transfer',
   'online-transfer': 'Online transfer',
+  cheque: 'Cheque',
 };
 
 export function orderToPdfInput(
@@ -328,11 +341,15 @@ export function orderToPdfInput(
   };
 }
 
-export function pdfDownloadHeaders(filename: string) {
+export function pdfFileHeaders(filename: string, mode: 'inline' | 'attachment' = 'attachment') {
   const safe = filename.replace(/[^A-Za-z0-9._-]/g, '_');
   return {
     'Content-Type': 'application/pdf',
-    'Content-Disposition': `attachment; filename="${safe}"`,
+    'Content-Disposition': `${mode}; filename="${safe}"`,
     'Cache-Control': 'no-store',
   };
+}
+
+export function pdfDownloadHeaders(filename: string) {
+  return pdfFileHeaders(filename, 'attachment');
 }

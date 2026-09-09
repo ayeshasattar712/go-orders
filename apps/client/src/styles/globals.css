@@ -287,6 +287,44 @@ h2,
   animation: var(--animate-shimmer);
 }
 
+@keyframes cart-bump {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.2) rotate(-10deg);
+  }
+  50% {
+    transform: scale(0.92) rotate(8deg);
+  }
+  75% {
+    transform: scale(1.08) rotate(-4deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes cart-badge-pop {
+  0% {
+    transform: scale(0.7);
+  }
+  50% {
+    transform: scale(1.35);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-cart-bump {
+  animation: cart-bump 0.55s ease-out;
+}
+
+.animate-cart-badge-pop {
+  animation: cart-badge-pop 0.35s ease-out;
+}
+
 .card-hover {
   transition:
     transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
@@ -299,6 +337,14 @@ h2,
     0 24px 48px -24px hsl(var(--shadow-soft) / 0.32),
     0 10px 20px -10px hsl(262 83% 58% / 0.2);
   border-color: hsl(var(--primary) / 0.4);
+}
+
+.product-thumb {
+  width: auto !important;
+  height: auto !important;
+  max-width: 72% !important;
+  max-height: 72% !important;
+  object-fit: contain;
 }
 
 .surface-panel {

@@ -4,11 +4,16 @@ export const PUBLIC_ROUTES = [
   '/register',
   '/forgot-password',
   '/reset-password',
+  '/home',
+  '/products',
+  '/categories',
+  '/vendors',
+  '/deals',
+  '/cart',
 ] as const;
 
 /** Routes that redirect an already-authenticated customer away. */
 export const CUSTOMER_AUTH_ROUTES = [
-  '/',
   '/login',
   '/register',
   '/forgot-password',
@@ -17,15 +22,9 @@ export const CUSTOMER_AUTH_ROUTES = [
 
 /**
  * Routes gated by the customer session (customer_session cookie).
- * Includes shop + purchase flows — guests are sent to /login.
+ * Catalog browsing is public; purchase/account flows send guests to /login.
  */
 export const CUSTOMER_ROUTES = [
-  '/home',
-  '/products',
-  '/categories',
-  '/vendors',
-  '/deals',
-  '/cart',
   '/dashboard',
   '/profile',
   '/checkout',
@@ -49,15 +48,9 @@ export const API_AUTH_ROUTES = {
 
 /** After login/signup, land on the marketplace. */
 export const CUSTOMER_DEFAULT_LOGIN_REDIRECT = '/home';
-export const CUSTOMER_DEFAULT_LOGOUT_REDIRECT = '/login';
+export const CUSTOMER_DEFAULT_LOGOUT_REDIRECT = '/home';
 
 export const CUSTOMER_ROUTE_PERMISSIONS: Record<string, string[]> = {
-  '/home': ['dashboard:read'],
-  '/products': ['dashboard:read'],
-  '/categories': ['dashboard:read'],
-  '/vendors': ['dashboard:read'],
-  '/deals': ['dashboard:read'],
-  '/cart': ['dashboard:read'],
   '/dashboard': ['dashboard:read'],
   '/checkout': ['dashboard:read'],
   '/orders': ['dashboard:read'],

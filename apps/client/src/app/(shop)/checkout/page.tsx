@@ -66,6 +66,10 @@ export default function CheckoutPage() {
   const total = subtotal + shipping + tax;
 
   async function handlePlaceOrder() {
+    if (payment === 'cheque' && !transferReference.trim()) {
+      setOrderError('Enter the cheque number before placing the order.');
+      return;
+    }
     setIsSubmitting(true);
     setOrderError(null);
     try {

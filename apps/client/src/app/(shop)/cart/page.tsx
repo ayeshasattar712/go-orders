@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowRight, ShoppingBag, Tag } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Tag, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -162,7 +162,7 @@ export default function CartPage() {
                 )
               }
             >
-              Proceed to checkout <ArrowRight className="h-4 w-4" />
+              <Zap className="h-4 w-4" /> Buy now <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
         </div>

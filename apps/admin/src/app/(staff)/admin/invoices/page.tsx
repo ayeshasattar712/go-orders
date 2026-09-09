@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { AlertCircle, BellRing, Download, Plus } from 'lucide-react';
+import { AlertCircle, BellRing, Plus } from 'lucide-react';
 import { KpiCard } from '@/components/shared/kpi-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -19,6 +19,7 @@ import {
 import { Modal } from '@/components/ui/modal';
 import { Loader } from '@/components/ui/loader';
 import { InvoiceStatusBadge } from '@/features/finance/invoice-status-badge';
+import { DownloadInvoicePdfButton } from '@/features/finance/download-invoice-pdf-button';
 import { useClients, useCreateInvoice, useInvoices, useUpdateInvoice } from '@/services/queries';
 import { invoicesService } from '@/services/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
@@ -49,15 +50,11 @@ function emptyForm(clientId: string, clientName: string): InvoiceForm {
 function InvoiceTable({
   items,
   onStatusChange,
-  onDownload,
   pending,
-  downloadingId,
 }: {
   items: Invoice[];
   onStatusChange: (invoice: Invoice, status: InvoiceStatus) => void;
-  onDownload: (invoice: Invoice) => void;
   pending: boolean;
-  downloadingId: string | null;
 }) {
   if (items.length === 0)
     return <p className="text-muted-foreground py-8 text-center text-sm">No invoices here.</p>;
@@ -89,16 +86,11 @@ function InvoiceTable({
             </div>
             <p className="font-semibold">{formatCurrency(invoice.amount)}</p>
             <div className="flex flex-col gap-2">
-              <Button
-                size="sm"
+              <DownloadInvoicePdfButton
+                invoiceId={invoice.id}
+                invoiceNumber={invoice.invoiceNumber}
                 variant="outline"
-                className="w-full"
-                disabled={downloadingId === invoice.id}
-                onClick={() => onDownload(invoice)}
-              >
-                <Download className="h-3.5 w-3.5" />
-                {downloadingId === invoice.id ? 'Saving...' : 'PDF'}
-              </Button>
+              />
               <Select
                 value={invoice.status}
                 disabled={pending}
@@ -154,15 +146,10 @@ function InvoiceTable({
                 </td>
                 <td className="py-3 pr-4">
                   <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      disabled={downloadingId === invoice.id}
-                      onClick={() => onDownload(invoice)}
-                    >
-                      <Download className="h-3.5 w-3.5" />
-                      {downloadingId === invoice.id ? 'Saving...' : 'PDF'}
-                    </Button>
+                    <DownloadInvoicePdfButton
+                      invoiceId={invoice.id}
+                      invoiceNumber={invoice.invoiceNumber}
+                    />
                     <Select
                       value={invoice.status}
                       disabled={pending}
@@ -198,7 +185,6 @@ export default function AdminInvoicesPage() {
 
   const [open, setOpen] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [form, setForm] = useState<InvoiceForm>(() => emptyForm('', ''));
 
   const receivables = invoices.filter((i) => i.type === 'receivable');
@@ -236,16 +222,6 @@ export default function AdminInvoicesPage() {
       status,
       amountPaid: status === 'paid' ? invoice.amount : undefined,
     });
-  }
-
-  async function handleDownload(invoice: Invoice) {
-    setDownloadingId(invoice.id);
-    try {
-      const file = await invoicesService.downloadPdf(invoice.id);
-      saveBlobFile(file.blob, file.filename);
-    } finally {
-      setDownloadingId(null);
-    }
   }
 
   if (isLoading) {
@@ -339,18 +315,14 @@ export default function AdminInvoicesPage() {
               <InvoiceTable
                 items={receivables}
                 onStatusChange={handleStatusChange}
-                onDownload={handleDownload}
                 pending={updateInvoice.isPending}
-                downloadingId={downloadingId}
               />
             </TabsContent>
             <TabsContent value="payables">
               <InvoiceTable
                 items={payables}
                 onStatusChange={handleStatusChange}
-                onDownload={handleDownload}
                 pending={updateInvoice.isPending}
-                downloadingId={downloadingId}
               />
             </TabsContent>
           </Tabs>

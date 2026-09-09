@@ -21,6 +21,9 @@ export default function AdminPaymentsPage() {
   const onlineTotal = payments
     .filter((payment) => payment.method === 'online-transfer' && payment.status === 'confirmed')
     .reduce((sum, payment) => sum + payment.amount, 0);
+  const chequeTotal = payments
+    .filter((payment) => payment.method === 'cheque' && payment.status === 'confirmed')
+    .reduce((sum, payment) => sum + payment.amount, 0);
 
   if (isLoading) {
     return <Loader label="Loading payments..." />;
@@ -31,12 +34,12 @@ export default function AdminPaymentsPage() {
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">Payments received</h2>
         <p className="text-muted-foreground">
-          Confirm bank transfers and online transfers in Pakistani rupees (PKR). Confirmed payments
-          settle matching invoices and post to cash / bank in the ledger.
+          Confirm bank transfers, online transfers, and cheques in Pakistani rupees (PKR). Confirmed
+          payments settle matching invoices and post to cash / bank in the ledger.
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           label="Awaiting confirmation"
           value={awaiting.length.toString()}
@@ -55,6 +58,12 @@ export default function AdminPaymentsPage() {
           icon={Banknote}
           iconTone="success"
         />
+        <KpiCard
+          label="Confirmed cheque"
+          value={formatCurrency(chequeTotal)}
+          icon={Banknote}
+          iconTone="info"
+        />
       </div>
 
       <Card>
@@ -65,7 +74,7 @@ export default function AdminPaymentsPage() {
           {payments.length === 0 ? (
             <EmptyState
               title="No transfers yet"
-              description="Customer checkout payments via bank or online transfer will appear here."
+              description="Customer checkout payments via bank transfer, online transfer, or cheque will appear here."
             />
           ) : (
             <div className="overflow-x-auto">

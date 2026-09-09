@@ -5,7 +5,6 @@ import { applySecurityMiddleware, validateCsrf } from '@/middleware/security.mid
 import {
   CUSTOMER_AUTH_ROUTES,
   CUSTOMER_DEFAULT_LOGIN_REDIRECT,
-  CUSTOMER_DEFAULT_LOGOUT_REDIRECT,
   CUSTOMER_ROUTE_PERMISSIONS,
 } from '@/constants/routes';
 
@@ -45,7 +44,7 @@ export async function middleware(request: NextRequest) {
         request,
         authResult.session,
         CUSTOMER_ROUTE_PERMISSIONS,
-        CUSTOMER_DEFAULT_LOGOUT_REDIRECT,
+        '/login',
         CUSTOMER_DEFAULT_LOGIN_REDIRECT,
       );
   if (roleBlock) return applySecurityMiddleware(request, roleBlock);

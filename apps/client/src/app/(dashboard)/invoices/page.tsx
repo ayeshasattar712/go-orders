@@ -1,25 +1,18 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, Download, ReceiptText, Wallet } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Clock3, Wallet } from 'lucide-react';
 import { KpiCard } from '@/components/shared/kpi-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { InvoiceStatusBadge } from '@/features/finance/invoice-status-badge';
+import { DownloadInvoicePdfButton } from '@/features/finance/download-invoice-pdf-button';
 import { invoicesService } from '@/services/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import { saveBlobFile } from '@/lib/save-blob';
 import type { Invoice } from '@/types/enterprise';
 
-function InvoiceTable({
-  items,
-  onDownload,
-}: {
-  items: Invoice[];
-  onDownload: (invoice: Invoice) => void;
-}) {
+function InvoiceTable({ items }: { items: Invoice[] }) {
   if (items.length === 0) {
     return (
       <EmptyState title="No invoices here" description="Place an order to generate an invoice." />
@@ -42,9 +35,11 @@ function InvoiceTable({
             </div>
             <div className="mt-3 flex items-center justify-between gap-3">
               <span className="font-semibold">{formatCurrency(invoice.amount)}</span>
-              <Button size="sm" variant="outline" onClick={() => onDownload(invoice)}>
-                <Download className="h-3.5 w-3.5" /> PDF
-              </Button>
+              <DownloadInvoicePdfButton
+                invoiceId={invoice.id}
+                invoiceNumber={invoice.invoiceNumber}
+                variant="outline"
+              />
             </div>
           </div>
         ))}
@@ -72,9 +67,10 @@ function InvoiceTable({
                   <InvoiceStatusBadge status={invoice.status} />
                 </td>
                 <td className="py-3 pr-4">
-                  <Button size="sm" variant="ghost" onClick={() => onDownload(invoice)}>
-                    <Download className="h-3.5 w-3.5" /> PDF
-                  </Button>
+                  <DownloadInvoicePdfButton
+                    invoiceId={invoice.id}
+                    invoiceNumber={invoice.invoiceNumber}
+                  />
                 </td>
               </tr>
             ))}
@@ -105,36 +101,34 @@ export default function CustomerInvoicesPage() {
     .filter((i) => i.status !== 'paid')
     .reduce((sum, i) => sum + (i.amount - i.amountPaid), 0);
 
-  async function handleDownload(invoice: Invoice) {
-    const file = await invoicesService.downloadPdf(invoice.id);
-    saveBlobFile(file.blob, file.filename);
-  }
-
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">Invoices</h2>
         <p className="text-muted-foreground">
-          Every purchase generates a fillable PDF invoice you can download and save.
+          Every purchase generates a PDF invoice you can view on screen or download.
         </p>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <KpiCard
-          label="Outstanding"
+          label="Amount due"
           value={formatCurrency(outstanding)}
+          hint="Balance still left to collect"
           icon={Wallet}
           iconTone="primary"
         />
         <KpiCard
-          label="Unpaid"
+          label="Open invoices"
           value={unpaid.length.toString()}
-          icon={ReceiptText}
+          hint="Waiting for payment"
+          icon={Clock3}
           iconTone="warning"
         />
         <KpiCard
-          label="Paid"
+          label="Paid invoices"
           value={paid.length.toString()}
-          icon={ReceiptText}
+          hint="Fully settled"
+          icon={CheckCircle2}
           iconTone="success"
         />
       </div>
@@ -150,13 +144,13 @@ export default function CustomerInvoicesPage() {
               <TabsTrigger value="unpaid">Unpaid ({unpaid.length})</TabsTrigger>
             </TabsList>
             <TabsContent value="all">
-              <InvoiceTable items={invoices} onDownload={handleDownload} />
+              <InvoiceTable items={invoices} />
             </TabsContent>
             <TabsContent value="paid">
-              <InvoiceTable items={paid} onDownload={handleDownload} />
+              <InvoiceTable items={paid} />
             </TabsContent>
             <TabsContent value="unpaid">
-              <InvoiceTable items={unpaid} onDownload={handleDownload} />
+              <InvoiceTable items={unpaid} />
             </TabsContent>
           </Tabs>
         </CardContent>

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/utils';
-import { useCartStore } from '@/store/cart-store';
+import { addProductToCart } from '@/store/cart-feedback-store';
 import type { Product } from '@/types/catalog';
 
 export function FrequentlyBoughtTogether({
@@ -18,7 +18,6 @@ export function FrequentlyBoughtTogether({
 }) {
   const allProducts = [mainProduct, ...companions];
   const [selected, setSelected] = useState<string[]>(allProducts.map((p) => p.id));
-  const addItem = useCartStore((state) => state.addItem);
 
   const total = allProducts
     .filter((product) => selected.includes(product.id))
@@ -33,7 +32,7 @@ export function FrequentlyBoughtTogether({
   function addSelected() {
     allProducts
       .filter((product) => selected.includes(product.id))
-      .forEach((product) => addItem(product, product.minOrderQty));
+      .forEach((product) => addProductToCart(product));
   }
 
   return (

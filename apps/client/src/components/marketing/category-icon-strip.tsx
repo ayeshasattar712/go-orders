@@ -24,24 +24,18 @@ export function CategoryIconStrip() {
             >
               <span
                 className={cn(
-                  'relative h-[72px] w-[72px] overflow-hidden rounded-full border-2 shadow-sm transition-all duration-200',
+                  'relative h-[72px] w-[72px] overflow-hidden rounded-xl border bg-white shadow-sm transition-all duration-200',
                   selected
                     ? 'border-primary ring-primary/30 scale-105 ring-4'
-                    : 'border-transparent group-hover:scale-105 group-hover:border-primary/40',
+                    : 'border-border group-hover:scale-105 group-hover:border-primary/40',
                 )}
               >
                 <Image
                   src={category.image}
                   alt={category.name}
                   fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-110"
+                  className="object-contain p-2"
                   sizes="72px"
-                />
-                <span
-                  className={cn(
-                    'absolute inset-0 bg-gradient-to-t from-black/35 to-transparent transition-opacity',
-                    selected ? 'opacity-100' : 'opacity-0 group-hover:opacity-60',
-                  )}
                 />
               </span>
               <span

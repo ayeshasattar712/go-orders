@@ -6,3 +6,4 @@ export * from './products.service';
 export * from './invoices.service';
 export * from './notifications.service';
 export * from './chat.service';
+export * from './quotations.service';

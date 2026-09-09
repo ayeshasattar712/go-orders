@@ -1,7 +1,7 @@
 import type { BulkPriceTier, Product, ProductReview } from '@/types/catalog';
-import { OFFICE_PENS_IMAGE, OFFICE_SUPPLIES_IMAGE } from './categories';
+import { OFFICE_PENS_IMAGE, OFFICE_SUPPLIES_IMAGE, SUBCATEGORY_KEYWORDS, homeCategoryTiles } from './categories';
+import { buildGeneratedCatalog } from './generated-catalog';
 
-const SNACK_BOX_IMAGE = '/images/products/snack-box.jpg';
 const MODULAR_SHELVING_IMAGE = '/images/products/modular-shelving.jpg';
 
 function bulkTiers(base: number): BulkPriceTier[] {
@@ -48,7 +48,7 @@ function reviews(seed: string, count: number): ProductReview[] {
   });
 }
 
-export const products: Product[] = [
+export const curatedProducts: Product[] = [
   {
     id: 'prod_ergo_chair',
     slug: 'apex-ergoflex-mesh-office-chair',
@@ -57,9 +57,9 @@ export const products: Product[] = [
     description:
       'The ApexErgoFlex combines breathable mesh, adjustable lumbar support, and a synchro-tilt mechanism engineered for long workdays. Rated for continuous 12-hour use and backed by a 5-year warranty, it is the top choice for enterprise workstation rollouts.',
     images: [
-      'https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?q=80&w=1200&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?q=80&w=1200&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?q=80&w=1200&auto=format&fit=crop',
+      '/images/products/office-chair.jpg',
+      'https://images.unsplash.com/photo-1592078615290-033ee584e267?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505843490701-5be5d0b187f8?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_furniture',
     categorySlug: 'office-furniture',
@@ -239,7 +239,7 @@ export const products: Product[] = [
     description:
       'A curated assortment of 60 individually packaged snacks including nuts, granola bars, and dried fruit — perfect for stocking corporate breakrooms with minimal management overhead.',
     images: [
-      SNACK_BOX_IMAGE,
+      '/images/products/snack-box.jpg',
       'https://images.unsplash.com/photo-1599490659213-e2b9527bd087?q=80&w=1200&auto=format&fit=crop',
     ],
     categoryId: 'cat_grocery',
@@ -638,7 +638,241 @@ export const products: Product[] = [
     deliveryEstimateDays: 5,
     reviews: reviews('wire_spool', 3),
   },
+  {
+    id: 'prod_black_tea',
+    slug: 'freshstock-everyday-black-tea-100',
+    name: 'FreshStock Everyday Black Tea (100 Bags)',
+    shortDescription: 'Strong everyday tea bags for office pantries and homes.',
+    description:
+      'Classic black tea packed in 100-count boxes for breakrooms and household use. Consistent brew strength with individually wrapped bags for freshness.',
+    images: [
+      'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1576092768241-dec231879fc3?q=80&w=1200&auto=format&fit=crop',
+    ],
+    categoryId: 'cat_grocery',
+    categorySlug: 'grocery-pantry',
+    vendorId: 'vnd_freshstock',
+    price: 12.5,
+    currency: 'PKR',
+    rating: 4.8,
+    reviewCount: 890,
+    stock: 1800,
+    stockStatus: 'in-stock',
+    sku: 'FSK-TEA-0190',
+    unit: 'box (100 bags)',
+    minOrderQty: 2,
+    bulkPricing: bulkTiers(12.5),
+    specifications: [
+      { label: 'Count', value: '100 tea bags' },
+      { label: 'Type', value: 'Black tea' },
+    ],
+    tags: ['pantry', 'everyday', 'best-seller'],
+    isBestSeller: true,
+    deliveryEstimateDays: 2,
+    reviews: reviews('black_tea', 5),
+  },
+  {
+    id: 'prod_canola_oil',
+    slug: 'freshstock-canola-oil-5l',
+    name: 'FreshStock Canola Cooking Oil (5 Litre)',
+    shortDescription: 'Everyday cooking oil for kitchens and canteens.',
+    description:
+      'Refined canola oil in a 5-litre household and canteen pack. Neutral taste for daily cooking, frying, and bulk meal prep.',
+    images: [
+      'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?q=80&w=1200&auto=format&fit=crop',
+    ],
+    categoryId: 'cat_grocery',
+    categorySlug: 'grocery-pantry',
+    vendorId: 'vnd_freshstock',
+    price: 18.9,
+    currency: 'PKR',
+    rating: 4.6,
+    reviewCount: 540,
+    stock: 960,
+    stockStatus: 'in-stock',
+    sku: 'FSK-OIL-0204',
+    unit: 'bottle (5 L)',
+    minOrderQty: 2,
+    bulkPricing: bulkTiers(18.9),
+    specifications: [
+      { label: 'Volume', value: '5 litres' },
+      { label: 'Type', value: 'Refined canola oil' },
+    ],
+    tags: ['pantry', 'everyday'],
+    isBestSeller: true,
+    deliveryEstimateDays: 2,
+    reviews: reviews('canola_oil', 4),
+  },
+  {
+    id: 'prod_masala_mix',
+    slug: 'freshstock-karahi-masala-pack',
+    name: 'FreshStock Karahi Masala (Family Pack)',
+    shortDescription: 'Everyday spice mix for home and canteen cooking.',
+    description:
+      'Balanced karahi masala packed for daily Pakistani cooking. Family-size box suited to household kitchens and staff canteens.',
+    images: [
+      'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?q=80&w=1200&auto=format&fit=crop',
+    ],
+    categoryId: 'cat_grocery',
+    categorySlug: 'grocery-pantry',
+    vendorId: 'vnd_freshstock',
+    price: 6.5,
+    currency: 'PKR',
+    rating: 4.7,
+    reviewCount: 410,
+    stock: 1400,
+    stockStatus: 'in-stock',
+    sku: 'FSK-MSC-0311',
+    unit: 'box',
+    minOrderQty: 6,
+    bulkPricing: bulkTiers(6.5),
+    specifications: [
+      { label: 'Net weight', value: '100 g' },
+      { label: 'Use', value: 'Karahi, gravies, everyday cooking' },
+    ],
+    tags: ['pantry', 'everyday'],
+    deliveryEstimateDays: 2,
+    reviews: reviews('masala_mix', 4),
+  },
+  {
+    id: 'prod_noodles_pack',
+    slug: 'freshstock-instant-noodles-carton',
+    name: 'FreshStock Instant Noodles (Carton of 24)',
+    shortDescription: 'Quick everyday noodles for breakrooms and homes.',
+    description:
+      'Carton of 24 instant noodle packs for pantries, hostels, and office breakrooms. Fast cook time with a spicy everyday flavour.',
+    images: [
+      'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1585032226651-759b368d7246?q=80&w=1200&auto=format&fit=crop',
+    ],
+    categoryId: 'cat_grocery',
+    categorySlug: 'grocery-pantry',
+    vendorId: 'vnd_freshstock',
+    price: 14.0,
+    currency: 'PKR',
+    rating: 4.5,
+    reviewCount: 720,
+    stock: 1100,
+    stockStatus: 'in-stock',
+    sku: 'FSK-NDL-0440',
+    unit: 'carton (24 packs)',
+    minOrderQty: 2,
+    bulkPricing: bulkTiers(14.0),
+    specifications: [
+      { label: 'Count', value: '24 packs' },
+      { label: 'Cook time', value: '3 minutes' },
+    ],
+    tags: ['pantry', 'everyday', 'breakroom'],
+    isTrending: true,
+    deliveryEstimateDays: 2,
+    reviews: reviews('noodles_pack', 5),
+  },
+  {
+    id: 'prod_seekh_kabab',
+    slug: 'almees-awami-seekh-kabab-32',
+    name: 'Almees Awami Seekh Kabab (32 Pieces)',
+    shortDescription: 'Frozen ready-to-eat seekh kabab value pack for pantries and canteens.',
+    description:
+      'Almees Awami Seekh Kabab in a 32-piece frozen value pack. Ready to heat for staff canteens, breakrooms, and household freezers.',
+    images: [
+      '/images/products/seekh-kabab.png',
+      'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1529042410759-befb1204b468?q=80&w=1200&auto=format&fit=crop',
+    ],
+    categoryId: 'cat_grocery',
+    categorySlug: 'grocery-pantry',
+    vendorId: 'vnd_freshstock',
+    price: 890.0,
+    currency: 'PKR',
+    rating: 4.6,
+    reviewCount: 214,
+    stock: 480,
+    stockStatus: 'in-stock',
+    sku: 'FSK-KBB-0320',
+    unit: 'pack (32 pieces)',
+    minOrderQty: 2,
+    bulkPricing: bulkTiers(890.0),
+    specifications: [
+      { label: 'Count', value: '32 pieces' },
+      { label: 'Type', value: 'Frozen, ready to eat' },
+      { label: 'Storage', value: 'Keep frozen' },
+    ],
+    tags: ['pantry', 'everyday', 'snack', 'frozen'],
+    isNew: true,
+    isTrending: true,
+    deliveryEstimateDays: 2,
+    reviews: reviews('seekh_kabab', 4),
+  },
+  {
+    id: 'prod_bath_soap',
+    slug: 'clearline-everyday-bath-soap-12',
+    name: 'ClearLine Everyday Bath Soap (Pack of 12)',
+    shortDescription: 'Daily-use bath soap for homes and washrooms.',
+    description:
+      'Mild everyday soap bars packed in a 12-count wrap for household bathrooms and facility washrooms.',
+    images: [
+      'https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?q=80&w=1200&auto=format&fit=crop',
+    ],
+    categoryId: 'cat_cleaning',
+    categorySlug: 'cleaning-supplies',
+    vendorId: 'vnd_clearline',
+    price: 9.5,
+    currency: 'PKR',
+    rating: 4.6,
+    reviewCount: 265,
+    stock: 1500,
+    stockStatus: 'in-stock',
+    sku: 'CLR-SOP-4012',
+    unit: 'pack (12 bars)',
+    minOrderQty: 3,
+    bulkPricing: bulkTiers(9.5),
+    specifications: [
+      { label: 'Count', value: '12 bars' },
+      { label: 'Use', value: 'Hands and body' },
+    ],
+    tags: ['everyday', 'facility'],
+    deliveryEstimateDays: 3,
+    reviews: reviews('bath_soap', 3),
+  },
+  {
+    id: 'prod_handwash',
+    slug: 'clearline-antibacterial-handwash-1l',
+    name: 'ClearLine Antibacterial Handwash (1 Litre)',
+    shortDescription: 'Everyday handwash for kitchens and washrooms.',
+    description:
+      'Pump-ready 1-litre antibacterial handwash for homes, pantries, and shared washrooms.',
+    images: [
+      'https://images.unsplash.com/photo-1583947215259-38e31be8751f?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=1200&auto=format&fit=crop',
+    ],
+    categoryId: 'cat_cleaning',
+    categorySlug: 'cleaning-supplies',
+    vendorId: 'vnd_clearline',
+    price: 7.9,
+    currency: 'PKR',
+    rating: 4.7,
+    reviewCount: 318,
+    stock: 2000,
+    stockStatus: 'in-stock',
+    sku: 'CLR-HND-1188',
+    unit: 'bottle (1 L)',
+    minOrderQty: 4,
+    bulkPricing: bulkTiers(7.9),
+    specifications: [
+      { label: 'Volume', value: '1 litre' },
+      { label: 'Type', value: 'Antibacterial liquid' },
+    ],
+    tags: ['everyday', 'facility'],
+    isBestSeller: true,
+    deliveryEstimateDays: 3,
+    reviews: reviews('handwash', 4),
+  },
 ];
+
+export const products: Product[] = [...curatedProducts, ...buildGeneratedCatalog(curatedProducts)];
 
 export function getProductBySlug(slug: string): Product | undefined {
   return products.find((product) => product.slug === slug);
@@ -647,6 +881,31 @@ export function getProductBySlug(slug: string): Product | undefined {
 export function getProductsByCategory(categorySlug: string, limit?: number): Product[] {
   const result = products.filter((product) => product.categorySlug === categorySlug);
   return typeof limit === 'number' ? result.slice(0, limit) : result;
+}
+
+export function filterProductsBySubcategory(items: Product[], sub?: string | null): Product[] {
+  if (!sub) return items;
+  const keywords = SUBCATEGORY_KEYWORDS[sub] ?? [sub.replace(/-/g, ' ')];
+  const matched = items.filter((product) => {
+    const haystack = `${product.name} ${product.shortDescription} ${product.tags.join(' ')}`.toLowerCase();
+    return keywords.some((keyword) => haystack.includes(keyword.toLowerCase()));
+  });
+  return matched.length ? matched : items;
+}
+
+export function getHomeCategoryProducts(): Product[] {
+  const used = new Set<string>();
+  const picks: Product[] = [];
+
+  for (const tile of homeCategoryTiles) {
+    const pool = filterProductsBySubcategory(getProductsByCategory(tile.parentSlug), tile.sub);
+    const product = pool.find((item) => !used.has(item.id)) ?? pool[0];
+    if (!product || used.has(product.id)) continue;
+    used.add(product.id);
+    picks.push(product);
+  }
+
+  return picks;
 }
 
 export function getFeaturedProductsByCategory(categorySlug: string, limit = 8): Product[] {
@@ -673,10 +932,16 @@ export function getRecommendedProductsByCategory(categorySlug: string, limit = 8
     .slice(0, limit);
 }
 
-export function getRelatedProducts(product: Product, limit = 4): Product[] {
-  return products
-    .filter((item) => item.id !== product.id && item.categoryId === product.categoryId)
-    .slice(0, limit);
+export function getRelatedProducts(product: Product, limit = 10): Product[] {
+  const others = products.filter((item) => item.id !== product.id);
+  const sameCategory = others.filter((item) => item.categoryId === product.categoryId);
+  const sameVendor = others.filter(
+    (item) => item.vendorId === product.vendorId && item.categoryId !== product.categoryId,
+  );
+  const rest = others.filter(
+    (item) => item.categoryId !== product.categoryId && item.vendorId !== product.vendorId,
+  );
+  return [...sameCategory, ...sameVendor, ...rest].slice(0, limit);
 }
 
 export function getFrequentlyBoughtTogether(product: Product, limit = 3): Product[] {
@@ -703,4 +968,17 @@ export function getFlashDeals(limit = 12): Product[] {
 
 export function getJustForYou(limit = 16): Product[] {
   return [...products].sort((a, b) => b.reviewCount - a.reviewCount).slice(0, limit);
+}
+
+const EVERYDAY_SLUGS = new Set([
+  'grocery-pantry',
+  'cleaning-supplies',
+]);
+
+export function getEverydayEssentials(limit = 10): Product[] {
+  const tagged = products.filter(
+    (product) =>
+      EVERYDAY_SLUGS.has(product.categorySlug) || product.tags.includes('everyday'),
+  );
+  return [...tagged].sort((a, b) => b.rating * b.reviewCount - a.rating * a.reviewCount).slice(0, limit);
 }

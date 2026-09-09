@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Ban, Download, Lock, Save, ShieldCheck, Unlock } from 'lucide-react';
+import { ArrowLeft, Ban, Lock, Save, ShieldCheck, Unlock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,12 +13,11 @@ import { Progress } from '@/components/ui/progress';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Loader } from '@/components/ui/loader';
 import { InvoiceStatusBadge } from '@/features/finance/invoice-status-badge';
+import { DownloadInvoicePdfButton } from '@/features/finance/download-invoice-pdf-button';
 import { CreditTermsSelect } from '@/components/shared/credit-terms-select';
 import { creditTermsLabel } from '@/constants/credit-terms';
 import { useClients, useInvoices, useLedgerEntries, useUpdateClient } from '@/services/queries';
-import { invoicesService } from '@/services/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import { saveBlobFile } from '@/lib/save-blob';
 
 export default function AdminClientDetailPage() {
   const params = useParams<{ id: string }>();
@@ -34,21 +33,10 @@ export default function AdminClientDetailPage() {
     [invoices, client?.id],
   );
   const [editedLimit, setEditedLimit] = useState<{ clientId: string; value: number } | null>(null);
-  const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const newLimit =
     editedLimit && editedLimit.clientId === client?.id
       ? editedLimit.value
       : (client?.creditLimit ?? 0);
-
-  async function handleDownloadPdf(invoiceId: string) {
-    setDownloadingId(invoiceId);
-    try {
-      const file = await invoicesService.downloadPdf(invoiceId);
-      saveBlobFile(file.blob, file.filename);
-    } finally {
-      setDownloadingId(null);
-    }
-  }
 
   const ledger = useMemo(() => {
     const numbers = new Set(clientInvoices.map((invoice) => invoice.invoiceNumber));
@@ -265,15 +253,10 @@ export default function AdminClientDetailPage() {
                             <InvoiceStatusBadge status={invoice.status} />
                           </td>
                           <td className="py-3 pr-4">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              disabled={downloadingId === invoice.id}
-                              onClick={() => void handleDownloadPdf(invoice.id)}
-                            >
-                              <Download className="h-3.5 w-3.5" />
-                              {downloadingId === invoice.id ? 'Saving...' : 'PDF'}
-                            </Button>
+                            <DownloadInvoicePdfButton
+                              invoiceId={invoice.id}
+                              invoiceNumber={invoice.invoiceNumber}
+                            />
                           </td>
                         </tr>
                       ))}

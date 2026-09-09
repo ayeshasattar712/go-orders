@@ -3,7 +3,7 @@ import { Bolt, ShoppingBag, Store, Sparkles, Home, Laptop } from 'lucide-react';
 
 const channels = [
   { href: '/deals', label: 'Flash Sale', icon: Bolt },
-  { href: '/vendors', label: 'Mall', icon: Store },
+  { href: '/products', label: 'Mall', icon: Store },
   { href: '/categories/grocery-pantry', label: 'Grocery', icon: ShoppingBag },
   { href: '/categories/office-furniture', label: 'Home', icon: Home },
   { href: '/categories/it-equipment', label: 'Electronics', icon: Laptop },

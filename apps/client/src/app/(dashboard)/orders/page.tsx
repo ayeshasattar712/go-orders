@@ -30,7 +30,7 @@ export default async function OrdersPage() {
       <div>
         <h2 className="text-2xl font-semibold tracking-tight">Your orders</h2>
         <p className="text-muted-foreground">
-          Track deliveries, download a PDF order form, and reorder easily.
+          Track deliveries, download your order, and reorder easily.
         </p>
       </div>
 

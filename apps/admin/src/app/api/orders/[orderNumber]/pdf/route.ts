@@ -3,7 +3,7 @@ import { PERMISSIONS } from '@/constants/roles';
 import { isResponse, requirePermission, requireStaffSession } from '@/lib/api-guard';
 import { prisma } from '@/lib/prisma';
 import { errorResponse } from '@/lib/api-response';
-import { buildOrderPdf, orderToPdfInput, pdfDownloadHeaders } from '@/lib/order-pdf';
+import { buildOrderPdf, orderToPdfInput, pdfFileHeaders } from '@/lib/order-pdf';
 
 export async function GET(
   request: Request,
@@ -24,9 +24,10 @@ export async function GET(
     return errorResponse('Order not found', { status: 404, code: 'NOT_FOUND' });
   }
 
-  const bytes = await buildOrderPdf(orderToPdfInput(order));
+  const inline = new URL(request.url).searchParams.get('inline') === '1';
+  const bytes = await buildOrderPdf(orderToPdfInput(order), { flatten: inline });
   return new NextResponse(Buffer.from(bytes), {
     status: 200,
-    headers: pdfDownloadHeaders(`${order.orderNumber}.pdf`),
+    headers: pdfFileHeaders(`${order.orderNumber}.pdf`, inline ? 'inline' : 'attachment'),
   });
 }

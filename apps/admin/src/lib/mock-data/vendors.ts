@@ -151,7 +151,7 @@ export const vendors: Vendor[] = [
     slug: 'budgetsupply-direct',
     logo: 'https://api.dicebear.com/9.x/initials/svg?seed=Budget%20Supply&backgroundType=gradientLinear',
     banner:
-      'https://images.unsplash.com/photo-1553413077-190083ec01b6?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1200&auto=format&fit=crop',
     rating: 3.4,
     reviewCount: 58,
     verified: false,

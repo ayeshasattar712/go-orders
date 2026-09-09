@@ -13,7 +13,7 @@ export interface CheckoutAddress {
 
 export type DeliveryOption = 'hour' | 'standard' | 'express' | 'scheduled';
 
-export type PaymentMethod = 'bank-account' | 'online-transfer';
+export type PaymentMethod = 'bank-account' | 'online-transfer' | 'cheque';
 
 export function shippingFee(option: DeliveryOption) {
   if (option === 'hour') return 99;

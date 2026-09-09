@@ -21,12 +21,12 @@ export function CategoryGrid() {
               href={`/categories/${category.slug}`}
               className="group flex flex-col items-center text-center"
             >
-              <span className="relative mb-3 h-28 w-28 overflow-hidden rounded-full border bg-muted shadow-sm transition-transform group-hover:scale-105">
+              <span className="relative mb-3 h-28 w-28 overflow-hidden rounded-xl border bg-white shadow-sm transition-transform group-hover:scale-105">
                 <Image
                   src={category.image}
                   alt={category.name}
                   fill
-                  className="object-cover"
+                  className="object-contain p-3"
                   sizes="112px"
                 />
               </span>

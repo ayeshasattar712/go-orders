@@ -8,38 +8,42 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
   const [active, setActive] = useState(0);
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row-reverse">
-      <div className="relative aspect-square w-full overflow-hidden rounded-2xl border bg-white sm:flex-1">
+    <div className="flex flex-col gap-3">
+      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border bg-white">
         <Image
           src={images[active] ?? images[0] ?? ''}
           alt={name}
           fill
           priority
-          className="object-cover"
-          sizes="(min-width: 1024px) 40vw, 90vw"
+          className="object-contain p-8 sm:p-12"
+          sizes="(min-width: 1024px) 50vw, 90vw"
         />
       </div>
-      <div className="flex gap-3 overflow-x-auto sm:w-20 sm:flex-col">
-        {images.map((image, index) => (
-          <button
-            key={image}
-            type="button"
-            onClick={() => setActive(index)}
-            className={cn(
-              'bg-muted relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 transition-colors',
-              active === index ? 'border-primary' : 'hover:border-border border-transparent',
-            )}
-          >
-            <Image
-              src={image}
-              alt={`${name} thumbnail ${index + 1}`}
-              fill
-              className="object-cover"
-              sizes="64px"
-            />
-          </button>
-        ))}
-      </div>
+      {images.length > 0 ? (
+        <div className="flex gap-3 overflow-x-auto">
+          {images.map((image, index) => (
+            <button
+              key={`${image}-${index}`}
+              type="button"
+              onClick={() => setActive(index)}
+              className={cn(
+                'relative h-16 w-20 shrink-0 overflow-hidden rounded-lg border-2 bg-white transition-colors',
+                active === index
+                  ? 'border-foreground'
+                  : 'border-border hover:border-foreground/40',
+              )}
+            >
+              <Image
+                src={image}
+                alt={`${name} thumbnail ${index + 1}`}
+                fill
+                className="object-contain p-2"
+                sizes="80px"
+              />
+            </button>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

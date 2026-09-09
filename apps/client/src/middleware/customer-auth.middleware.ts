@@ -3,7 +3,6 @@ import { getCustomerSessionFromRequest } from '@/lib/auth/customer-auth';
 import {
   CUSTOMER_AUTH_ROUTES,
   CUSTOMER_DEFAULT_LOGIN_REDIRECT,
-  CUSTOMER_DEFAULT_LOGOUT_REDIRECT,
   CUSTOMER_ROUTES,
 } from '@/constants/routes';
 import type { AppSessionToken } from '@/lib/auth/session';
@@ -22,6 +21,14 @@ export async function applyCustomerAuthMiddleware(
   request: NextRequest,
 ): Promise<SurfaceAuthResult> {
   const { pathname } = request.nextUrl;
+
+  if (pathname === '/') {
+    return {
+      response: NextResponse.redirect(new URL(CUSTOMER_DEFAULT_LOGIN_REDIRECT, request.url)),
+      session: await getCustomerSessionFromRequest(request),
+    };
+  }
+
   const isAuthRoute = CUSTOMER_AUTH_ROUTES.some((route) => pathMatches(pathname, route));
   // Auth routes always take precedence over the protected-route table, in
   // case of future prefix overlap (mirrors the admin surface's guard).
@@ -34,7 +41,7 @@ export async function applyCustomerAuthMiddleware(
   const session = await getCustomerSessionFromRequest(request);
 
   if (isProtected && !session) {
-    const loginUrl = new URL(CUSTOMER_DEFAULT_LOGOUT_REDIRECT, request.url);
+    const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('next', pathname);
     return { response: NextResponse.redirect(loginUrl), session: null };
   }

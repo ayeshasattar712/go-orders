@@ -14,6 +14,7 @@ import {
   Calculator,
   MessagesSquare,
   Sparkles,
+  FileText,
   Wrench,
   Gavel,
   Store,
@@ -59,7 +60,10 @@ const adminGroups: NavGroup[] = [
   },
   {
     label: 'Sales',
-    items: [{ href: '/admin/orders', label: 'Orders', icon: PackageCheck }],
+    items: [
+      { href: '/admin/orders', label: 'Orders', icon: PackageCheck },
+      { href: '/admin/quotations', label: 'Quotations', icon: FileText },
+    ],
   },
   {
     label: 'Catalog',

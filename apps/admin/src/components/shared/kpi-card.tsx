@@ -33,17 +33,17 @@ export function KpiCard({
 
   return (
     <Card className={cn('card-hover w-full min-w-0', className)}>
-      <CardContent className="pt-6">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-muted-foreground text-sm">{label}</p>
-            <p className="mt-1.5 text-xl font-bold tracking-tight break-words sm:text-2xl">
+      <CardContent className="overflow-visible p-5 sm:p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 flex-1 pr-1">
+            <p className="text-muted-foreground text-sm leading-5">{label}</p>
+            <p className="mt-2 text-xl leading-none font-bold tracking-tight break-words sm:text-2xl">
               {value}
             </p>
           </div>
           <span
             className={cn(
-              'flex h-10 w-10 items-center justify-center rounded-xl',
+              'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl',
               toneStyles[iconTone],
             )}
           >

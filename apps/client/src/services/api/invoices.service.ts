@@ -2,10 +2,11 @@ import { apiClient } from '@/lib/axios';
 import type { Invoice } from '@/types/enterprise';
 import type { ApiSuccessResponse } from '@/types/api';
 
-async function downloadPdfBlob(id: string) {
+async function downloadPdfBlob(id: string, options?: { inline?: boolean }) {
   const response = await apiClient.get<Blob>(`/invoices/${id}/pdf`, {
     responseType: 'blob',
     headers: { Accept: 'application/pdf' },
+    params: options?.inline ? { inline: '1' } : undefined,
   });
   const blob = response.data;
   if (blob.type.includes('json')) {

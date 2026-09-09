@@ -4,19 +4,17 @@ import { notFound } from 'next/navigation';
 import { ChevronRight } from 'lucide-react';
 import { ProductGallery } from '@/features/catalog/components/product-gallery';
 import { ProductBuyBox } from '@/features/catalog/components/product-buy-box';
-import { VendorMiniCard } from '@/features/catalog/components/vendor-mini-card';
 import { BulkPricingTable } from '@/features/catalog/components/bulk-pricing-table';
 import { ProductReviews } from '@/features/catalog/components/product-reviews';
 import { FrequentlyBoughtTogether } from '@/features/catalog/components/frequently-bought-together';
-import { ProductComparison } from '@/features/catalog/components/product-comparison';
-import { ProductRail } from '@/components/shared/product-rail';
+import { ProductCard } from '@/components/shared/product-card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   getFrequentlyBoughtTogether,
   getProductBySlug,
   getRelatedProducts,
-  getVendorById,
 } from '@/lib/catalog/catalog-repository';
+import { getCategoryGalleryImages } from '@/lib/mock-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,12 +43,14 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const [vendor, related, companions] = await Promise.all([
-    getVendorById(product.vendorId),
-    getRelatedProducts(product),
+  const [related, companions] = await Promise.all([
+    getRelatedProducts(product, 10),
     getFrequentlyBoughtTogether(product, 2),
   ]);
-  const comparisonProducts = [product, ...related.slice(0, 2)];
+
+  const galleryImages = Array.from(
+    new Set([...product.images, ...getCategoryGalleryImages(product.categorySlug)]),
+  ).slice(0, 4);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -71,7 +71,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-        <ProductGallery images={product.images} name={product.name} />
+        <ProductGallery images={galleryImages} name={product.name} />
 
         <div className="space-y-5">
           <div>
@@ -80,7 +80,6 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           </div>
 
           <ProductBuyBox product={product} />
-          {vendor ? <VendorMiniCard vendor={vendor} /> : null}
         </div>
       </div>
 
@@ -128,21 +127,30 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         <FrequentlyBoughtTogether mainProduct={product} companions={companions} />
       </div>
 
-      {comparisonProducts.length > 1 ? (
-        <div className="mt-12">
-          <h2 className="mb-4 text-xl font-bold tracking-tight">Compare similar products</h2>
-          <ProductComparison products={comparisonProducts} />
-        </div>
-      ) : null}
-
       {related.length > 0 ? (
-        <div className="mt-4">
-          <ProductRail
-            title="Related products"
-            products={related}
-            viewAllHref={`/categories/${product.categorySlug}`}
-          />
-        </div>
+        <section className="mt-12">
+          <div className="mb-6 flex items-end justify-between gap-3">
+            <div>
+              <p className="text-primary mb-1 text-[11px] font-semibold tracking-[0.2em] uppercase">
+                Shop
+              </p>
+              <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+                Related products
+              </h2>
+            </div>
+            <Link
+              href={`/categories/${product.categorySlug}`}
+              className="text-primary text-sm font-medium hover:underline"
+            >
+              View all
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
+            {related.map((item) => (
+              <ProductCard key={item.id} product={item} compact />
+            ))}
+          </div>
+        </section>
       ) : null}
     </div>
   );

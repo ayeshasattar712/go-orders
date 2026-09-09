@@ -42,6 +42,7 @@ export interface Quotation {
   id: string;
   quotationNumber: string;
   clientId: string;
+  clientName?: string;
   productName: string;
   quantity: number;
   unit: string;

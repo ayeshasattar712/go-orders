@@ -38,7 +38,7 @@ const nextConfig: NextConfig = {
   compress: true,
   // Workspace package consumed as raw TS source — Next needs to transpile it.
   transpilePackages: ['@goorder/db'],
-  serverExternalPackages: ['@prisma/client'],
+  serverExternalPackages: ['@prisma/client', 'bcryptjs'],
   outputFileTracingRoot: monorepoRoot,
   turbopack: {
     root: monorepoRoot,

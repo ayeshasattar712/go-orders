@@ -1,14 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-import { FileText } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useCallback } from 'react';
+import { PdfViewDownloadActions } from '@/components/shared/pdf-view-download-actions';
 import { ordersService } from '@/services/api';
 import { saveBlobFile } from '@/lib/save-blob';
 
 export async function saveChallanPdf(orderNumber: string) {
   const file = await ordersService.downloadChallanPdf(orderNumber);
-  saveBlobFile(file.blob, file.filename);
+  const blob =
+    file.blob.type === 'application/pdf'
+      ? file.blob
+      : new Blob([file.blob], { type: 'application/pdf' });
+  saveBlobFile(blob, file.filename);
 }
 
 export function DownloadChallanPdfButton({
@@ -22,23 +25,24 @@ export function DownloadChallanPdfButton({
   size?: 'sm' | 'default';
   label?: string;
 }) {
-  const [pending, setPending] = useState(false);
+  const loadPreview = useCallback(async () => {
+    const file = await ordersService.downloadChallanPdf(orderNumber, { inline: true });
+    return file.blob;
+  }, [orderNumber]);
 
-  async function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
-    event.preventDefault();
-    event.stopPropagation();
-    setPending(true);
-    try {
-      await saveChallanPdf(orderNumber);
-    } finally {
-      setPending(false);
-    }
-  }
+  const onDownload = useCallback(async () => {
+    await saveChallanPdf(orderNumber);
+  }, [orderNumber]);
 
   return (
-    <Button type="button" size={size} variant={variant} disabled={pending} onClick={handleClick}>
-      <FileText className="h-3.5 w-3.5" />
-      {pending ? 'Saving...' : label}
-    </Button>
+    <PdfViewDownloadActions
+      title="View challan"
+      description={`Review delivery challan for ${orderNumber} on screen. Use Download if you want to save a copy.`}
+      downloadLabel={label}
+      variant={variant}
+      size={size}
+      loadPreview={loadPreview}
+      onDownload={onDownload}
+    />
   );
 }

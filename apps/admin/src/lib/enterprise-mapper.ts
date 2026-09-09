@@ -228,11 +228,16 @@ export const QUOTATION_STATUS_TO_STRING: Record<PrismaQuotationStatus, Quotation
   REJECTED: 'rejected',
 };
 
-export function serializeQuotation(quotation: PrismaQuotation): Quotation {
+export function serializeQuotation(
+  quotation: PrismaQuotation & {
+    client?: Pick<PrismaClient, 'companyName' | 'contactName'> | null;
+  },
+): Quotation {
   return {
     id: quotation.id,
     quotationNumber: quotation.quotationNumber,
     clientId: quotation.clientId,
+    clientName: quotation.client?.companyName ?? quotation.client?.contactName,
     productName: quotation.productName,
     quantity: quotation.quantity,
     unit: quotation.unit,
@@ -532,6 +537,7 @@ export function serializeLedgerEntry(entry: PrismaLedgerEntry): LedgerEntry {
 const PAYMENT_METHOD_TO_STRING: Record<PrismaCheckoutPaymentMethod, ReceivedPayment['method']> = {
   BANK_ACCOUNT: 'bank-account',
   ONLINE_TRANSFER: 'online-transfer',
+  CHEQUE: 'cheque',
 };
 
 const PAYMENT_STATUS_TO_STRING: Record<PrismaPaymentStatus, ReceivedPayment['status']> = {
@@ -553,7 +559,12 @@ export function serializeReceivedPayment(
     customerName: name,
     customerEmail: payment.order.user?.email,
     method,
-    methodLabel: method === 'bank-account' ? 'Bank transfer' : 'Online transfer',
+    methodLabel:
+      method === 'bank-account'
+        ? 'Bank transfer'
+        : method === 'cheque'
+          ? 'Cheque'
+          : 'Online transfer',
     status: PAYMENT_STATUS_TO_STRING[payment.status],
     amount: payment.amount,
     reference: payment.reference,

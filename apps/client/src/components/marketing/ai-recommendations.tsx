@@ -25,10 +25,10 @@ const insights = [
   {
     icon: Boxes,
     tone: 'info' as const,
-    title: 'Smarter vendor match found',
-    body: 'ClearLine Janitorial Supply offers a 12% lower rate on your most-ordered cleaning SKUs with equal delivery performance.',
-    action: 'Compare vendor',
-    href: '/vendors/clearline-janitorial-supply',
+    title: 'Better price on cleaning supplies',
+    body: 'ClearLine cleaning SKUs you reorder often are available with bulk pricing and fast delivery.',
+    action: 'Shop cleaning',
+    href: '/categories/cleaning-supplies',
   },
 ];
 

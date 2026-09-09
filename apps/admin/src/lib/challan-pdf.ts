@@ -1,5 +1,5 @@
 import { PDFDocument, StandardFonts, rgb, type PDFFont } from 'pdf-lib';
-import { pdfDownloadHeaders } from '@/lib/order-pdf';
+import { pdfDownloadHeaders, pdfFileHeaders } from '@/lib/order-pdf';
 
 export type ChallanPdfItem = {
   name: string;
@@ -45,7 +45,10 @@ function truncate(font: PDFFont, text: string, size: number, maxWidth: number) {
   return `${value}…`;
 }
 
-export async function buildChallanPdf(input: ChallanPdfInput): Promise<Uint8Array> {
+export async function buildChallanPdf(
+  input: ChallanPdfInput,
+  options?: { flatten?: boolean },
+): Promise<Uint8Array> {
   const pdf = await PDFDocument.create();
   const font = await pdf.embedFont(StandardFonts.Helvetica);
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
@@ -184,6 +187,14 @@ export async function buildChallanPdf(input: ChallanPdfInput): Promise<Uint8Arra
     color: MUTED,
   });
 
+  if (options?.flatten) {
+    try {
+      form.flatten();
+    } catch {
+      // Preview still works as a static PDF if flattening fails.
+    }
+  }
+
   return pdf.save();
 }
 
@@ -240,4 +251,4 @@ export function challanToPdfInput(
   };
 }
 
-export { pdfDownloadHeaders };
+export { pdfDownloadHeaders, pdfFileHeaders };

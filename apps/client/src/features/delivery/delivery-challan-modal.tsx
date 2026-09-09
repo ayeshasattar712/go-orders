@@ -1,10 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import { Modal } from '@/components/ui/modal';
 import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/utils';
-import { saveChallanPdf } from '@/features/delivery/download-challan-pdf-button';
+import { DownloadChallanPdfButton } from '@/features/delivery/download-challan-pdf-button';
 import type { DeliveryJob } from '@/types/enterprise';
 
 export function DeliveryChallanModal({
@@ -16,33 +15,20 @@ export function DeliveryChallanModal({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const [saving, setSaving] = useState(false);
   if (!job) return null;
-  const selectedJob = job;
-
-  async function handleSavePdf() {
-    setSaving(true);
-    try {
-      await saveChallanPdf(selectedJob.orderNumber);
-    } finally {
-      setSaving(false);
-    }
-  }
 
   return (
     <Modal
       open={open}
       onOpenChange={onOpenChange}
       title="Delivery challan"
-      description="Generates a fillable PDF form for this shipment and saves it to your device."
+      description="Preview or download a fillable PDF form for this shipment."
       footer={
         <>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Close
           </Button>
-          <Button onClick={() => void handleSavePdf()} disabled={saving}>
-            {saving ? 'Saving...' : 'Save PDF form'}
-          </Button>
+          <DownloadChallanPdfButton orderNumber={job.orderNumber} label="Challan PDF" />
         </>
       }
     >
@@ -108,7 +94,8 @@ export function DeliveryChallanModal({
           </div>
         </div>
         <p className="text-muted-foreground border-t pt-3 text-xs">
-          Saving the challan downloads a PDF form with receiver name, signature, and remarks fields.
+          View opens a preview; download saves a PDF form with receiver name, signature, and remarks
+          fields.
         </p>
       </div>
     </Modal>

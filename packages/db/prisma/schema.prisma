@@ -250,6 +250,7 @@ model Order {
 enum CheckoutPaymentMethod {
   BANK_ACCOUNT     @map("bank-account")
   ONLINE_TRANSFER  @map("online-transfer")
+  CHEQUE           @map("cheque")
 }
 
 enum PaymentStatus {
