@@ -108,6 +108,9 @@ export function serializeProduct(product: PrismaProductWithRelations): Product {
       label: spec.label,
       value: spec.value,
     })),
+    // Overwritten by withMockCatalogAttributes — DB rows don't carry these yet.
+    color: null,
+    material: 'General',
     tags: product.tags,
     isBestSeller: product.isBestSeller,
     isTrending: product.isTrending,

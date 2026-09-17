@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { AtSign, Boxes, Globe } from 'lucide-react';
 import { clientEnv } from '@/lib/env';
-import { categories } from '@/lib/mock-data';
+import { FooterNewsletter } from '@/components/layouts/footer-newsletter';
 
 const footerColumns = [
   {
@@ -85,23 +85,17 @@ export function SiteFooter() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-wrap gap-2 border-t border-white/10 pt-8">
-          {categories.map((category) => (
-            <Link
-              key={category.id}
-              href={`/categories/${category.slug}`}
-              className="rounded-full border border-white/15 px-3 py-1.5 text-xs text-white/70 hover:border-white/40 hover:text-white"
-            >
-              {category.name}
-            </Link>
-          ))}
+        <div className="mt-10">
+          <FooterNewsletter />
         </div>
 
-        <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/50 sm:flex-row">
+        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/50 sm:flex-row">
           <p>
             © {new Date().getFullYear()} {clientEnv.NEXT_PUBLIC_APP_NAME}, Inc. All rights reserved.
           </p>
-          <p className="tracking-wide">Visa · Mastercard · JazzCash · Raast · Bank transfer · Cheque</p>
+          <p className="tracking-wide">
+            Visa · Mastercard · JazzCash · Raast · Bank transfer · Cheque
+          </p>
         </div>
       </div>
     </footer>

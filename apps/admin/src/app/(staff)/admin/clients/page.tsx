@@ -80,7 +80,7 @@ export default function AdminClientsPage() {
               <table className="w-full min-w-[900px] text-sm">
                 <thead className="text-muted-foreground text-left text-xs tracking-wide uppercase">
                   <tr className="border-b">
-                    <th className="py-2.5 pr-4 font-medium">Company</th>
+                    <th className="py-2.5 pr-4 font-medium">Client</th>
                     <th className="py-2.5 pr-4 font-medium">Contact</th>
                     <th className="py-2.5 pr-4 font-medium">Credit limit</th>
                     <th className="py-2.5 pr-4 font-medium">Terms</th>
@@ -98,12 +98,15 @@ export default function AdminClientsPage() {
                           href={`/admin/clients/${client.id}`}
                           className="hover:text-primary hover:underline"
                         >
-                          {client.companyName}
+                          {client.contactName}
                         </Link>
+                        <p className="text-muted-foreground text-xs font-normal">
+                          {client.companyName}
+                        </p>
                       </td>
                       <td className="text-muted-foreground py-3 pr-4">
-                        <p>{client.contactName}</p>
-                        <p className="text-xs">{client.email}</p>
+                        <p>{client.email}</p>
+                        <p className="text-xs">{client.phone}</p>
                       </td>
                       <td className="py-3 pr-4">{formatCurrency(client.creditLimit)}</td>
                       <td className="py-3 pr-4">{creditTermsLabel(client.creditTerms)}</td>

@@ -143,43 +143,6 @@ export default function AdminDashboardPage() {
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Revenue trend</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[220px] w-full min-w-0 sm:h-[280px]">
-              <RevenueTrendChart
-                data={monthlyRevenue}
-                xKey="month"
-                series={[
-                  { key: 'revenue', color: 'hsl(var(--chart-1))', label: 'Revenue' },
-                  { key: 'profit', color: 'hsl(var(--chart-2))', label: 'Profit' },
-                ]}
-                height={220}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Top products</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {topProducts.map((product) => (
-              <div key={product.id} className="flex items-center justify-between gap-2 text-sm">
-                <span className="truncate">{product.name}</span>
-                <span className="text-muted-foreground shrink-0 font-medium">
-                  {formatCurrency(product.price)}
-                </span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
@@ -233,6 +196,43 @@ export default function AdminDashboardPage() {
             {outstandingInvoices.length === 0 ? (
               <p className="text-muted-foreground text-sm">No outstanding invoices. Great job!</p>
             ) : null}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Revenue trend</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[220px] w-full min-w-0 sm:h-[280px]">
+              <RevenueTrendChart
+                data={monthlyRevenue}
+                xKey="month"
+                series={[
+                  { key: 'revenue', color: 'hsl(var(--chart-1))', label: 'Revenue' },
+                  { key: 'profit', color: 'hsl(var(--chart-2))', label: 'Profit' },
+                ]}
+                height={220}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Top products</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {topProducts.map((product) => (
+              <div key={product.id} className="flex items-center justify-between gap-2 text-sm">
+                <span className="truncate">{product.name}</span>
+                <span className="text-muted-foreground shrink-0 font-medium">
+                  {formatCurrency(product.price)}
+                </span>
+              </div>
+            ))}
           </CardContent>
         </Card>
       </div>

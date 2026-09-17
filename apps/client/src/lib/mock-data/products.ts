@@ -1,5 +1,10 @@
 import type { BulkPriceTier, Product, ProductReview } from '@/types/catalog';
-import { OFFICE_PENS_IMAGE, OFFICE_SUPPLIES_IMAGE, SUBCATEGORY_KEYWORDS, homeCategoryTiles } from './categories';
+import {
+  OFFICE_PENS_IMAGE,
+  OFFICE_SUPPLIES_IMAGE,
+  SUBCATEGORY_KEYWORDS,
+  homeCategoryTiles,
+} from './categories';
 import { buildGeneratedCatalog } from './generated-catalog';
 
 const MODULAR_SHELVING_IMAGE = '/images/products/modular-shelving.jpg';
@@ -82,6 +87,8 @@ export const curatedProducts: Product[] = [
       { label: 'Warranty', value: '5 years' },
       { label: 'Assembly', value: 'Required, tools included' },
     ],
+    color: 'Black',
+    material: 'Mesh',
     tags: ['ergonomic', 'best-seller', 'warranty-5yr'],
     isBestSeller: true,
     isTrending: true,
@@ -121,6 +128,8 @@ export const curatedProducts: Product[] = [
       { label: 'Presets', value: '4 programmable memory settings' },
       { label: 'Warranty', value: '7 years frame, 3 years electronics' },
     ],
+    color: 'Grey',
+    material: 'Laminate',
     tags: ['ergonomic', 'electric', 'wellness'],
     isTrending: true,
     deliveryEstimateDays: 5,
@@ -156,6 +165,8 @@ export const curatedProducts: Product[] = [
       { label: 'Load capacity', value: '800 lbs per shelf' },
       { label: 'Assembly', value: 'Tool-free' },
     ],
+    color: 'Grey',
+    material: 'Metal Frame',
     tags: ['storage', 'warehouse'],
     deliveryEstimateDays: 6,
     reviews: reviews('modular_shelving', 4),
@@ -192,6 +203,8 @@ export const curatedProducts: Product[] = [
       { label: 'Certification', value: 'Rainforest Alliance' },
       { label: 'Shelf life', value: '12 months unopened' },
     ],
+    color: null,
+    material: 'Sachet Pack',
     tags: ['best-seller', 'breakroom'],
     isBestSeller: true,
     deliveryEstimateDays: 2,
@@ -226,6 +239,8 @@ export const curatedProducts: Product[] = [
       { label: 'Packaging', value: 'BPA-free PET' },
       { label: 'Certification', value: 'FDA registered facility' },
     ],
+    color: null,
+    material: 'Plastic Bottle',
     tags: ['pantry', 'events'],
     isTrending: true,
     deliveryEstimateDays: 2,
@@ -260,6 +275,8 @@ export const curatedProducts: Product[] = [
       { label: 'Variety', value: '12 unique items' },
       { label: 'Dietary', value: 'Nut-free options included' },
     ],
+    color: null,
+    material: 'Carton',
     tags: ['breakroom'],
     deliveryEstimateDays: 3,
     reviews: reviews('snack_box', 4),
@@ -292,6 +309,8 @@ export const curatedProducts: Product[] = [
       { label: 'Sheets per ream', value: '500' },
       { label: 'Compatibility', value: 'Laser & inkjet' },
     ],
+    color: 'White',
+    material: 'Paper',
     tags: ['best-seller', 'printing'],
     isBestSeller: true,
     deliveryEstimateDays: 2,
@@ -323,6 +342,8 @@ export const curatedProducts: Product[] = [
       { label: 'Tip size', value: '0.7mm' },
       { label: 'Count', value: '100 pens per pack' },
     ],
+    color: 'Black',
+    material: 'Plastic',
     tags: ['stationery'],
     deliveryEstimateDays: 2,
     reviews: reviews('pen_pack', 3),
@@ -360,6 +381,8 @@ export const curatedProducts: Product[] = [
       { label: 'Security', value: 'TPM 2.0, vPro, fingerprint reader' },
       { label: 'Warranty', value: '3-year on-site' },
     ],
+    color: 'Silver',
+    material: 'Aluminum',
     tags: ['best-seller', 'enterprise', 'security'],
     isBestSeller: true,
     isTrending: true,
@@ -396,6 +419,8 @@ export const curatedProducts: Product[] = [
       { label: 'Connectivity', value: 'USB-C (90W PD), HDMI, DP, KVM' },
       { label: 'Color accuracy', value: 'Factory calibrated Delta E < 2' },
     ],
+    color: 'Black',
+    material: 'Plastic',
     tags: ['it', 'display'],
     isTrending: true,
     deliveryEstimateDays: 4,
@@ -431,6 +456,8 @@ export const curatedProducts: Product[] = [
       { label: 'Management', value: 'L2/L3 managed, cloud-ready' },
       { label: 'Mounting', value: '19" rack-mountable' },
     ],
+    color: 'Black',
+    material: 'Steel',
     tags: ['networking'],
     deliveryEstimateDays: 5,
     reviews: reviews('network_switch', 4),
@@ -465,6 +492,8 @@ export const curatedProducts: Product[] = [
       { label: 'Certification', value: 'EPA registered' },
       { label: 'Kill claims', value: 'Broad-spectrum, 99.9%' },
     ],
+    color: 'Blue',
+    material: 'Plastic',
     tags: ['facility', 'disinfectant'],
     deliveryEstimateDays: 4,
     reviews: reviews('disinfectant', 4),
@@ -497,6 +526,8 @@ export const curatedProducts: Product[] = [
       { label: 'Material', value: 'High-density polyethylene' },
       { label: 'Count', value: '250 liners per case' },
     ],
+    color: 'Black',
+    material: 'Plastic',
     tags: ['facility'],
     deliveryEstimateDays: 4,
     reviews: reviews('trash_liners', 3),
@@ -529,6 +560,8 @@ export const curatedProducts: Product[] = [
       { label: 'Reusable', value: 'Machine washable, 300+ cycles' },
       { label: 'Count', value: '100 cloths per pack' },
     ],
+    color: 'Blue',
+    material: 'Microfiber',
     tags: ['facility'],
     isNew: true,
     deliveryEstimateDays: 3,
@@ -565,6 +598,8 @@ export const curatedProducts: Product[] = [
       { label: 'Certification', value: 'DLC Premium listed' },
       { label: 'Lifespan', value: '50,000 hours' },
     ],
+    color: 'White',
+    material: 'Aluminum',
     tags: ['lighting', 'energy-efficient'],
     isBestSeller: true,
     deliveryEstimateDays: 3,
@@ -599,6 +634,8 @@ export const curatedProducts: Product[] = [
       { label: 'Monitoring', value: 'Remote via SNMP/network card' },
       { label: 'Mounting', value: '1U rack-mount' },
     ],
+    color: 'Black',
+    material: 'Plastic',
     tags: ['power', 'data-center'],
     deliveryEstimateDays: 5,
     reviews: reviews('surge_protector', 3),
@@ -633,6 +670,8 @@ export const curatedProducts: Product[] = [
       { label: 'Length', value: '500 ft per spool' },
       { label: 'Certification', value: 'UL listed' },
     ],
+    color: 'Black',
+    material: 'Copper',
     tags: ['electrical'],
     isNew: true,
     deliveryEstimateDays: 5,
@@ -666,6 +705,8 @@ export const curatedProducts: Product[] = [
       { label: 'Count', value: '100 tea bags' },
       { label: 'Type', value: 'Black tea' },
     ],
+    color: null,
+    material: 'Sachet Pack',
     tags: ['pantry', 'everyday', 'best-seller'],
     isBestSeller: true,
     deliveryEstimateDays: 2,
@@ -699,6 +740,8 @@ export const curatedProducts: Product[] = [
       { label: 'Volume', value: '5 litres' },
       { label: 'Type', value: 'Refined canola oil' },
     ],
+    color: null,
+    material: 'Plastic Bottle',
     tags: ['pantry', 'everyday'],
     isBestSeller: true,
     deliveryEstimateDays: 2,
@@ -732,6 +775,8 @@ export const curatedProducts: Product[] = [
       { label: 'Net weight', value: '100 g' },
       { label: 'Use', value: 'Karahi, gravies, everyday cooking' },
     ],
+    color: null,
+    material: 'Sachet Pack',
     tags: ['pantry', 'everyday'],
     deliveryEstimateDays: 2,
     reviews: reviews('masala_mix', 4),
@@ -764,6 +809,8 @@ export const curatedProducts: Product[] = [
       { label: 'Count', value: '24 packs' },
       { label: 'Cook time', value: '3 minutes' },
     ],
+    color: null,
+    material: 'Carton',
     tags: ['pantry', 'everyday', 'breakroom'],
     isTrending: true,
     deliveryEstimateDays: 2,
@@ -799,6 +846,8 @@ export const curatedProducts: Product[] = [
       { label: 'Type', value: 'Frozen, ready to eat' },
       { label: 'Storage', value: 'Keep frozen' },
     ],
+    color: null,
+    material: 'Carton',
     tags: ['pantry', 'everyday', 'snack', 'frozen'],
     isNew: true,
     isTrending: true,
@@ -833,6 +882,8 @@ export const curatedProducts: Product[] = [
       { label: 'Count', value: '12 bars' },
       { label: 'Use', value: 'Hands and body' },
     ],
+    color: 'White',
+    material: 'Plastic',
     tags: ['everyday', 'facility'],
     deliveryEstimateDays: 3,
     reviews: reviews('bath_soap', 3),
@@ -865,6 +916,8 @@ export const curatedProducts: Product[] = [
       { label: 'Volume', value: '1 litre' },
       { label: 'Type', value: 'Antibacterial liquid' },
     ],
+    color: 'Blue',
+    material: 'Plastic',
     tags: ['everyday', 'facility'],
     isBestSeller: true,
     deliveryEstimateDays: 3,
@@ -887,7 +940,8 @@ export function filterProductsBySubcategory(items: Product[], sub?: string | nul
   if (!sub) return items;
   const keywords = SUBCATEGORY_KEYWORDS[sub] ?? [sub.replace(/-/g, ' ')];
   const matched = items.filter((product) => {
-    const haystack = `${product.name} ${product.shortDescription} ${product.tags.join(' ')}`.toLowerCase();
+    const haystack =
+      `${product.name} ${product.shortDescription} ${product.tags.join(' ')}`.toLowerCase();
     return keywords.some((keyword) => haystack.includes(keyword.toLowerCase()));
   });
   return matched.length ? matched : items;
@@ -970,15 +1024,13 @@ export function getJustForYou(limit = 16): Product[] {
   return [...products].sort((a, b) => b.reviewCount - a.reviewCount).slice(0, limit);
 }
 
-const EVERYDAY_SLUGS = new Set([
-  'grocery-pantry',
-  'cleaning-supplies',
-]);
+const EVERYDAY_SLUGS = new Set(['grocery-pantry', 'cleaning-supplies']);
 
 export function getEverydayEssentials(limit = 10): Product[] {
   const tagged = products.filter(
-    (product) =>
-      EVERYDAY_SLUGS.has(product.categorySlug) || product.tags.includes('everyday'),
+    (product) => EVERYDAY_SLUGS.has(product.categorySlug) || product.tags.includes('everyday'),
   );
-  return [...tagged].sort((a, b) => b.rating * b.reviewCount - a.rating * a.reviewCount).slice(0, limit);
+  return [...tagged]
+    .sort((a, b) => b.rating * b.reviewCount - a.rating * a.reviewCount)
+    .slice(0, limit);
 }

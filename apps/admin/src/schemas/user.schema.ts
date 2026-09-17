@@ -56,7 +56,7 @@ export const createStaffSchema = z.object({
 export const createClientLoginSchema = z.object({
   firstName: z.string().trim().min(1).max(50),
   lastName: z.string().trim().min(1).max(50),
-  companyName: z.string().trim().min(1).max(120),
+  companyName: z.string().trim().max(120).optional(),
   email: optionalEmail,
   phone: z.string().trim().max(40).optional(),
   creditLimit: z.number().min(0).optional(),

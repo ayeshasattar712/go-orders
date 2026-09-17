@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, type MouseEvent } from 'react';
+import { useMemo, useState, type MouseEvent } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -20,12 +20,7 @@ interface CategoryHeroProps {
   products: Product[];
 }
 
-export function CategoryHero({
-  category,
-  activeSub,
-  galleryImages,
-  products,
-}: CategoryHeroProps) {
+export function CategoryHero({ category, activeSub, galleryImages, products }: CategoryHeroProps) {
   const router = useRouter();
   const guard = useGuardedAction();
   const children = getCategoryChildren(category.slug);
@@ -45,9 +40,12 @@ export function CategoryHero({
 
   const productKey = products.map((product) => product.id).join(',');
 
-  useEffect(() => {
+  const activeKey = `${activeSub ?? ''}:${productKey}`;
+  const [syncedActiveKey, setSyncedActiveKey] = useState(activeKey);
+  if (activeKey !== syncedActiveKey) {
+    setSyncedActiveKey(activeKey);
     setActive(0);
-  }, [activeSub, productKey]);
+  }
 
   const current = items[Math.min(active, Math.max(items.length - 1, 0))] ?? null;
   const selectedProduct = products.find((product) => product.id === current?.id) ?? null;
@@ -65,10 +63,7 @@ export function CategoryHero({
     event?.stopPropagation();
     if (!selectedProduct) return;
     addProductToCart(selectedProduct);
-    guard(
-      () => router.push('/checkout'),
-      'Log in to place your order and checkout securely.',
-    );
+    guard(() => router.push('/checkout'), 'Log in to place your order and checkout securely.');
   }
 
   return (
@@ -87,10 +82,21 @@ export function CategoryHero({
         </div>
 
         {current ? (
-          <div className="mt-4 flex max-w-xl flex-col gap-3">
-            <div className="relative aspect-[16/9] w-full max-h-52 overflow-hidden rounded-xl border bg-white sm:max-h-64">
-              {selectedProduct ? (
-                <Link href={`/products/${selectedProduct.slug}`} className="absolute inset-0">
+          <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-start">
+            <div className="flex w-full max-w-xl flex-col gap-3">
+              <div className="relative aspect-[16/9] max-h-52 w-full overflow-hidden rounded-xl border bg-white sm:max-h-64">
+                {selectedProduct ? (
+                  <Link href={`/products/${selectedProduct.slug}`} className="absolute inset-0">
+                    <Image
+                      src={image}
+                      alt={current.name}
+                      fill
+                      priority
+                      className="object-cover"
+                      sizes="(min-width: 640px) 36rem, 90vw"
+                    />
+                  </Link>
+                ) : (
                   <Image
                     src={image}
                     alt={current.name}
@@ -99,91 +105,86 @@ export function CategoryHero({
                     className="object-cover"
                     sizes="(min-width: 640px) 36rem, 90vw"
                   />
-                </Link>
-              ) : (
-                <Image
-                  src={image}
-                  alt={current.name}
-                  fill
-                  priority
-                  className="object-cover"
-                  sizes="(min-width: 640px) 36rem, 90vw"
-                />
-              )}
+                )}
+              </div>
+
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {items.map((item, index) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setActive(index)}
+                    className={cn(
+                      'relative h-12 w-16 shrink-0 overflow-hidden rounded-md border-2 bg-white sm:h-14 sm:w-20',
+                      active === index ? 'border-foreground' : 'border-border',
+                    )}
+                  >
+                    <Image
+                      src={item.images[0] ?? ''}
+                      alt={item.name}
+                      fill
+                      className="object-cover"
+                      sizes="72px"
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {items.map((item, index) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setActive(index)}
-                  className={cn(
-                    'relative h-12 w-16 shrink-0 overflow-hidden rounded-md border-2 bg-white sm:h-14 sm:w-20',
-                    active === index ? 'border-foreground' : 'border-border',
-                  )}
-                >
-                  <Image
-                    src={item.images[0] ?? ''}
-                    alt={item.name}
-                    fill
-                    className="object-cover"
-                    sizes="72px"
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : null}
+            {children.length || selectedProduct ? (
+              <div className="flex w-full max-w-md flex-col gap-5">
+                {children.length ? (
+                  <div className="flex flex-wrap gap-2">
+                    {children.map((child) => (
+                      <Link
+                        key={child.slug}
+                        href={`/categories/${category.slug}?sub=${child.slug}`}
+                        className={
+                          activeSub === child.slug
+                            ? 'border-primary bg-primary/5 text-primary rounded-full border px-3 py-1.5 text-sm'
+                            : 'rounded-full border bg-white px-3 py-1.5 text-sm'
+                        }
+                      >
+                        {child.name}
+                      </Link>
+                    ))}
+                  </div>
+                ) : null}
 
-        {children.length ? (
-          <div className="mt-6 flex flex-wrap gap-2">
-            {children.map((child) => (
-              <Link
-                key={child.slug}
-                href={`/categories/${category.slug}?sub=${child.slug}`}
-                className={
-                  activeSub === child.slug
-                    ? 'border-primary bg-primary/5 text-primary rounded-full border px-3 py-1.5 text-sm'
-                    : 'rounded-full border bg-white px-3 py-1.5 text-sm'
-                }
-              >
-                {child.name}
-              </Link>
-            ))}
-          </div>
-        ) : null}
-
-        {selectedProduct ? (
-          <div className="mt-5 max-w-xl rounded-xl border bg-white p-3 sm:p-4">
-            <Link
-              href={`/products/${selectedProduct.slug}`}
-              className="line-clamp-2 text-sm font-semibold sm:text-base"
-            >
-              {selectedProduct.name}
-            </Link>
-            <p className="text-primary mt-1 text-lg font-bold">
-              {formatCurrency(selectedProduct.price)}
-            </p>
-            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full sm:flex-1"
-                onClick={handleAddToCart}
-                disabled={selectedProduct.stockStatus === 'out-of-stock'}
-              >
-                <ShoppingCart className="h-4 w-4" /> Add to cart
-              </Button>
-              <Button
-                type="button"
-                className="w-full sm:flex-1"
-                onClick={handleBuyNow}
-                disabled={selectedProduct.stockStatus === 'out-of-stock'}
-              >
-                <Zap className="h-4 w-4" /> Buy now
-              </Button>
-            </div>
+                {selectedProduct ? (
+                  <div className="rounded-xl border bg-white p-3 sm:p-4">
+                    <Link
+                      href={`/products/${selectedProduct.slug}`}
+                      className="line-clamp-2 text-sm font-semibold sm:text-base"
+                    >
+                      {selectedProduct.name}
+                    </Link>
+                    <p className="text-primary mt-1 text-lg font-bold">
+                      {formatCurrency(selectedProduct.price)}
+                    </p>
+                    <div className="mt-3 flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="min-w-0 flex-1"
+                        onClick={handleAddToCart}
+                        disabled={selectedProduct.stockStatus === 'out-of-stock'}
+                      >
+                        <ShoppingCart className="h-4 w-4" /> Add to cart
+                      </Button>
+                      <Button
+                        type="button"
+                        className="min-w-0 flex-1"
+                        onClick={handleBuyNow}
+                        disabled={selectedProduct.stockStatus === 'out-of-stock'}
+                      >
+                        <Zap className="h-4 w-4" /> Buy now
+                      </Button>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>

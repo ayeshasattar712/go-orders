@@ -99,7 +99,9 @@ export async function POST(request: Request) {
         emailVerified: new Date(),
         client: {
           create: {
-            companyName: parsed.data.companyName,
+            companyName:
+              parsed.data.companyName?.trim() ||
+              `${parsed.data.firstName} ${parsed.data.lastName}`.trim(),
             contactName: `${parsed.data.firstName} ${parsed.data.lastName}`.trim(),
             email,
             phone: parsed.data.phone || '—',

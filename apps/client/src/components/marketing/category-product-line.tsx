@@ -8,7 +8,7 @@ import { homeCategoryTiles } from '@/lib/mock-data';
 import { cn } from '@/lib/utils';
 
 const arrowBtnClass =
-  'flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-zinc-200/80 bg-white text-zinc-800 shadow-[0_8px_20px_-12px_rgba(0,0,0,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-primary hover:text-white hover:shadow-[0_12px_24px_-12px_hsl(262_83%_58%/0.55)] active:translate-y-0';
+  'flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-[0_8px_20px_-12px_rgba(0,0,0,0.5)] transition-all duration-200 hover:-translate-y-0.5 hover:border-accent-brand/50 hover:bg-primary hover:text-primary-foreground hover:shadow-[0_12px_24px_-12px_hsl(var(--primary)/0.55)] active:translate-y-0';
 
 export function CategoryProductLine() {
   const scroller = useRef<HTMLDivElement>(null);
@@ -40,10 +40,10 @@ export function CategoryProductLine() {
   }
 
   return (
-    <section className="relative overflow-hidden bg-[linear-gradient(180deg,#f8f7fc_0%,#ffffff_55%,#ffffff_100%)]">
+    <section className="bg-background relative overflow-hidden">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_top,hsl(262_83%_58%/0.08),transparent_65%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_top,hsl(var(--accent-brand)/0.1),transparent_65%)]"
       />
 
       <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
@@ -80,7 +80,7 @@ export function CategoryProductLine() {
 
           <div
             ref={scroller}
-            className="flex min-w-0 flex-1 gap-3 overflow-x-auto scroll-smooth py-2 pb-4 [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-4 [&::-webkit-scrollbar]:hidden"
+            className="flex min-w-0 flex-1 [scrollbar-width:none] gap-3 overflow-x-auto scroll-smooth py-2 pb-4 [-ms-overflow-style:none] sm:gap-4 [&::-webkit-scrollbar]:hidden"
           >
             {homeCategoryTiles.map((item) => (
               <Link
@@ -91,17 +91,17 @@ export function CategoryProductLine() {
                 <span
                   className={cn(
                     'relative mb-2.5 flex h-[108px] w-[108px] items-center justify-center overflow-hidden rounded-2xl border border-zinc-200/90 bg-white',
-                    'shadow-[0_10px_28px_-18px_rgba(15,23,42,0.35)]',
+                    'shadow-[0_10px_28px_-18px_rgba(0,0,0,0.6)]',
                     'transition-all duration-300 ease-out',
-                    'group-hover:-translate-y-1.5 group-hover:border-primary/45',
-                    'group-hover:shadow-[0_22px_40px_-20px_hsl(262_83%_58%/0.45)]',
-                    'group-hover:ring-4 group-hover:ring-primary/15',
+                    'group-hover:border-accent-brand/60 group-hover:-translate-y-1.5',
+                    'group-hover:shadow-[0_22px_40px_-20px_hsl(var(--primary)/0.5)]',
+                    'group-hover:ring-accent-brand/20 group-hover:ring-4',
                     'sm:h-[120px] sm:w-[120px]',
                   )}
                 >
                   <span
                     aria-hidden
-                    className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(262_83%_58%/0.08),transparent_55%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--primary)/0.1),transparent_55%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                   />
                   <Image
                     src={item.image}
@@ -115,7 +115,7 @@ export function CategoryProductLine() {
                     className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/25 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                   />
                 </span>
-                <span className="line-clamp-2 min-h-[2.5em] px-1 text-center text-[13px] leading-snug font-semibold text-zinc-800 transition-colors duration-200 group-hover:text-primary sm:text-sm">
+                <span className="text-foreground group-hover:text-primary line-clamp-2 min-h-[2.5em] px-1 text-center text-[13px] leading-snug font-semibold transition-colors duration-200 sm:text-sm">
                   {item.name}
                 </span>
               </Link>
@@ -133,7 +133,7 @@ export function CategoryProductLine() {
         </div>
 
         <div className="mt-2 flex flex-col items-center gap-3">
-          <div className="mx-auto h-1.5 w-full max-w-[240px] overflow-hidden rounded-full bg-zinc-200/90">
+          <div className="bg-muted mx-auto h-1.5 w-full max-w-[240px] overflow-hidden rounded-full">
             <div
               className="bg-primary h-1.5 rounded-full transition-[margin,width] duration-200"
               style={{ width: `${progress.width}%`, marginLeft: `${progress.left}%` }}

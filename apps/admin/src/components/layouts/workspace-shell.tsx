@@ -16,13 +16,11 @@ import {
   Sparkles,
   FileText,
   Wrench,
-  Gavel,
   Store,
   Tags,
   Package,
   Users,
   Wallet,
-  BellRing,
   Banknote,
   ShoppingBasket,
   Settings,
@@ -34,6 +32,7 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { PaletteSwitcher } from '@/components/shared/palette-switcher';
 import { useStaffAuthStore } from '@/store/staff-auth-store';
 import { useStaffLogout } from '@/features/auth/hooks/use-staff-logout';
 import type { User } from '@/types/auth';
@@ -84,7 +83,6 @@ const adminGroups: NavGroup[] = [
     items: [
       { href: '/admin/credit', label: 'Credit Management', icon: Wallet },
       { href: '/admin/invoices', label: 'Invoices', icon: Receipt },
-      { href: '/admin/invoices/alerts', label: 'Invoice Alerts', icon: BellRing },
       { href: '/admin/payments', label: 'Payments received', icon: Banknote },
       { href: '/accounting', label: 'Accounting ERP', icon: Calculator },
       { href: '/admin/purchases', label: 'Vendor Purchases', icon: ShoppingBasket },
@@ -96,7 +94,6 @@ const adminGroups: NavGroup[] = [
       { href: '/procurement', label: 'Procurement', icon: ClipboardList },
       { href: '/inventory', label: 'Inventory', icon: Warehouse },
       { href: '/delivery', label: 'Delivery', icon: Truck },
-      { href: '/tenders', label: 'Tenders', icon: Gavel },
     ],
   },
   {
@@ -253,14 +250,6 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
           logoutPending={logout.isPending}
           onLogout={() => logout.mutate()}
         />
-        <div className="border-sidebar-border border-t px-3 pb-3">
-          <Link
-            href="/"
-            className="text-sidebar-muted flex items-center gap-2.5 rounded-full px-3 py-2 text-sm font-medium hover:bg-white/5 hover:text-white"
-          >
-            <Store className="h-4 w-4" /> Marketplace
-          </Link>
-        </div>
       </aside>
 
       <div className="flex w-full min-w-0 flex-1 flex-col lg:pl-64">
@@ -283,6 +272,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
               GoOrder Admin
             </h1>
           </div>
+          <PaletteSwitcher triggerClassName="shrink-0" />
         </header>
 
         <main className="w-full min-w-0 flex-1 p-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] lg:p-8 lg:pb-8">

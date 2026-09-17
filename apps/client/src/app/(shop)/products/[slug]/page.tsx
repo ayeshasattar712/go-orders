@@ -4,16 +4,9 @@ import { notFound } from 'next/navigation';
 import { ChevronRight } from 'lucide-react';
 import { ProductGallery } from '@/features/catalog/components/product-gallery';
 import { ProductBuyBox } from '@/features/catalog/components/product-buy-box';
-import { BulkPricingTable } from '@/features/catalog/components/bulk-pricing-table';
-import { ProductReviews } from '@/features/catalog/components/product-reviews';
-import { FrequentlyBoughtTogether } from '@/features/catalog/components/frequently-bought-together';
 import { ProductCard } from '@/components/shared/product-card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  getFrequentlyBoughtTogether,
-  getProductBySlug,
-  getRelatedProducts,
-} from '@/lib/catalog/catalog-repository';
+import { getProductBySlug, getRelatedProducts } from '@/lib/catalog/catalog-repository';
 import { getCategoryGalleryImages } from '@/lib/mock-data';
 
 export const dynamic = 'force-dynamic';
@@ -43,10 +36,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const [related, companions] = await Promise.all([
-    getRelatedProducts(product, 10),
-    getFrequentlyBoughtTogether(product, 2),
-  ]);
+  const related = await getRelatedProducts(product, 10);
 
   const galleryImages = Array.from(
     new Set([...product.images, ...getCategoryGalleryImages(product.categorySlug)]),
@@ -88,8 +78,6 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           <TabsList>
             <TabsTrigger value="description">Description</TabsTrigger>
             <TabsTrigger value="specifications">Specifications</TabsTrigger>
-            <TabsTrigger value="bulk-pricing">Bulk pricing</TabsTrigger>
-            <TabsTrigger value="reviews">Reviews ({product.reviewCount})</TabsTrigger>
           </TabsList>
 
           <TabsContent
@@ -109,22 +97,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               ))}
             </div>
           </TabsContent>
-
-          <TabsContent value="bulk-pricing" className="max-w-2xl">
-            <p className="text-muted-foreground mb-3 text-sm">
-              Unlock automatic discounts as your order quantity increases.
-            </p>
-            <BulkPricingTable tiers={product.bulkPricing} unit={product.unit} />
-          </TabsContent>
-
-          <TabsContent value="reviews">
-            <ProductReviews product={product} />
-          </TabsContent>
         </Tabs>
-      </div>
-
-      <div className="mt-12">
-        <FrequentlyBoughtTogether mainProduct={product} companions={companions} />
       </div>
 
       {related.length > 0 ? (

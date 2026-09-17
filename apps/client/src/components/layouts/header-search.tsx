@@ -18,6 +18,11 @@ export function HeaderSearch({
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndexQuery, setActiveIndexQuery] = useState(query);
+  if (query !== activeIndexQuery) {
+    setActiveIndexQuery(query);
+    setActiveIndex(0);
+  }
   const rootRef = useRef<HTMLDivElement>(null);
 
   const suggestions = useMemo(() => getSearchSuggestions(query), [query]);
@@ -29,10 +34,6 @@ export function HeaderSearch({
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
-
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [query]);
 
   function go(href: string) {
     setOpen(false);
@@ -77,7 +78,7 @@ export function HeaderSearch({
           />
           <button
             type="submit"
-            className="flex h-11 w-11 shrink-0 items-center justify-center bg-[#efe7ff] text-primary hover:bg-white"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 flex h-11 w-11 shrink-0 items-center justify-center"
             aria-label="Search"
           >
             <Search className="h-5 w-5" />
@@ -86,7 +87,7 @@ export function HeaderSearch({
       </form>
 
       {open && suggestions.length > 0 ? (
-        <div className="absolute top-full right-0 left-0 z-50 mt-1 overflow-hidden rounded-xl border bg-white text-foreground shadow-xl">
+        <div className="text-foreground absolute top-full right-0 left-0 z-50 mt-1 overflow-hidden rounded-xl border bg-white shadow-xl">
           <ul className="max-h-80 overflow-y-auto py-1">
             {suggestions.map((item, index) => (
               <li key={`${item.type}-${item.href}`}>

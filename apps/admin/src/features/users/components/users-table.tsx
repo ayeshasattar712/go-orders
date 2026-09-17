@@ -45,10 +45,8 @@ const emptyStaff: CreateStaffInput = {
 const emptyClient = {
   firstName: '',
   lastName: '',
-  companyName: '',
   email: '',
   phone: '',
-  creditLimit: 5000,
   creditTerms: CREDIT_TERMS.NET_30 as CreditTerms,
 };
 
@@ -145,10 +143,8 @@ export function UsersTable() {
       const result = await createClientLogin.mutateAsync({
         firstName: clientForm.firstName,
         lastName: clientForm.lastName,
-        companyName: clientForm.companyName,
         email: clientForm.email || undefined,
         phone: clientForm.phone || undefined,
-        creditLimit: clientForm.creditLimit,
         creditTerms: clientForm.creditTerms,
       });
       setClientForm(emptyClient);
@@ -304,13 +300,6 @@ export function UsersTable() {
         }
       >
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label>Company name</Label>
-            <Input
-              value={clientForm.companyName}
-              onChange={(e) => setClientForm({ ...clientForm, companyName: e.target.value })}
-            />
-          </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label>First name</Label>
@@ -336,25 +325,12 @@ export function UsersTable() {
               onChange={(e) => setClientForm({ ...clientForm, email: e.target.value })}
             />
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Credit limit</Label>
-              <Input
-                type="number"
-                min={0}
-                value={clientForm.creditLimit}
-                onChange={(e) =>
-                  setClientForm({ ...clientForm, creditLimit: Number(e.target.value) })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Credit terms</Label>
-              <CreditTermsSelect
-                value={clientForm.creditTerms}
-                onChange={(creditTerms) => setClientForm({ ...clientForm, creditTerms })}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label>Credit terms</Label>
+            <CreditTermsSelect
+              value={clientForm.creditTerms}
+              onChange={(creditTerms) => setClientForm({ ...clientForm, creditTerms })}
+            />
           </div>
           {formError ? <p className="text-destructive text-sm">{formError}</p> : null}
         </div>

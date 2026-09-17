@@ -33,7 +33,7 @@ export function MarketplaceHero() {
         </div>
 
         <div className="relative mx-auto aspect-square w-full max-w-[480px]">
-          <div className="bg-primary/35 absolute inset-[8%] rounded-full blur-3xl" />
+          <div className="bg-primary/30 absolute inset-[8%] rounded-full blur-3xl" />
           <div className="glow-purple border-primary/40 absolute inset-[16%] rounded-full border" />
           {featured[0] ? (
             <div className="absolute top-[16%] left-1/2 z-10 h-[48%] w-[48%] -translate-x-1/2 overflow-hidden rounded-3xl border border-white/15 shadow-2xl">

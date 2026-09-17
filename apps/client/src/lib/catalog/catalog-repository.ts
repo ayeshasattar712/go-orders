@@ -6,8 +6,13 @@ import { categories as mockCategories } from '@/lib/mock-data/categories';
 import { products as mockProducts, filterProductsBySubcategory } from '@/lib/mock-data/products';
 import type { Category, Product, Vendor } from '@/types/catalog';
 
-const mockCategoryImageBySlug = new Map(mockCategories.map((category) => [category.slug, category.image]));
+const mockCategoryImageBySlug = new Map(
+  mockCategories.map((category) => [category.slug, category.image]),
+);
 const mockProductImagesById = new Map(mockProducts.map((product) => [product.id, product.images]));
+const mockProductAttributesById = new Map(
+  mockProducts.map((product) => [product.id, { color: product.color, material: product.material }]),
+);
 
 function withMockCategoryImage(category: Category): Category {
   const image = mockCategoryImageBySlug.get(category.slug);
@@ -17,6 +22,12 @@ function withMockCategoryImage(category: Category): Category {
 function withMockProductImages(product: Product): Product {
   const images = mockProductImagesById.get(product.id);
   return images?.length ? { ...product, images } : product;
+}
+
+/** DB rows don't store color/material yet — overlay from the matching mock catalog entry by id. */
+function withMockProductAttributes(product: Product): Product {
+  const attributes = mockProductAttributesById.get(product.id);
+  return attributes ? { ...product, ...attributes } : product;
 }
 
 /** Detail pages — includes a few recent reviews. */
@@ -35,10 +46,8 @@ const PRODUCT_LIST_INCLUDE = {
   reviews: { take: 0 },
 } as const;
 
-function mapProducts(
-  rows: Parameters<typeof serializeProduct>[0][],
-): Product[] {
-  return rows.map(serializeProduct).map(withMockProductImages);
+function mapProducts(rows: Parameters<typeof serializeProduct>[0][]): Product[] {
+  return rows.map(serializeProduct).map(withMockProductImages).map(withMockProductAttributes);
 }
 
 async function findProducts(args: {
@@ -108,7 +117,9 @@ export async function getProductBySlug(slug: string): Promise<Product | undefine
     where: { slug },
     include: PRODUCT_DETAIL_INCLUDE,
   });
-  return product ? withMockProductImages(serializeProduct(product)) : undefined;
+  return product
+    ? withMockProductAttributes(withMockProductImages(serializeProduct(product)))
+    : undefined;
 }
 
 export async function getProductsByCategory(
@@ -327,10 +338,10 @@ export async function getCatalogHighlight(
   limit = 12,
 ): Promise<{ kind: 'featured' | 'recommended'; products: Product[] }> {
   if (userId) {
-    return {
-      kind: 'recommended',
-      products: await getRecommendedProductsForUser(userId, limit),
-    };
+    const recommended = await getRecommendedProductsForUser(userId, limit);
+    if (recommended.length > 0) {
+      return { kind: 'recommended', products: recommended };
+    }
   }
   return {
     kind: 'featured',

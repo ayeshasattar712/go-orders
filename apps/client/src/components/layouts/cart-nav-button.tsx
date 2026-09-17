@@ -42,7 +42,7 @@ export function CartNavButton({
       href="/cart"
       aria-label={count > 0 ? `Cart, ${count} items` : 'Cart'}
       className={cn(
-        'relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white transition-colors hover:bg-white/15 hover:text-white',
+        'text-foreground hover:bg-muted relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors',
         bump && 'animate-cart-bump',
         className,
       )}
@@ -52,7 +52,7 @@ export function CartNavButton({
         <span
           aria-hidden
           className={cn(
-            'pointer-events-none absolute -top-0.5 -right-0.5 z-10 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#f5c518] px-1 text-[10px] font-bold leading-none text-zinc-900 shadow-md ring-2 ring-white/80',
+            'bg-destructive text-destructive-foreground ring-background pointer-events-none absolute -top-0.5 -right-0.5 z-10 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] leading-none font-bold shadow-md ring-2',
             bump && 'animate-cart-badge-pop',
           )}
         >

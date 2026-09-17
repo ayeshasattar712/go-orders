@@ -19,6 +19,8 @@ type CategoryBlueprint = {
   basePrice: number;
   images: string[];
   names: string[];
+  colors: string[] | null;
+  materials: string[];
 };
 
 const blueprints: CategoryBlueprint[] = [
@@ -29,6 +31,8 @@ const blueprints: CategoryBlueprint[] = [
     skuPrefix: 'FURN',
     unit: 'unit',
     basePrice: 189,
+    colors: ['Black', 'Grey', 'Walnut Brown', 'White', 'Navy Blue'],
+    materials: ['Mesh', 'Leather', 'Fabric', 'Solid Wood', 'Metal Frame', 'Laminate'],
     images: [
       '/images/products/office-chair.jpg',
       'https://images.unsplash.com/photo-1592078615290-033ee584e267?q=80&w=1200&auto=format&fit=crop',
@@ -55,6 +59,8 @@ const blueprints: CategoryBlueprint[] = [
     skuPrefix: 'GROC',
     unit: 'case',
     basePrice: 24,
+    colors: null,
+    materials: ['Carton', 'Plastic Bottle', 'Glass Jar', 'Tin Can', 'Sachet Pack'],
     images: [
       'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=1200&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1621939514649-280e2ee25f60?q=80&w=1200&auto=format&fit=crop',
@@ -81,6 +87,8 @@ const blueprints: CategoryBlueprint[] = [
     skuPrefix: 'SUPP',
     unit: 'pack',
     basePrice: 18,
+    colors: ['Black', 'Blue', 'Red', 'White', 'Multicolor'],
+    materials: ['Paper', 'Plastic', 'Metal', 'Recycled Paper'],
     images: [
       '/images/categories/office-supplies.jpg',
       '/images/categories/office-pens.jpg',
@@ -107,6 +115,8 @@ const blueprints: CategoryBlueprint[] = [
     skuPrefix: 'ITEQ',
     unit: 'unit',
     basePrice: 420,
+    colors: ['Black', 'Silver', 'White', 'Space Grey'],
+    materials: ['Aluminum', 'Plastic', 'Steel', 'Polycarbonate'],
     images: [
       'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1200&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?q=80&w=1200&auto=format&fit=crop',
@@ -133,6 +143,8 @@ const blueprints: CategoryBlueprint[] = [
     skuPrefix: 'CLEN',
     unit: 'case',
     basePrice: 16,
+    colors: ['Blue', 'Green', 'Yellow', 'White'],
+    materials: ['Plastic', 'Microfiber', 'Cotton', 'Biodegradable'],
     images: [
       'https://images.unsplash.com/photo-1585421514738-0179e5f0f0d8?q=80&w=1200&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1563453392212-326f255e7e7b?q=80&w=1200&auto=format&fit=crop',
@@ -159,6 +171,8 @@ const blueprints: CategoryBlueprint[] = [
     skuPrefix: 'ELEC',
     unit: 'unit',
     basePrice: 55,
+    colors: ['White', 'Black', 'Grey'],
+    materials: ['Copper', 'PVC', 'Aluminum', 'Plastic'],
     images: [
       'https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?q=80&w=1200&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=1200&auto=format&fit=crop',
@@ -231,6 +245,8 @@ export function buildGeneratedCatalog(existing: Product[]): Product[] {
           { label: 'Category', value: blueprint.categorySlug },
           { label: 'Subcategory', value: child?.name ?? 'General' },
         ],
+        color: blueprint.colors ? blueprint.colors[i % blueprint.colors.length]! : null,
+        material: blueprint.materials[i % blueprint.materials.length]!,
         tags: [subTag, 'catalog', blueprint.categorySlug, nameBase.split(' ')[0]!.toLowerCase()],
         isBestSeller: i % 11 === 0,
         isTrending: i % 13 === 0,

@@ -11,7 +11,7 @@ export function CategoryIconStrip() {
   const [hovered, setHovered] = useState(active[0]?.slug ?? '');
 
   return (
-    <section className="bg-white">
+    <section className="bg-background">
       <div className="mx-auto flex max-w-7xl gap-4 overflow-x-auto px-4 py-8 sm:px-6 lg:justify-center">
         {active.map((category) => {
           const selected = hovered === category.slug;
@@ -27,7 +27,7 @@ export function CategoryIconStrip() {
                   'relative h-[72px] w-[72px] overflow-hidden rounded-xl border bg-white shadow-sm transition-all duration-200',
                   selected
                     ? 'border-primary ring-primary/30 scale-105 ring-4'
-                    : 'border-border group-hover:scale-105 group-hover:border-primary/40',
+                    : 'border-border group-hover:border-primary/40 group-hover:scale-105',
                 )}
               >
                 <Image

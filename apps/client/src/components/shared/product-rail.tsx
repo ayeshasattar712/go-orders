@@ -19,11 +19,12 @@ interface ProductRailProps {
 }
 
 const arrowBtnClass =
-  'flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-900 shadow-sm transition-colors hover:bg-zinc-50';
+  'flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-sm transition-colors hover:border-accent-brand/50 hover:bg-muted';
 
 export function ProductRail({ title, description, products, viewAllHref }: ProductRailProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { sort, setSort, visible } = useCatalogSection(products);
+  const { sort, setSort, filters, setFilters, resetFilters, maxPrice, allProducts, visible } =
+    useCatalogSection(products);
 
   function scroll(direction: 'left' | 'right') {
     const el = scrollRef.current;
@@ -43,7 +44,15 @@ export function ProductRail({ title, description, products, viewAllHref }: Produ
           </h2>
           {description ? <p className="text-muted-foreground mt-1 text-sm">{description}</p> : null}
         </div>
-        <CatalogSectionControls sort={sort} onSortChange={setSort} />
+        <CatalogSectionControls
+          sort={sort}
+          onSortChange={setSort}
+          filters={filters}
+          onFiltersChange={setFilters}
+          onFiltersReset={resetFilters}
+          maxPrice={maxPrice}
+          products={allProducts}
+        />
       </div>
 
       <div className="flex items-center gap-2">
@@ -58,7 +67,7 @@ export function ProductRail({ title, description, products, viewAllHref }: Produ
 
         <div
           ref={scrollRef}
-          className="scrollbar-none flex min-w-0 flex-1 snap-x gap-4 overflow-x-auto pb-2"
+          className="flex min-w-0 flex-1 snap-x scrollbar-none gap-4 overflow-x-auto pb-2"
         >
           {visible.map((product) => (
             <ProductCard

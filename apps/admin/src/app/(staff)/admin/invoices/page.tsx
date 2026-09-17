@@ -2,13 +2,24 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { AlertCircle, BellRing, Plus } from 'lucide-react';
+import {
+  AlertCircle,
+  Bell,
+  BellRing,
+  Mail,
+  MessageSquare,
+  MonitorSmartphone,
+  Plus,
+  X,
+} from 'lucide-react';
 import { KpiCard } from '@/components/shared/kpi-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -18,13 +29,29 @@ import {
 } from '@/components/ui/select';
 import { Modal } from '@/components/ui/modal';
 import { Loader } from '@/components/ui/loader';
+import { EmptyState } from '@/components/ui/empty-state';
 import { InvoiceStatusBadge } from '@/features/finance/invoice-status-badge';
 import { DownloadInvoicePdfButton } from '@/features/finance/download-invoice-pdf-button';
-import { useClients, useCreateInvoice, useInvoices, useUpdateInvoice } from '@/services/queries';
+import {
+  useClients,
+  useCreateInvoice,
+  useInvoiceAlertLog,
+  useInvoiceAlertRules,
+  useInvoices,
+  useToggleInvoiceAlertRule,
+  useUpdateInvoice,
+} from '@/services/queries';
 import { invoicesService } from '@/services/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { saveBlobFile } from '@/lib/save-blob';
 import type { Invoice, InvoiceStatus } from '@/types/enterprise';
+import type { InvoiceAlertChannel } from '@/types/admin';
+
+const channelIcons: Record<InvoiceAlertChannel, typeof Mail> = {
+  dashboard: MonitorSmartphone,
+  email: Mail,
+  sms: MessageSquare,
+};
 
 type InvoiceForm = {
   clientId: string;
@@ -177,6 +204,178 @@ function InvoiceTable({
   );
 }
 
+function AlertSettingsModal({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const { data: rules = [], isLoading } = useInvoiceAlertRules();
+  const { data: logs = [] } = useInvoiceAlertLog();
+  const toggleRule = useToggleInvoiceAlertRule();
+
+  return (
+    <Modal
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Invoice alert settings"
+      description="Automated reminders sent to clients and admins as invoices approach their due date."
+      className="max-w-2xl"
+    >
+      {isLoading ? (
+        <Loader label="Loading alert rules..." />
+      ) : (
+        <div className="space-y-6">
+          {rules.length === 0 ? (
+            <EmptyState
+              title="No alert rules"
+              description="Seed invoice alert rules to manage reminders here."
+            />
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {rules.map((rule) => (
+                <div key={rule.id} className="rounded-xl border p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold">{rule.label}</p>
+                      <p className="text-muted-foreground mt-0.5 text-xs">{rule.description}</p>
+                    </div>
+                    <Switch
+                      checked={rule.enabled}
+                      disabled={toggleRule.isPending}
+                      onCheckedChange={(enabled) => toggleRule.mutate({ id: rule.id, enabled })}
+                    />
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {rule.channels.map((channel) => {
+                      const Icon = channelIcons[channel];
+                      return (
+                        <Badge key={channel} variant="secondary" className="gap-1 capitalize">
+                          <Icon className="h-3 w-3" /> {channel}
+                        </Badge>
+                      );
+                    })}
+                    {rule.recipients.map((recipient) => (
+                      <Badge key={recipient} variant="outline" className="capitalize">
+                        {recipient}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div>
+            <p className="mb-2 flex items-center gap-2 text-sm font-semibold">
+              <Bell className="h-4 w-4" /> Recent alert activity
+            </p>
+            {logs.length === 0 ? (
+              <p className="text-muted-foreground py-6 text-center text-sm">No alerts sent yet.</p>
+            ) : (
+              <div className="max-h-64 overflow-auto rounded-lg border">
+                <table className="w-full min-w-[560px] text-sm">
+                  <thead className="text-muted-foreground bg-muted/40 sticky top-0 text-left text-xs tracking-wide uppercase">
+                    <tr className="border-b">
+                      <th className="px-3 py-2 font-medium">Invoice</th>
+                      <th className="px-3 py-2 font-medium">Client</th>
+                      <th className="px-3 py-2 font-medium">Timing</th>
+                      <th className="px-3 py-2 font-medium">Channel</th>
+                      <th className="px-3 py-2 font-medium">Sent</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {logs.map((log) => (
+                      <tr key={log.id} className="border-b last:border-0">
+                        <td className="px-3 py-2 font-medium">{log.invoiceNumber}</td>
+                        <td className="text-muted-foreground px-3 py-2">{log.clientName}</td>
+                        <td className="text-muted-foreground px-3 py-2 capitalize">
+                          {log.timing.replace('-', ' ')}
+                        </td>
+                        <td className="text-muted-foreground px-3 py-2 capitalize">
+                          {log.channel}
+                        </td>
+                        <td className="text-muted-foreground px-3 py-2">
+                          {formatDate(log.sentAt)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </Modal>
+  );
+}
+
+function OverdueInvoicesPopup({ overdue, onManage }: { overdue: Invoice[]; onManage: () => void }) {
+  const [dismissed, setDismissed] = useState(false);
+
+  const totalOverdue = useMemo(
+    () => overdue.reduce((sum, i) => sum + (i.amount - i.amountPaid), 0),
+    [overdue],
+  );
+
+  if (dismissed || overdue.length === 0) return null;
+
+  return (
+    <div className="animate-fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="animate-slide-up bg-card relative w-full max-w-sm rounded-2xl p-6 pt-10 text-center shadow-2xl">
+        <button
+          type="button"
+          onClick={() => setDismissed(true)}
+          aria-label="Dismiss"
+          className="text-muted-foreground hover:text-foreground absolute top-3 right-3"
+        >
+          <X className="h-4 w-4" />
+        </button>
+
+        <span className="bg-destructive absolute -top-7 left-1/2 flex h-14 w-14 -translate-x-1/2 items-center justify-center rounded-full text-white shadow-lg">
+          <AlertCircle className="h-6 w-6" />
+        </span>
+
+        <p className="text-lg font-semibold">
+          {overdue.length} invoice{overdue.length === 1 ? '' : 's'} overdue!
+        </p>
+        <p className="text-muted-foreground mt-1 text-sm">
+          {formatCurrency(totalOverdue)} outstanding needs your attention
+        </p>
+
+        <ul className="mt-4 space-y-1.5 text-left text-sm">
+          {overdue.slice(0, 3).map((invoice) => (
+            <li key={invoice.id} className="text-muted-foreground flex flex-wrap gap-x-1.5">
+              <span className="text-foreground font-medium">{invoice.invoiceNumber}</span>
+              <span>· {invoice.vendorOrCustomer}</span>
+              <span className="text-destructive font-medium">
+                · {formatCurrency(invoice.amount - invoice.amountPaid)}
+              </span>
+            </li>
+          ))}
+          {overdue.length > 3 ? (
+            <li className="text-muted-foreground text-xs">
+              +{overdue.length - 3} more invoice{overdue.length - 3 === 1 ? '' : 's'}
+            </li>
+          ) : null}
+        </ul>
+
+        <Button
+          className="mt-5 w-full rounded-full"
+          onClick={() => {
+            setDismissed(true);
+            onManage();
+          }}
+        >
+          Open
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminInvoicesPage() {
   const { data: invoices = [], isLoading } = useInvoices();
   const { data: clients = [] } = useClients();
@@ -184,6 +383,7 @@ export default function AdminInvoicesPage() {
   const updateInvoice = useUpdateInvoice();
 
   const [open, setOpen] = useState(false);
+  const [alertsOpen, setAlertsOpen] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [form, setForm] = useState<InvoiceForm>(() => emptyForm('', ''));
 
@@ -230,6 +430,8 @@ export default function AdminInvoicesPage() {
 
   return (
     <div className="space-y-6">
+      <OverdueInvoicesPopup overdue={overdue} onManage={() => setAlertsOpen(true)} />
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-2xl font-semibold tracking-tight">Invoices</h2>
@@ -239,10 +441,12 @@ export default function AdminInvoicesPage() {
           </p>
         </div>
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-          <Button variant="outline" asChild className="w-full sm:w-auto">
-            <Link href="/admin/invoices/alerts">
-              <BellRing className="h-4 w-4" /> Alert settings
-            </Link>
+          <Button
+            variant="outline"
+            className="w-full sm:w-auto"
+            onClick={() => setAlertsOpen(true)}
+          >
+            <BellRing className="h-4 w-4" /> Alert settings
           </Button>
           <Button
             className="w-full sm:w-auto"
@@ -285,18 +489,28 @@ export default function AdminInvoicesPage() {
       </div>
 
       {overdue.length > 0 ? (
-        <Card className="border-destructive/30 bg-destructive/5">
-          <CardContent className="flex items-center gap-3 pt-6 text-sm">
-            <AlertCircle className="text-destructive h-5 w-5 shrink-0" />
-            <p>
-              <span className="text-destructive font-medium">
-                {overdue.length} invoice(s) overdue
-              </span>{' '}
+        <div className="border-destructive/20 bg-destructive/5 flex items-center gap-3 rounded-full border py-2.5 pr-2.5 pl-3">
+          <span className="bg-destructive/15 text-destructive flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
+            <AlertCircle className="h-4 w-4" />
+          </span>
+          <p className="min-w-0 flex-1 truncate text-sm">
+            <span className="text-destructive font-semibold">
+              {overdue.length} invoice{overdue.length === 1 ? '' : 's'} overdue
+            </span>{' '}
+            <span className="text-muted-foreground">
               totaling{' '}
-              {formatCurrency(overdue.reduce((sum, i) => sum + (i.amount - i.amountPaid), 0))}.
-            </p>
-          </CardContent>
-        </Card>
+              {formatCurrency(overdue.reduce((sum, i) => sum + (i.amount - i.amountPaid), 0))}
+            </span>
+          </p>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-destructive hover:text-destructive shrink-0 hover:bg-transparent"
+            onClick={() => setAlertsOpen(true)}
+          >
+            Manage alerts
+          </Button>
+        </div>
       ) : null}
 
       <Card>
@@ -427,6 +641,8 @@ export default function AdminInvoicesPage() {
           </div>
         </div>
       </Modal>
+
+      <AlertSettingsModal open={alertsOpen} onOpenChange={setAlertsOpen} />
     </div>
   );
 }

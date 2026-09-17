@@ -11,7 +11,7 @@ import type { Product } from '@/types/catalog';
 
 function MustBuySlide() {
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[#0a2470]">
+    <div className="bg-navy absolute inset-0 overflow-hidden">
       <Image
         src="/images/marketing/must-buy-collage.png"
         alt="Workplace furniture, IT, and everyday supplies"
@@ -20,22 +20,19 @@ function MustBuySlide() {
         className="object-contain object-right"
         sizes="(max-width: 1280px) 100vw, 1100px"
       />
+      <div className="bg-navy pointer-events-none absolute inset-y-0 left-0 w-[48%]" aria-hidden />
       <div
-        className="pointer-events-none absolute inset-y-0 left-0 w-[48%] bg-[#0a2470]"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute inset-y-0 left-[42%] w-[28%] bg-gradient-to-r from-[#0a2470] via-[#0a2470]/80 to-transparent"
+        className="from-navy via-navy/80 pointer-events-none absolute inset-y-0 left-[42%] w-[28%] bg-gradient-to-r to-transparent"
         aria-hidden
       />
 
       <div className="relative z-10 flex h-full w-[42%] flex-col justify-center px-5 sm:w-[40%] sm:px-8 lg:px-10">
-        <h1 className="max-w-[12ch] text-2xl leading-tight font-extrabold text-white drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)] sm:text-4xl">
+        <h1 className="text-navy-foreground max-w-[12ch] text-2xl leading-tight font-extrabold drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)] sm:text-4xl">
           Buy Better for Business
         </h1>
         <Button
           asChild
-          className="mt-5 h-10 w-fit rounded-full bg-[#f5c518] px-7 text-base font-bold text-[#9a3412] shadow-[0_10px_24px_rgba(0,0,0,0.28)] hover:bg-yellow-300 sm:h-11"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 mt-5 h-10 w-fit rounded-full px-7 text-base font-bold shadow-[0_10px_24px_rgba(0,0,0,0.28)] sm:h-11"
         >
           <Link href="/products">Shop now</Link>
         </Button>
@@ -48,7 +45,7 @@ function MegaDealsSlide({ onAdd }: { onAdd: (product: Product) => void }) {
   const featured = useMemo(() => getProductsByCategory('office-furniture')[0], []);
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[#2e1065]">
+    <div className="bg-navy absolute inset-0 overflow-hidden">
       <Image
         src="/images/marketing/mega-deals-podium-cluster.png"
         alt="Featured grocery, electronics, and personal care products"
@@ -84,13 +81,25 @@ function MegaDealsSlide({ onAdd }: { onAdd: (product: Product) => void }) {
 
 function MartSlide() {
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[#123d28]">
-      <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.08]" aria-hidden>
+    <div className="bg-navy absolute inset-0 overflow-hidden">
+      <svg
+        className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.08]"
+        aria-hidden
+      >
         <pattern id="mart-icons" width="120" height="90" patternUnits="userSpaceOnUse">
           <path d="M18 28h20l4 22H22z" fill="none" stroke="white" strokeWidth="2" />
           <circle cx="26" cy="56" r="3" fill="white" />
           <circle cx="38" cy="56" r="3" fill="white" />
-          <rect x="70" y="22" width="14" height="28" rx="7" fill="none" stroke="white" strokeWidth="2" />
+          <rect
+            x="70"
+            y="22"
+            width="14"
+            height="28"
+            rx="7"
+            fill="none"
+            stroke="white"
+            strokeWidth="2"
+          />
           <path d="M92 48c8-10 18-8 22 0" fill="none" stroke="white" strokeWidth="2" />
         </pattern>
         <rect width="100%" height="100%" fill="url(#mart-icons)" />
@@ -144,7 +153,7 @@ export function FeaturedProductsBanner() {
   }
 
   return (
-    <section className="bg-[#f5f5f5] px-3 py-3 sm:px-4">
+    <section className="bg-background px-3 py-3 sm:px-4">
       <div className="relative mx-auto h-[280px] max-w-7xl overflow-hidden rounded-xl sm:h-[340px] lg:h-[380px]">
         {index === 0 ? (
           <MustBuySlide />

@@ -92,7 +92,7 @@ export function ProductCard({
     return (
       <div
         className={cn(
-          'group bg-card card-hover hover:border-primary relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-transparent shadow-sm',
+          'group bg-card card-hover hover:border-accent-brand/70 relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-transparent shadow-sm',
           className,
         )}
       >
@@ -139,7 +139,7 @@ export function ProductCard({
   return (
     <div
       className={cn(
-        'group bg-card card-hover hover:border-primary relative flex min-w-0 flex-col overflow-hidden rounded-xl border shadow-sm',
+        'group bg-card card-hover hover:border-accent-brand/70 relative flex min-w-0 flex-col overflow-hidden rounded-xl border shadow-sm',
         className,
       )}
     >
@@ -156,7 +156,6 @@ export function ProductCard({
         />
         <div className="absolute top-2 left-2 flex flex-col gap-1">
           {discount ? <Badge className="rounded-sm">{`-${discount}%`}</Badge> : null}
-          {product.isBestSeller ? <Badge variant="success">Mall</Badge> : null}
           {product.isNew ? <Badge variant="info">New</Badge> : null}
         </div>
       </Link>
@@ -172,7 +171,12 @@ export function ProductCard({
           <p className="text-primary text-lg leading-tight font-bold">
             {formatCurrency(product.price)}
           </p>
-          <Button type="button" size="sm" className="h-9 w-full rounded-lg" onClick={handleAddToCart}>
+          <Button
+            type="button"
+            size="sm"
+            className="h-9 w-full rounded-lg"
+            onClick={handleAddToCart}
+          >
             <ShoppingCart className="h-4 w-4" /> Add to cart
           </Button>
         </div>

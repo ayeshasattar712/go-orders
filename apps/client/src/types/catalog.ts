@@ -77,6 +77,8 @@ export interface Product {
   minOrderQty: number;
   bulkPricing: BulkPriceTier[];
   specifications: { label: string; value: string }[];
+  color: string | null;
+  material: string;
   tags: string[];
   isBestSeller?: boolean;
   isTrending?: boolean;

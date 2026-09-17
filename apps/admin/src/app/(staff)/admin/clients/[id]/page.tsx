@@ -89,9 +89,9 @@ export default function AdminClientDetailPage() {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight">{client.companyName}</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">{client.contactName}</h2>
           <p className="text-muted-foreground">
-            {client.contactName} · {client.email} · Client since {formatDate(client.joinedAt)}
+            {client.companyName} · {client.email} · Client since {formatDate(client.joinedAt)}
           </p>
         </div>
         <div className="flex items-center gap-2">
