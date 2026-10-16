@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { DollarSign, PackageCheck, TrendingUp, Truck, Users, Warehouse } from 'lucide-react';
+import { DollarSign, TrendingUp, Users, Warehouse } from 'lucide-react';
 import { KpiCard } from '@/components/shared/kpi-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RevenueTrendChart, CategoryBarChart, DonutChart } from '@/components/charts';
@@ -125,42 +125,6 @@ export default function BusinessIntelligencePage() {
               height={260}
               color="hsl(var(--success))"
             />
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <CardContent className="flex items-center gap-3 pt-6">
-            <span className="bg-success/10 text-success flex h-10 w-10 items-center justify-center rounded-xl">
-              <PackageCheck className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="text-muted-foreground text-sm">Procurement spend (MTD)</p>
-              <p className="text-lg font-bold">{formatCurrency(184_200)}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-3 pt-6">
-            <span className="bg-info/10 text-info flex h-10 w-10 items-center justify-center rounded-xl">
-              <Truck className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="text-muted-foreground text-sm">On-time delivery rate</p>
-              <p className="text-lg font-bold">98.2%</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-3 pt-6">
-            <span className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-xl">
-              <Users className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="text-muted-foreground text-sm">Customer satisfaction</p>
-              <p className="text-lg font-bold">4.7 / 5.0</p>
-            </div>
           </CardContent>
         </Card>
       </div>
