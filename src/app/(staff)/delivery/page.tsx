@@ -50,13 +50,6 @@ export default function DeliveryPage() {
           icon={Navigation}
           iconTone="destructive"
         />
-        <KpiCard
-          label="On-time rate"
-          value="98.2%"
-          delta={1.3}
-          icon={CheckCircle2}
-          iconTone="primary"
-        />
       </div>
 
       <div className="space-y-4">

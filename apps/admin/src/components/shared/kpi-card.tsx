@@ -33,21 +33,21 @@ export function KpiCard({
 
   return (
     <Card className={cn('card-hover w-full min-w-0', className)}>
-      <CardContent className="overflow-visible p-5 sm:p-6">
-        <div className="flex items-start justify-between gap-4">
+      <CardContent className="overflow-visible p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1 pr-1">
-            <p className="text-muted-foreground text-sm leading-5">{label}</p>
-            <p className="mt-2 text-xl leading-none font-bold tracking-tight break-words sm:text-2xl">
+            <p className="text-muted-foreground text-xs leading-snug">{label}</p>
+            <p className="mt-2 text-sm leading-tight font-bold tracking-tight whitespace-nowrap tabular-nums sm:text-base">
               {value}
             </p>
           </div>
           <span
             className={cn(
-              'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl',
+              'flex h-8 w-8 shrink-0 items-center justify-center rounded-xl',
               toneStyles[iconTone],
             )}
           >
-            <Icon className="h-5 w-5" />
+            <Icon className="h-4 w-4" />
           </span>
         </div>
         {delta !== undefined ? (

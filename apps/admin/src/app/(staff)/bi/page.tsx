@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { DollarSign, TrendingUp, Users, Warehouse } from 'lucide-react';
+import { DollarSign, PackageCheck, TrendingUp, Users, Warehouse } from 'lucide-react';
 import { KpiCard } from '@/components/shared/kpi-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RevenueTrendChart, CategoryBarChart, DonutChart } from '@/components/charts';
@@ -41,7 +41,7 @@ export default function BusinessIntelligencePage() {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <KpiCard
           label="Revenue (7 mo)"
           value={formatCurrency(totalRevenue)}
@@ -57,6 +57,12 @@ export default function BusinessIntelligencePage() {
           iconTone="success"
         />
         <KpiCard
+          label="Procurement spend (MTD)"
+          value={formatCurrency(184_200)}
+          icon={PackageCheck}
+          iconTone="success"
+        />
+        <KpiCard
           label="Inventory value"
           value={formatCurrency(2_840_000)}
           delta={-2.1}
@@ -64,6 +70,31 @@ export default function BusinessIntelligencePage() {
           iconTone="warning"
         />
         <KpiCard label="Active customers" value="48,214" delta={5.6} icon={Users} iconTone="info" />
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Revenue by category</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CategoryBarChart data={categoryRevenue} layout="vertical" height={260} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Vendor performance (fulfillment %)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CategoryBarChart
+              data={vendorPerformanceScores}
+              layout="vertical"
+              height={260}
+              color="hsl(var(--success))"
+            />
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -100,31 +131,6 @@ export default function BusinessIntelligencePage() {
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Revenue by category</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CategoryBarChart data={categoryRevenue} layout="vertical" height={260} />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Vendor performance (fulfillment %)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CategoryBarChart
-              data={vendorPerformanceScores}
-              layout="vertical"
-              height={260}
-              color="hsl(var(--success))"
-            />
           </CardContent>
         </Card>
       </div>

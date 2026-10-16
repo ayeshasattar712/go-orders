@@ -146,10 +146,10 @@ const blueprints: CategoryBlueprint[] = [
     colors: ['Blue', 'Green', 'Yellow', 'White'],
     materials: ['Plastic', 'Microfiber', 'Cotton', 'Biodegradable'],
     images: [
-      'https://images.unsplash.com/photo-1585421514738-0179e5f0f0d8?q=80&w=1200&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1563453392212-326f255e7e7b?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1563453392212-326f5e854473?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=1200&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1583947215259-38e31be8751f?q=80&w=1200&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1556911220-bff31c28c827?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1628177142898-93e36e4e3a71?q=80&w=1200&auto=format&fit=crop',
     ],
     names: [
       'Surface Disinfectant Spray',

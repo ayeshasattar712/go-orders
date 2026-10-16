@@ -2,6 +2,7 @@ import { cache } from 'react';
 import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { serializeCategory, serializeProduct, serializeVendor } from '@/lib/catalog/catalog-mapper';
+import { productImageSrc } from '@/lib/catalog/product-image';
 import { categories as mockCategories } from '@/lib/mock-data/categories';
 import { products as mockProducts, filterProductsBySubcategory } from '@/lib/mock-data/products';
 import type { Category, Product, Vendor } from '@/types/catalog';
@@ -21,7 +22,9 @@ function withMockCategoryImage(category: Category): Category {
 
 function withMockProductImages(product: Product): Product {
   const images = mockProductImagesById.get(product.id);
-  return images?.length ? { ...product, images } : product;
+  if (images?.length) return { ...product, images };
+  if (product.images.some((src) => src.trim().length > 0)) return product;
+  return { ...product, images: [productImageSrc(product)] };
 }
 
 /** DB rows don't store color/material yet — overlay from the matching mock catalog entry by id. */
@@ -50,18 +53,97 @@ function mapProducts(rows: Parameters<typeof serializeProduct>[0][]): Product[] 
   return rows.map(serializeProduct).map(withMockProductImages).map(withMockProductAttributes);
 }
 
+let databaseUnavailable = false;
+
+function markDatabaseUnavailable(error: unknown) {
+  databaseUnavailable = true;
+  console.warn(
+    '[catalog] Database unavailable — using mock catalog fallback.',
+    error instanceof Error ? error.message : error,
+  );
+}
+
+/** Rough mock filtering when Supabase/Postgres is down so pages still render. */
+function mockFindProducts(args: { where?: Prisma.ProductWhereInput; take: number }): Product[] {
+  let rows = [...mockProducts];
+  const where = args.where;
+
+  if (where && typeof where === 'object') {
+    if (where.isBestSeller === true) rows = rows.filter((p) => p.isBestSeller);
+    if (where.isTrending === true) rows = rows.filter((p) => p.isTrending);
+    if (where.isNew === true) rows = rows.filter((p) => p.isNew);
+    if (
+      where.compareAtPrice &&
+      typeof where.compareAtPrice === 'object' &&
+      'not' in where.compareAtPrice
+    ) {
+      rows = rows.filter((p) => p.compareAtPrice != null);
+    }
+
+    const category = where.category;
+    if (
+      category &&
+      typeof category === 'object' &&
+      'slug' in category &&
+      typeof category.slug === 'string'
+    ) {
+      rows = rows.filter((p) => p.categorySlug === category.slug);
+    }
+    if (typeof where.categoryId === 'string') {
+      rows = rows.filter((p) => p.categoryId === where.categoryId);
+    }
+
+    const not = where.NOT;
+    if (not && typeof not === 'object' && !Array.isArray(not) && 'id' in not) {
+      const excluded = not.id;
+      if (typeof excluded === 'string') rows = rows.filter((p) => p.id !== excluded);
+      if (
+        excluded &&
+        typeof excluded === 'object' &&
+        'in' in excluded &&
+        Array.isArray(excluded.in)
+      ) {
+        const ids = new Set(excluded.in.filter((id): id is string => typeof id === 'string'));
+        rows = rows.filter((p) => !ids.has(p.id));
+      }
+    }
+
+    if (
+      where.id &&
+      typeof where.id === 'object' &&
+      'notIn' in where.id &&
+      Array.isArray(where.id.notIn)
+    ) {
+      const ids = new Set(where.id.notIn.filter((id): id is string => typeof id === 'string'));
+      rows = rows.filter((p) => !ids.has(p.id));
+    }
+  }
+
+  return rows
+    .slice()
+    .sort((a, b) => b.rating - a.rating || b.reviewCount - a.reviewCount)
+    .slice(0, args.take);
+}
+
 async function findProducts(args: {
   where?: Prisma.ProductWhereInput;
   orderBy?: Prisma.ProductOrderByWithRelationInput | Prisma.ProductOrderByWithRelationInput[];
   take: number;
 }): Promise<Product[]> {
-  const products = await prisma.product.findMany({
-    where: args.where,
-    orderBy: args.orderBy ?? { createdAt: 'desc' },
-    take: args.take,
-    include: PRODUCT_LIST_INCLUDE,
-  });
-  return mapProducts(products);
+  if (databaseUnavailable) return mockFindProducts(args);
+
+  try {
+    const products = await prisma.product.findMany({
+      where: args.where,
+      orderBy: args.orderBy ?? { createdAt: 'desc' },
+      take: args.take,
+      include: PRODUCT_LIST_INCLUDE,
+    });
+    return mapProducts(products);
+  } catch (error) {
+    markDatabaseUnavailable(error);
+    return mockFindProducts(args);
+  }
 }
 
 /**
@@ -69,25 +151,46 @@ async function findProducts(args: {
  * pages that call several of the selectors below only hit the DB once each.
  */
 export const getCategories = cache(async (): Promise<Category[]> => {
-  const categories = await prisma.category.findMany({ orderBy: { name: 'asc' } });
-  return categories.map(serializeCategory).map(withMockCategoryImage);
+  if (databaseUnavailable) return mockCategories.map(withMockCategoryImage);
+
+  try {
+    const categories = await prisma.category.findMany({ orderBy: { name: 'asc' } });
+    return categories.map(serializeCategory).map(withMockCategoryImage);
+  } catch (error) {
+    markDatabaseUnavailable(error);
+    return mockCategories.map(withMockCategoryImage);
+  }
 });
 
 export const getVendors = cache(async (): Promise<Vendor[]> => {
-  const vendors = await prisma.vendor.findMany({
-    include: { categories: true },
-    orderBy: { name: 'asc' },
-  });
-  return vendors.map(serializeVendor);
+  if (databaseUnavailable) return [];
+
+  try {
+    const vendors = await prisma.vendor.findMany({
+      include: { categories: true },
+      orderBy: { name: 'asc' },
+    });
+    return vendors.map(serializeVendor);
+  } catch (error) {
+    markDatabaseUnavailable(error);
+    return [];
+  }
 });
 
 /** Full catalog (list include). Prefer limited helpers on home/rails. */
 export const getProducts = cache(async (): Promise<Product[]> => {
-  const products = await prisma.product.findMany({
-    include: PRODUCT_LIST_INCLUDE,
-    orderBy: { createdAt: 'desc' },
-  });
-  return mapProducts(products);
+  if (databaseUnavailable) return mockFindProducts({ take: mockProducts.length });
+
+  try {
+    const products = await prisma.product.findMany({
+      include: PRODUCT_LIST_INCLUDE,
+      orderBy: { createdAt: 'desc' },
+    });
+    return mapProducts(products);
+  } catch (error) {
+    markDatabaseUnavailable(error);
+    return mockFindProducts({ take: mockProducts.length });
+  }
 });
 
 export async function getCategoryBySlug(slug: string): Promise<Category | undefined> {
@@ -113,26 +216,32 @@ export async function getVendorsByCategory(categoryId: string): Promise<Vendor[]
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | undefined> {
-  const product = await prisma.product.findUnique({
-    where: { slug },
-    include: PRODUCT_DETAIL_INCLUDE,
-  });
-  return product
-    ? withMockProductAttributes(withMockProductImages(serializeProduct(product)))
-    : undefined;
+  if (databaseUnavailable) {
+    return mockProducts.find((product) => product.slug === slug);
+  }
+
+  try {
+    const product = await prisma.product.findUnique({
+      where: { slug },
+      include: PRODUCT_DETAIL_INCLUDE,
+    });
+    return product
+      ? withMockProductAttributes(withMockProductImages(serializeProduct(product)))
+      : undefined;
+  } catch (error) {
+    markDatabaseUnavailable(error);
+    return mockProducts.find((product) => product.slug === slug);
+  }
 }
 
 export async function getProductsByCategory(
   categorySlug: string,
   limit?: number,
 ): Promise<Product[]> {
-  const products = await prisma.product.findMany({
+  return findProducts({
     where: { category: { slug: categorySlug } },
-    include: PRODUCT_LIST_INCLUDE,
-    orderBy: { createdAt: 'desc' },
-    ...(typeof limit === 'number' ? { take: limit } : {}),
+    take: typeof limit === 'number' ? limit : 500,
   });
-  return mapProducts(products);
 }
 
 export async function getProductsByCategorySub(
@@ -275,62 +384,69 @@ export async function getRecommendedProductsForUser(
   userId: string,
   limit = 12,
 ): Promise<Product[]> {
-  const orders = await prisma.order.findMany({
-    where: { userId },
-    orderBy: { date: 'desc' },
-    take: 12,
-    include: { items: { select: { productId: true, name: true } } },
-  });
+  if (databaseUnavailable) return getRecommendedProducts(limit);
 
-  const purchasedIds = new Set<string>();
-  for (const order of orders) {
-    for (const item of order.items) {
-      if (item.productId) purchasedIds.add(item.productId);
+  try {
+    const orders = await prisma.order.findMany({
+      where: { userId },
+      orderBy: { date: 'desc' },
+      take: 12,
+      include: { items: { select: { productId: true, name: true } } },
+    });
+
+    const purchasedIds = new Set<string>();
+    for (const order of orders) {
+      for (const item of order.items) {
+        if (item.productId) purchasedIds.add(item.productId);
+      }
     }
-  }
 
-  let boostedCategoryIds: string[] = [];
-  if (purchasedIds.size > 0) {
-    const purchased = await prisma.product.findMany({
-      where: { id: { in: [...purchasedIds] } },
-      select: { categoryId: true },
-    });
-    const counts = new Map<string, number>();
-    for (const product of purchased) {
-      counts.set(product.categoryId, (counts.get(product.categoryId) ?? 0) + 1);
+    let boostedCategoryIds: string[] = [];
+    if (purchasedIds.size > 0) {
+      const purchased = await prisma.product.findMany({
+        where: { id: { in: [...purchasedIds] } },
+        select: { categoryId: true },
+      });
+      const counts = new Map<string, number>();
+      for (const product of purchased) {
+        counts.set(product.categoryId, (counts.get(product.categoryId) ?? 0) + 1);
+      }
+      boostedCategoryIds = [...counts.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .map(([categoryId]) => categoryId);
     }
-    boostedCategoryIds = [...counts.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .map(([categoryId]) => categoryId);
+
+    const excludeIds = [...purchasedIds];
+    const picks: Product[] = [];
+
+    for (const categoryId of boostedCategoryIds) {
+      if (picks.length >= limit) break;
+      const batch = await findProducts({
+        where: {
+          categoryId,
+          ...(excludeIds.length ? { id: { notIn: excludeIds } } : {}),
+        },
+        orderBy: [{ rating: 'desc' }, { reviewCount: 'desc' }],
+        take: limit - picks.length,
+      });
+      picks.push(...batch);
+      excludeIds.push(...batch.map((item) => item.id));
+    }
+
+    if (picks.length < limit) {
+      const filler = await findProducts({
+        where: excludeIds.length ? { id: { notIn: excludeIds } } : undefined,
+        orderBy: [{ rating: 'desc' }, { reviewCount: 'desc' }],
+        take: limit - picks.length,
+      });
+      picks.push(...filler);
+    }
+
+    return takeUnique(picks, limit);
+  } catch (error) {
+    markDatabaseUnavailable(error);
+    return getRecommendedProducts(limit);
   }
-
-  const excludeIds = [...purchasedIds];
-  const picks: Product[] = [];
-
-  for (const categoryId of boostedCategoryIds) {
-    if (picks.length >= limit) break;
-    const batch = await findProducts({
-      where: {
-        categoryId,
-        ...(excludeIds.length ? { id: { notIn: excludeIds } } : {}),
-      },
-      orderBy: [{ rating: 'desc' }, { reviewCount: 'desc' }],
-      take: limit - picks.length,
-    });
-    picks.push(...batch);
-    excludeIds.push(...batch.map((item) => item.id));
-  }
-
-  if (picks.length < limit) {
-    const filler = await findProducts({
-      where: excludeIds.length ? { id: { notIn: excludeIds } } : undefined,
-      orderBy: [{ rating: 'desc' }, { reviewCount: 'desc' }],
-      take: limit - picks.length,
-    });
-    picks.push(...filler);
-  }
-
-  return takeUnique(picks, limit);
 }
 
 export async function getCatalogHighlight(

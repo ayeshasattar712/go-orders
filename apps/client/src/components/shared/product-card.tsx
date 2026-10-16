@@ -2,15 +2,42 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import type { MouseEvent } from 'react';
+import { useState, type MouseEvent } from 'react';
 import { Heart, ShoppingCart } from 'lucide-react';
 import { cn, formatCurrency } from '@/lib/utils';
+import { productImageFallback, productImageSrc } from '@/lib/catalog/product-image';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { addProductToCart } from '@/store/cart-feedback-store';
 import { useWishlistStore } from '@/store/wishlist-store';
 import { useGuardedAction } from '@/hooks/use-guarded-action';
 import type { Product } from '@/types/catalog';
+
+function ProductThumb({
+  product,
+  sizes,
+  className,
+}: {
+  product: Product;
+  sizes: string;
+  className?: string;
+}) {
+  const fallback = productImageFallback(product.categorySlug);
+  const [src, setSrc] = useState(() => productImageSrc(product));
+
+  return (
+    <Image
+      src={src}
+      alt={product.name}
+      fill
+      className={className}
+      sizes={sizes}
+      onError={() => {
+        if (src !== fallback) setSrc(fallback);
+      }}
+    />
+  );
+}
 
 interface ProductCardProps {
   product: Product;
@@ -53,13 +80,7 @@ export function ProductCard({
           href={`/products/${product.slug}`}
           className="relative h-28 w-full shrink-0 overflow-hidden rounded-lg border bg-white sm:h-24 sm:w-24"
         >
-          <Image
-            src={product.images[0] ?? ''}
-            alt={product.name}
-            fill
-            className="object-contain p-2"
-            sizes="96px"
-          />
+          <ProductThumb product={product} className="object-contain p-2" sizes="96px" />
         </Link>
         <div className="flex min-w-0 flex-1 flex-col justify-between">
           <div>
@@ -100,10 +121,8 @@ export function ProductCard({
           href={`/products/${product.slug}`}
           className="relative flex aspect-[5/4] max-h-36 items-center justify-center overflow-hidden bg-white"
         >
-          <Image
-            src={product.images[0] ?? ''}
-            alt={product.name}
-            fill
+          <ProductThumb
+            product={product}
             className="object-contain p-3"
             sizes="(min-width: 1024px) 16vw, 50vw"
           />
@@ -147,10 +166,8 @@ export function ProductCard({
         href={`/products/${product.slug}`}
         className="relative flex aspect-[5/4] max-h-44 items-center justify-center overflow-hidden bg-white sm:max-h-48"
       >
-        <Image
-          src={product.images[0] ?? ''}
-          alt={product.name}
-          fill
+        <ProductThumb
+          product={product}
           className="object-contain p-3"
           sizes="(min-width: 1024px) 20vw, 45vw"
         />
