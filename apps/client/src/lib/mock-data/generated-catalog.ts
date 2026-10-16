@@ -149,7 +149,7 @@ const blueprints: CategoryBlueprint[] = [
       'https://images.unsplash.com/photo-1563453392212-326f5e854473?q=80&w=1200&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=1200&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1583947215259-38e31be8751f?q=80&w=1200&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1628177142898-93e36e4e3a71?q=80&w=1200&auto=format&fit=crop',
+      '/images/products/microfiber-cleaning-cloth-pack.jpg',
     ],
     names: [
       'Surface Disinfectant Spray',
@@ -216,7 +216,9 @@ export function buildGeneratedCatalog(existing: Product[]): Product[] {
       const id = `prod_gen_${blueprint.categorySlug}_${String(n).padStart(3, '0')}`;
       const slug = `${blueprint.categorySlug}-${nameBase.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${n}`;
       const sku = `GO-${blueprint.skuPrefix}-${1000 + n}`;
-      const image = blueprint.images[i % blueprint.images.length]!;
+      const image = nameBase.toLowerCase().includes('microfiber cleaning cloth')
+        ? '/images/products/microfiber-cleaning-cloth-pack.jpg'
+        : blueprint.images[i % blueprint.images.length]!;
       const subTag = child?.slug ?? 'general';
 
       generated.push({

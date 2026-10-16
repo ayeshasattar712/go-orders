@@ -1,8 +1,10 @@
+const MICROFIBER_CLOTH_IMAGE = '/images/products/microfiber-cleaning-cloth-pack.jpg';
+
 const CLEANING = [
   'https://images.unsplash.com/photo-1563453392212-326f5e854473?q=80&w=1200&auto=format&fit=crop',
   'https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=1200&auto=format&fit=crop',
   'https://images.unsplash.com/photo-1583947215259-38e31be8751f?q=80&w=1200&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1628177142898-93e36e4e3a71?q=80&w=1200&auto=format&fit=crop',
+  MICROFIBER_CLOTH_IMAGE,
 ];
 
 const FURNITURE = [
@@ -45,15 +47,28 @@ function poolFor(categorySlug?: string): string[] {
   return BY_CATEGORY[categorySlug ?? ''] ?? CLEANING;
 }
 
-export function productImageFallback(categorySlug?: string): string {
-  return poolFor(categorySlug)[0] ?? DEFAULT_IMAGE;
+function isMicrofiberCloth(product: { name?: string; slug?: string }): boolean {
+  const haystack = `${product.name ?? ''} ${product.slug ?? ''}`.toLowerCase();
+  return haystack.includes('microfiber') && haystack.includes('cloth');
+}
+
+export function productImageFallback(
+  product?: { categorySlug?: string; name?: string; slug?: string } | string,
+): string {
+  if (typeof product === 'string' || !product) return poolFor(product)[0] ?? DEFAULT_IMAGE;
+  if (isMicrofiberCloth(product)) return MICROFIBER_CLOTH_IMAGE;
+  return poolFor(product.categorySlug)[0] ?? DEFAULT_IMAGE;
 }
 
 export function productImageSrc(product: {
   images?: string[];
   categorySlug?: string;
   id?: string;
+  name?: string;
+  slug?: string;
 }): string {
+  if (isMicrofiberCloth(product)) return MICROFIBER_CLOTH_IMAGE;
+
   const first = product.images?.find((src) => src.trim().length > 0);
   if (first) return first;
 

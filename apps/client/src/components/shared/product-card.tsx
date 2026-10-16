@@ -22,7 +22,7 @@ function ProductThumb({
   sizes: string;
   className?: string;
 }) {
-  const fallback = productImageFallback(product.categorySlug);
+  const fallback = productImageFallback(product);
   const [src, setSrc] = useState(() => productImageSrc(product));
 
   return (
